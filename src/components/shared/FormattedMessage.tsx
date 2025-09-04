@@ -142,9 +142,6 @@ export default function FormattedMessage({
             <Box className="typing-dot" />
             <Box className="typing-dot" />
           </Box>
-          <Typography variant="body2" sx={{ fontSize: '12px', opacity: 0.7 }}>
-            Typing...
-          </Typography>
         </Box>
       </Box>
     );

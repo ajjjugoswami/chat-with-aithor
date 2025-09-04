@@ -70,11 +70,14 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
 }
 
 function MessageBubble({ message }: { message: Message }) {
+  const isThinking = message.content === "Thinking..." && message.sender === 'ai';
+  
   return (
     <FormattedMessage
       content={message.content}
       isUser={message.sender === 'user'}
       timestamp={message.timestamp}
+      isTyping={isThinking}
     />
   );
 }

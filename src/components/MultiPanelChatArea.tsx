@@ -226,12 +226,15 @@ function MessageBubble({
   message: Message;
   modelColor?: string;
 }) {
+  const isThinking = message.content === "Thinking..." && message.sender === 'ai';
+  
   return (
     <FormattedMessage
       content={message.content}
       isUser={message.sender === 'user'}
       modelColor={modelColor}
       timestamp={message.timestamp}
+      isTyping={isThinking}
     />
   );
 }
