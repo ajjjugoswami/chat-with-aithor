@@ -1,5 +1,5 @@
 import { Box, Typography, IconButton, Button } from "@mui/material";
-import { ExpandLess, Settings, Key } from "@mui/icons-material";
+import { ExpandLess, Key } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
@@ -91,12 +91,7 @@ function ModelPanel({
               >
                 <ExpandLess />
               </IconButton>
-              <IconButton
-                size="small"
-                sx={{ color: "#888", "&:hover": { color: "white" } }}
-              >
-                <Settings />
-              </IconButton>
+              
             </Box>
           </>
         )}
