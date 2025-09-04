@@ -102,12 +102,11 @@ export default function Sidebar({
                 fontSize: "1.4rem"
               }}
             >
-               AITHOR
+               AITHOR 
             </Typography>
           )}
         </Box>
 
-        {/* Collapse/Expand Button */}
         {onToggleCollapse && (
           <IconButton
             onClick={onToggleCollapse}
