@@ -1,11 +1,13 @@
 import { Box, Typography, Avatar, IconButton, Button } from '@mui/material';
-import { ExpandMore, ExpandLess, Settings, Key } from '@mui/icons-material';
-import { useState } from 'react';
+import { ExpandLess, Settings, Key } from '@mui/icons-material';
+import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { AIModel } from './AIModelTabs';
 import { hasAPIKey } from '../utils/apiKeys';
 import APIKeyDialog from './APIKeyDialog';
 import { saveAPIKey } from '../utils/apiKeys';
+import ResizablePanel from './ResizablePanel';
+import { getPanelWidths, savePanelWidth, getPanelCollapsed, savePanelCollapsed } from '../utils/panelStorage';
 
 interface Message {
   id: string;
@@ -18,12 +20,23 @@ interface Message {
 interface ModelPanelProps {
   model: AIModel;
   messages: Message[];
-  isActive: boolean;
   onToggle?: (modelId: string) => void;
+  width: number;
+  isCollapsed: boolean;
+  onWidthChange: (width: number) => void;
+  onToggleCollapse: () => void;
+  showRightHandle?: boolean;
 }
 
-function ModelPanel({ model, messages, isActive }: ModelPanelProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+function ModelPanel({ 
+  model, 
+  messages, 
+  width,
+  isCollapsed,
+  onWidthChange,
+  onToggleCollapse,
+  showRightHandle = true
+}: ModelPanelProps) {
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(hasAPIKey(model.id));
   
@@ -37,22 +50,8 @@ function ModelPanel({ model, messages, isActive }: ModelPanelProps) {
     setApiKeyDialogOpen(false);
   };
 
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        minWidth: isCollapsed ? 60 : 380,
-        maxWidth: isCollapsed ? 60 : 450,
-        bgcolor: '#1a1a1a',
-        borderRight: '1px solid #333',
-        opacity: isActive ? 1 : 0.7,
-        position: 'relative',
-        flexShrink: 0,
-        transition: 'all 0.3s ease',
-      }}
-    >
+  const panelContent = (
+    <>
       {/* Model Header */}
       <Box
         sx={{
@@ -88,7 +87,7 @@ function ModelPanel({ model, messages, isActive }: ModelPanelProps) {
             <Box sx={{ display: 'flex', gap: 1 }}>
               <IconButton
                 size="small"
-                onClick={() => setIsCollapsed(true)}
+                onClick={onToggleCollapse}
                 sx={{ color: '#888', '&:hover': { color: 'white' } }}
               >
                 <ExpandLess />
@@ -104,13 +103,18 @@ function ModelPanel({ model, messages, isActive }: ModelPanelProps) {
         )}
         
         {isCollapsed && (
-          <IconButton
-            size="small"
-            onClick={() => setIsCollapsed(false)}
-            sx={{ color: model.color, '&:hover': { color: 'white' } }}
+          <Avatar
+            sx={{
+              width: 28,
+              height: 28,
+              bgcolor: model.color,
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
+            onClick={onToggleCollapse}
           >
-            <ExpandMore />
-          </IconButton>
+            {model.icon}
+          </Avatar>
         )}
       </Box>
 
@@ -211,7 +215,22 @@ function ModelPanel({ model, messages, isActive }: ModelPanelProps) {
         model={model}
         onSave={handleSaveAPIKey}
       />
-    </Box>
+    </>
+  );
+
+  return (
+    <ResizablePanel
+      initialWidth={width}
+      minWidth={300}
+      maxWidth={600}
+      isCollapsed={isCollapsed}
+      onToggleCollapse={onToggleCollapse}
+      onWidthChange={onWidthChange}
+      showRightHandle={showRightHandle}
+      collapsedWidth={60}
+    >
+      {panelContent}
+    </ResizablePanel>
   );
 }
 
@@ -281,6 +300,61 @@ interface MultiPanelChatAreaProps {
 
 export default function MultiPanelChatArea({ models, messages, chatInput, onModelToggle }: MultiPanelChatAreaProps) {
   const enabledModels = models.filter(model => model.enabled);
+  
+  // Initialize panel widths and collapsed states
+  const [panelWidths, setPanelWidths] = useState<{ [modelId: string]: number }>(() => {
+    const stored = getPanelWidths();
+    const initial: { [modelId: string]: number } = {};
+    enabledModels.forEach(model => {
+      initial[model.id] = stored[model.id] || 380; // Default width
+    });
+    return initial;
+  });
+
+  const [panelCollapsed, setPanelCollapsed] = useState<{ [modelId: string]: boolean }>(() => {
+    const stored = getPanelCollapsed();
+    const initial: { [modelId: string]: boolean } = {};
+    enabledModels.forEach(model => {
+      initial[model.id] = stored[model.id] || false; // Default not collapsed
+    });
+    return initial;
+  });
+
+  // Update states when models change
+  useEffect(() => {
+    const storedWidths = getPanelWidths();
+    const storedCollapsed = getPanelCollapsed();
+    
+    const newWidths: { [modelId: string]: number } = {};
+    const newCollapsed: { [modelId: string]: boolean } = {};
+    
+    enabledModels.forEach(model => {
+      newWidths[model.id] = storedWidths[model.id] || 380;
+      newCollapsed[model.id] = storedCollapsed[model.id] || false;
+    });
+    
+    setPanelWidths(newWidths);
+    setPanelCollapsed(newCollapsed);
+  }, [enabledModels]);
+
+  const handleWidthChange = (modelId: string, width: number) => {
+    setPanelWidths(prev => ({
+      ...prev,
+      [modelId]: width,
+    }));
+    savePanelWidth(modelId, width);
+  };
+
+  const handleToggleCollapse = (modelId: string) => {
+    setPanelCollapsed(prev => {
+      const newCollapsed = !prev[modelId];
+      savePanelCollapsed(modelId, newCollapsed);
+      return {
+        ...prev,
+        [modelId]: newCollapsed,
+      };
+    });
+  };
 
   return (
     <Box
@@ -338,13 +412,17 @@ export default function MultiPanelChatArea({ models, messages, chatInput, onMode
             </Box>
           </Box>
         ) : (
-          enabledModels.map((model) => (
+          enabledModels.map((model, index) => (
             <ModelPanel
               key={model.id}
               model={model}
               messages={messages}
-              isActive={true}
               onToggle={onModelToggle}
+              width={panelWidths[model.id] || 380}
+              isCollapsed={panelCollapsed[model.id] || false}
+              onWidthChange={(width) => handleWidthChange(model.id, width)}
+              onToggleCollapse={() => handleToggleCollapse(model.id)}
+              showRightHandle={index < enabledModels.length - 1} // No handle on last panel
             />
           ))
         )}

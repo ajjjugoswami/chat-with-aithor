@@ -1,5 +1,8 @@
 import { Box } from '@mui/material';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
+import ResizablePanel from './ResizablePanel';
+import { getSidebarWidth, saveSidebarWidth, getSidebarCollapsed, saveSidebarCollapsed } from '../utils/panelStorage';
 
 interface ChatLayoutProps {
   sidebar: ReactNode;
@@ -7,6 +10,20 @@ interface ChatLayoutProps {
 }
 
 export default function ChatLayout({ sidebar, chatArea }: ChatLayoutProps) {
+  const [sidebarWidth, setSidebarWidth] = useState(getSidebarWidth());
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(getSidebarCollapsed());
+
+  const handleSidebarWidthChange = (width: number) => {
+    setSidebarWidth(width);
+    saveSidebarWidth(width);
+  };
+
+  const handleSidebarToggleCollapse = () => {
+    const newCollapsed = !sidebarCollapsed;
+    setSidebarCollapsed(newCollapsed);
+    saveSidebarCollapsed(newCollapsed);
+  };
+
   return (
     <Box
       sx={{
@@ -14,22 +31,31 @@ export default function ChatLayout({ sidebar, chatArea }: ChatLayoutProps) {
         height: '100vh',
         bgcolor: '#1a1a1a',
         color: 'white',
-        overflow: 'hidden', // Prevent app-level scrolling
+        overflow: 'hidden',
       }}
     >
-      {/* Sidebar */}
-      <Box
-        sx={{
-          width: 280,
-          bgcolor: '#2a2a2a',
-          borderRight: '1px solid #404040',
-          display: 'flex',
-          flexDirection: 'column',
-          flexShrink: 0, // Prevent sidebar from shrinking
-        }}
+      {/* Sidebar with ResizablePanel */}
+      <ResizablePanel
+        initialWidth={sidebarWidth}
+        minWidth={300}
+        maxWidth={500}
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={handleSidebarToggleCollapse}
+        onWidthChange={handleSidebarWidthChange}
+        showRightHandle={true}
+        collapsedWidth={60}
       >
-        {sidebar}
-      </Box>
+        <Box
+          sx={{
+            bgcolor: '#2a2a2a',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          }}
+        >
+          {sidebar}
+        </Box>
+      </ResizablePanel>
       
       {/* Main Chat Area */}
       <Box

@@ -9,6 +9,7 @@ import type { AIModel } from './components/AIModelTabs';
 import { hasAPIKey } from './utils/apiKeys';
 import { sendToAI, type ChatMessage } from './services/aiServices';
 import { saveChatsToStorage, loadChatsFromStorage } from './utils/chatStorage';
+import { getSidebarCollapsed } from './utils/panelStorage';
 
 interface Message {
   id: string;
@@ -27,6 +28,7 @@ interface Chat {
 
 function App() {
   const [currentView, setCurrentView] = useState<'chat' | 'settings'>('chat');
+  const [sidebarCollapsed] = useState(() => getSidebarCollapsed());
   
   const [aiModels, setAiModels] = useState<AIModel[]>([
     {
@@ -244,6 +246,7 @@ function App() {
           onChatSelect={setSelectedChatId}
           onSettingsClick={() => setCurrentView('settings')}
           onDeleteChat={handleDeleteChat}
+          isCollapsed={sidebarCollapsed}
         />
       }
       chatArea={
