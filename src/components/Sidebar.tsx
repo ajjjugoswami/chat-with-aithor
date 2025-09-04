@@ -8,7 +8,13 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import { Add, Settings, Delete, ChevronLeft, ChevronRight } from "@mui/icons-material";
+import {
+  Add,
+  Settings,
+  Delete,
+  ChevronLeft,
+  ChevronRight,
+} from "@mui/icons-material";
 
 interface Chat {
   id: string;
@@ -47,26 +53,30 @@ export default function Sidebar({
 
   return (
     <Box
-      sx={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        height: "100%", 
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
         p: isCollapsed ? 1 : 2,
-        alignItems: isCollapsed ? "center" : "stretch"
+        alignItems: isCollapsed ? "center" : "stretch",
       }}
     >
       {/* Header with Logo */}
-      <Box sx={{ 
-        display: "flex", 
-        alignItems: "center", 
-        mb: 3,
-        justifyContent: isCollapsed ? "center" : "space-between",
-        position: "relative"
-      }}>
-        <Box sx={{ 
-          display: "flex", 
+      <Box
+        sx={{
+          display: "flex",
           alignItems: "center",
-        }}>
+          mb: 3,
+          justifyContent: isCollapsed ? "center" : "space-between",
+          position: "relative",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Box
             sx={{
               width: 32,
@@ -86,12 +96,15 @@ export default function Sidebar({
             </Typography>
           </Box>
           {!isCollapsed && (
-            <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
-             Chat with AI
+            <Typography
+              variant="h6"
+              sx={{ color: "white", fontWeight: "bold" }}
+            >
+              Chat with AI
             </Typography>
           )}
         </Box>
-        
+
         {/* Collapse/Expand Button */}
         {onToggleCollapse && (
           <IconButton
@@ -142,6 +155,7 @@ export default function Sidebar({
             mb: 2,
             color: "white",
             borderColor: "#404040",
+            borderRadius: "12px",
             "&:hover": {
               borderColor: "#606060",
               bgcolor: "#333",
@@ -230,12 +244,12 @@ export default function Sidebar({
         {isCollapsed ? (
           <IconButton
             onClick={onSettingsClick}
-            sx={{ 
+            sx={{
               color: "#888",
               "&:hover": {
                 color: "white",
                 bgcolor: "#333",
-              }
+              },
             }}
           >
             <Settings />
@@ -244,7 +258,7 @@ export default function Sidebar({
           <Button
             startIcon={<Settings />}
             onClick={onSettingsClick}
-            sx={{ color: "#888", textTransform: "none" }}
+            sx={{ color: "#888", textTransform: "none", outline: "none" }}
           >
             Settings
           </Button>
