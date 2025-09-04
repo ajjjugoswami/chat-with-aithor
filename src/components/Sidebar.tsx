@@ -89,7 +89,7 @@ export default function Sidebar({
               mr: isCollapsed ? 0 : 2,
             }}
           >
-            <img src="/public/aithor.png" style={{ width: "35px" }} />
+            <img src="/aithor.png" style={{ width: "35px" }} />
           </Box>
           {!isCollapsed && (
             <Typography
