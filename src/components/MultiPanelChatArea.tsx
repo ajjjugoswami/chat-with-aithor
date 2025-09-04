@@ -64,7 +64,7 @@ function ModelPanel({
       {/* Model Header */}
       <Box
         sx={{
-          p: 2,
+          p: 1,
           borderBottom: "1px solid #333",
           display: "flex",
           alignItems: "center",
@@ -79,7 +79,7 @@ function ModelPanel({
         {!isCollapsed && (
           <>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <div>{model.icon}</div>
+              <div style={{marginTop:"4px"}}>{model.icon}</div>
               <Typography
                 variant="subtitle1"
                 sx={{ color: "white", fontWeight: 600 }}

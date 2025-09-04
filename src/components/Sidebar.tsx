@@ -245,6 +245,7 @@ export default function Sidebar({
             sx={{
               color: "#bbb",
               mb: 2,
+              ml: 1,
               border: "1px solid #404040",
               borderRadius: "8px",
               "&:hover": {
@@ -325,8 +326,8 @@ export default function Sidebar({
                 src={user.picture}
                 alt={user.name}
                 sx={{
-                  width: isCollapsed ? 36 : 44,
-                  height: isCollapsed ? 36 : 44,
+                  width: isCollapsed ? 30 : 44,
+                  height: isCollapsed ? 30 : 44,
                   border: "2px solid transparent",
                   background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   "& .MuiAvatar-img": {
