@@ -1,22 +1,22 @@
-import { 
-  Box, 
-  Typography, 
-  Switch, 
-  List, 
-  ListItem, 
-  ListItemText, 
+import {
+  Box,
+  Typography,
+  Switch,
+  List,
+  ListItem,
+  ListItemText,
   ListItemSecondaryAction,
   Avatar,
   Divider,
   Paper,
   IconButton,
-  Chip
-} from '@mui/material';
-import { ArrowBack, Key, Edit, Delete } from '@mui/icons-material';
-import { useState } from 'react';
-import type { AIModel } from './AIModelTabs';
-import { getAllAPIKeys, removeAPIKey } from '../utils/apiKeys';
-import APIKeyDialog from './APIKeyDialog';
+  Chip,
+} from "@mui/material";
+import { ArrowBack, Key, Edit, Delete } from "@mui/icons-material";
+import { useState } from "react";
+import type { AIModel } from "./AIModelTabs";
+import { getAllAPIKeys, removeAPIKey } from "../utils/apiKeys";
+import APIKeyDialog from "./APIKeyDialog";
 
 interface SettingsPageProps {
   models: AIModel[];
@@ -24,7 +24,11 @@ interface SettingsPageProps {
   onBack?: () => void;
 }
 
-export default function SettingsPage({ models, onModelToggle, onBack }: SettingsPageProps) {
+export default function SettingsPage({
+  models,
+  onModelToggle,
+  onBack,
+}: SettingsPageProps) {
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
   const [apiKeys, setApiKeys] = useState(getAllAPIKeys());
@@ -47,21 +51,21 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
   return (
     <Box
       sx={{
-        height: '100%',
-        bgcolor: '#1a1a1a',
-        color: 'white',
-        overflow: 'auto',
+        height: "100%",
+        bgcolor: "#1a1a1a",
+        color: "white",
+        overflow: "auto",
         p: 3,
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         {onBack && (
           <IconButton
             onClick={onBack}
-            sx={{ 
-              color: 'white', 
+            sx={{
+              color: "white",
               mr: 2,
-              '&:hover': { bgcolor: '#333' }
+              "&:hover": { bgcolor: "#333" },
             }}
           >
             <ArrowBack />
@@ -75,17 +79,17 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
       {/* AI Models Section */}
       <Paper
         sx={{
-          bgcolor: '#2a2a2a',
-          border: '1px solid #404040',
+          bgcolor: "#2a2a2a",
+          border: "1px solid #404040",
           borderRadius: 2,
           mb: 3,
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: 'white' }}>
+          <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
             AI Models
           </Typography>
-          <Typography variant="body2" sx={{ color: '#888', mb: 3 }}>
+          <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>
             Enable or disable AI models that will appear in your chat dashboard.
           </Typography>
 
@@ -96,28 +100,30 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
                   sx={{
                     py: 2,
                     borderRadius: 1,
-                    '&:hover': { bgcolor: '#333' },
+                    "&:hover": { bgcolor: "#333" },
                   }}
                 >
-                  <Avatar
-                    sx={{
+                  <div
+                    style={{
                       width: 40,
                       height: 40,
-                      bgcolor: model.color,
-                      mr: 2,
+                      marginRight: 20,
                     }}
                   >
                     {model.icon}
-                  </Avatar>
+                  </div>
                   <ListItemText
                     primary={
-                      <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 500 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ color: "white", fontWeight: 500 }}
+                      >
                         {model.displayName}
                       </Typography>
                     }
                     secondary={
-                      <Typography variant="body2" sx={{ color: '#888' }}>
-                        {model.name} - {model.enabled ? 'Active' : 'Inactive'}
+                      <Typography variant="body2" sx={{ color: "#888" }}>
+                        {model.name} - {model.enabled ? "Active" : "Inactive"}
                       </Typography>
                     }
                   />
@@ -126,21 +132,22 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
                       checked={model.enabled}
                       onChange={() => onModelToggle(model.id)}
                       sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
+                        "& .MuiSwitch-switchBase.Mui-checked": {
                           color: model.color,
                         },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: model.color,
-                        },
-                        '& .MuiSwitch-track': {
-                          backgroundColor: '#666',
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: model.color,
+                          },
+                        "& .MuiSwitch-track": {
+                          backgroundColor: "#666",
                         },
                       }}
                     />
                   </ListItemSecondaryAction>
                 </ListItem>
                 {index < models.length - 1 && (
-                  <Divider sx={{ bgcolor: '#404040', mx: 2 }} />
+                  <Divider sx={{ bgcolor: "#404040", mx: 2 }} />
                 )}
               </Box>
             ))}
@@ -151,30 +158,33 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
       {/* API Keys Section */}
       <Paper
         sx={{
-          bgcolor: '#2a2a2a',
-          border: '1px solid #404040',
+          bgcolor: "#2a2a2a",
+          border: "1px solid #404040",
           borderRadius: 2,
           mb: 3,
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: 'white' }}>
+          <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
             API Keys
           </Typography>
-          <Typography variant="body2" sx={{ color: '#888', mb: 3 }}>
-            Manage your API keys for different AI models. Only models with API keys will respond to your messages.
+          <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>
+            Manage your API keys for different AI models. Only models with API
+            keys will respond to your messages.
           </Typography>
 
           <List>
             {models.map((model, index) => {
-              const modelApiKey = apiKeys.find(key => key.modelId === model.id);
+              const modelApiKey = apiKeys.find(
+                (key) => key.modelId === model.id
+              );
               return (
                 <Box key={model.id}>
                   <ListItem
                     sx={{
                       py: 2,
                       borderRadius: 1,
-                      '&:hover': { bgcolor: '#333' },
+                      "&:hover": { bgcolor: "#333" },
                     }}
                   >
                     <Avatar
@@ -189,8 +199,13 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
                     </Avatar>
                     <ListItemText
                       primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 500 }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ color: "white", fontWeight: 500 }}
+                          >
                             {model.displayName}
                           </Typography>
                           {modelApiKey && (
@@ -199,29 +214,30 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
                               size="small"
                               sx={{
                                 bgcolor: model.color,
-                                color: 'white',
-                                fontSize: '0.7rem',
+                                color: "white",
+                                fontSize: "0.7rem",
                               }}
                             />
                           )}
                         </Box>
                       }
                       secondary={
-                        <Typography variant="body2" sx={{ color: '#888' }}>
-                          {modelApiKey 
-                            ? `Added on ${new Date(modelApiKey.addedAt).toLocaleDateString()}`
-                            : 'No API key configured'
-                          }
+                        <Typography variant="body2" sx={{ color: "#888" }}>
+                          {modelApiKey
+                            ? `Added on ${new Date(
+                                modelApiKey.addedAt
+                              ).toLocaleDateString()}`
+                            : "No API key configured"}
                         </Typography>
                       }
                     />
                     <ListItemSecondaryAction>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: "flex", gap: 1 }}>
                         <IconButton
                           onClick={() => handleEditAPIKey(model)}
                           sx={{
                             color: model.color,
-                            '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                            "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
                           }}
                         >
                           <Edit />
@@ -230,8 +246,8 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
                           <IconButton
                             onClick={() => handleRemoveAPIKey(model.id)}
                             sx={{
-                              color: '#f44336',
-                              '&:hover': { bgcolor: 'rgba(244,67,54,0.1)' }
+                              color: "#f44336",
+                              "&:hover": { bgcolor: "rgba(244,67,54,0.1)" },
                             }}
                           >
                             <Delete />
@@ -241,7 +257,7 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
                     </ListItemSecondaryAction>
                   </ListItem>
                   {index < models.length - 1 && (
-                    <Divider sx={{ bgcolor: '#404040', mx: 2 }} />
+                    <Divider sx={{ bgcolor: "#404040", mx: 2 }} />
                   )}
                 </Box>
               );
@@ -253,16 +269,16 @@ export default function SettingsPage({ models, onModelToggle, onBack }: Settings
       {/* General Settings Section */}
       <Paper
         sx={{
-          bgcolor: '#2a2a2a',
-          border: '1px solid #404040',
+          bgcolor: "#2a2a2a",
+          border: "1px solid #404040",
           borderRadius: 2,
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: 'white' }}>
+          <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
             General Settings
           </Typography>
-          <Typography variant="body2" sx={{ color: '#888' }}>
+          <Typography variant="body2" sx={{ color: "#888" }}>
             More settings coming soon...
           </Typography>
         </Box>

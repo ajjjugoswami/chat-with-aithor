@@ -1,18 +1,23 @@
-import { Box, Typography, Avatar, IconButton, Button } from '@mui/material';
-import { ExpandLess, Settings, Key } from '@mui/icons-material';
-import { useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import type { AIModel } from './AIModelTabs';
-import { hasAPIKey } from '../utils/apiKeys';
-import APIKeyDialog from './APIKeyDialog';
-import { saveAPIKey } from '../utils/apiKeys';
-import ResizablePanel from './ResizablePanel';
-import { getPanelWidths, savePanelWidth, getPanelCollapsed, savePanelCollapsed } from '../utils/panelStorage';
+import { Box, Typography, IconButton, Button } from "@mui/material";
+import { ExpandLess, Settings, Key } from "@mui/icons-material";
+import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import type { AIModel } from "./AIModelTabs";
+import { hasAPIKey } from "../utils/apiKeys";
+import APIKeyDialog from "./APIKeyDialog";
+import { saveAPIKey } from "../utils/apiKeys";
+import ResizablePanel from "./ResizablePanel";
+import {
+  getPanelWidths,
+  savePanelWidth,
+  getPanelCollapsed,
+  savePanelCollapsed,
+} from "../utils/panelStorage";
 
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'ai';
+  sender: "user" | "ai";
   timestamp: Date;
   modelId?: string;
 }
@@ -28,20 +33,20 @@ interface ModelPanelProps {
   showRightHandle?: boolean;
 }
 
-function ModelPanel({ 
-  model, 
-  messages, 
+function ModelPanel({
+  model,
+  messages,
   width,
   isCollapsed,
   onWidthChange,
   onToggleCollapse,
-  showRightHandle = true
+  showRightHandle = true,
 }: ModelPanelProps) {
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(hasAPIKey(model.id));
-  
-  const modelMessages = messages.filter(msg => 
-    msg.sender === 'user' || msg.modelId === model.id
+
+  const modelMessages = messages.filter(
+    (msg) => msg.sender === "user" || msg.modelId === model.id
   );
 
   const handleSaveAPIKey = (modelId: string, apiKey: string) => {
@@ -56,66 +61,47 @@ function ModelPanel({
       <Box
         sx={{
           p: 2,
-          borderBottom: '1px solid #333',
-          display: 'flex',
-          alignItems: 'center',
+          borderBottom: "1px solid #333",
+          display: "flex",
+          alignItems: "center",
           gap: 2,
-          bgcolor: '#202020',
-          position: 'sticky',
+          bgcolor: "#202020",
+          position: "sticky",
           top: 0,
           zIndex: 1,
-          justifyContent: isCollapsed ? 'center' : 'space-between',
+          justifyContent: isCollapsed ? "center" : "space-between",
         }}
       >
         {!isCollapsed && (
           <>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28,
-                  bgcolor: model.color,
-                  fontSize: '12px',
-                }}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <div>{model.icon}</div>
+              <Typography
+                variant="subtitle1"
+                sx={{ color: "white", fontWeight: 600 }}
               >
-                {model.icon}
-              </Avatar>
-              <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 {model.displayName}
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1 }}>
               <IconButton
                 size="small"
                 onClick={onToggleCollapse}
-                sx={{ color: '#888', '&:hover': { color: 'white' } }}
+                sx={{ color: "#888", "&:hover": { color: "white" } }}
               >
                 <ExpandLess />
               </IconButton>
               <IconButton
                 size="small"
-                sx={{ color: '#888', '&:hover': { color: 'white' } }}
+                sx={{ color: "#888", "&:hover": { color: "white" } }}
               >
                 <Settings />
               </IconButton>
             </Box>
           </>
         )}
-        
-        {isCollapsed && (
-          <Avatar
-            sx={{
-              width: 28,
-              height: 28,
-              bgcolor: model.color,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
-            onClick={onToggleCollapse}
-          >
-            {model.icon}
-          </Avatar>
-        )}
+
+        {isCollapsed && <div onClick={onToggleCollapse}>{model.icon}</div>}
       </Box>
 
       {/* Messages Area - Only show when not collapsed */}
@@ -124,39 +110,42 @@ function ModelPanel({
           <Box
             sx={{
               flex: 1,
-              overflowY: 'auto',
+              overflowY: "auto",
               p: 2,
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               gap: 1.5,
-              '&::-webkit-scrollbar': {
-                width: '6px',
+              "&::-webkit-scrollbar": {
+                width: "6px",
               },
-              '&::-webkit-scrollbar-track': {
-                background: '#1a1a1a',
+              "&::-webkit-scrollbar-track": {
+                background: "#1a1a1a",
               },
-              '&::-webkit-scrollbar-thumb': {
-                background: '#444',
-                borderRadius: '3px',
+              "&::-webkit-scrollbar-thumb": {
+                background: "#444",
+                borderRadius: "3px",
               },
-              '&::-webkit-scrollbar-thumb:hover': {
-                background: '#555',
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
               },
             }}
           >
             {!hasApiKey ? (
               /* Show API Key button when no API key exists */
-              <Box 
-                sx={{ 
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  height: '100%',
-                  gap: 2
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  height: "100%",
+                  gap: 2,
                 }}
               >
-                <Typography variant="body2" sx={{ color: '#666', textAlign: 'center' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#666", textAlign: "center" }}
+                >
                   Add your API key to start chatting with {model.displayName}
                 </Typography>
                 <Button
@@ -165,14 +154,14 @@ function ModelPanel({
                   onClick={() => setApiKeyDialogOpen(true)}
                   sx={{
                     bgcolor: model.color,
-                    color: 'white',
+                    color: "white",
                     borderRadius: 3,
-                    textTransform: 'none',
+                    textTransform: "none",
                     px: 3,
                     py: 1.5,
-                    '&:hover': { 
+                    "&:hover": {
                       bgcolor: model.color,
-                      filter: 'brightness(1.1)',
+                      filter: "brightness(1.1)",
                     },
                   }}
                 >
@@ -182,13 +171,13 @@ function ModelPanel({
             ) : modelMessages.length === 0 ? (
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100%',
-                  color: '#666',
-                  textAlign: 'center',
-                  fontSize: '14px',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  color: "#666",
+                  textAlign: "center",
+                  fontSize: "14px",
                 }}
               >
                 <Typography variant="body2">
@@ -197,9 +186,9 @@ function ModelPanel({
               </Box>
             ) : (
               modelMessages.map((message) => (
-                <MessageBubble 
-                  key={`${model.id}-${message.id}`} 
-                  message={message} 
+                <MessageBubble
+                  key={`${model.id}-${message.id}`}
+                  message={message}
                   modelColor={model.color}
                 />
               ))
@@ -234,27 +223,33 @@ function ModelPanel({
   );
 }
 
-function MessageBubble({ message, modelColor }: { message: Message; modelColor?: string }) {
-  const isUser = message.sender === 'user';
+function MessageBubble({
+  message,
+  modelColor,
+}: {
+  message: Message;
+  modelColor?: string;
+}) {
+  const isUser = message.sender === "user";
 
   if (isUser) {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
+          display: "flex",
+          justifyContent: "flex-end",
           mb: 1,
         }}
       >
         <Box
           sx={{
-            maxWidth: '80%',
+            maxWidth: "80%",
             p: 1.5,
             borderRadius: 2,
-            bgcolor: '#007aff',
-            color: 'white',
-            wordBreak: 'break-word',
-            fontSize: '14px',
+            bgcolor: "#007aff",
+            color: "white",
+            wordBreak: "break-word",
+            fontSize: "14px",
             lineHeight: 1.4,
           }}
         >
@@ -267,20 +262,20 @@ function MessageBubble({ message, modelColor }: { message: Message; modelColor?:
   return (
     <Box
       sx={{
-        display: 'flex',
-        justifyContent: 'flex-start',
+        display: "flex",
+        justifyContent: "flex-start",
         mb: 1,
       }}
     >
       <Box
         sx={{
-          maxWidth: '100%',
+          maxWidth: "100%",
           p: 2,
           borderRadius: 2,
-          bgcolor: '#2a2a2a',
-          color: 'white',
-          wordBreak: 'break-word',
-          fontSize: '14px',
+          bgcolor: "#2a2a2a",
+          color: "white",
+          wordBreak: "break-word",
+          fontSize: "14px",
           lineHeight: 1.5,
           border: `1px solid ${modelColor}30`,
         }}
@@ -298,23 +293,32 @@ interface MultiPanelChatAreaProps {
   onModelToggle?: (modelId: string) => void;
 }
 
-export default function MultiPanelChatArea({ models, messages, chatInput, onModelToggle }: MultiPanelChatAreaProps) {
-  const enabledModels = models.filter(model => model.enabled);
-  
-  // Initialize panel widths and collapsed states
-  const [panelWidths, setPanelWidths] = useState<{ [modelId: string]: number }>(() => {
-    const stored = getPanelWidths();
-    const initial: { [modelId: string]: number } = {};
-    enabledModels.forEach(model => {
-      initial[model.id] = stored[model.id] || 380; // Default width
-    });
-    return initial;
-  });
+export default function MultiPanelChatArea({
+  models,
+  messages,
+  chatInput,
+  onModelToggle,
+}: MultiPanelChatAreaProps) {
+  const enabledModels = models.filter((model) => model.enabled);
 
-  const [panelCollapsed, setPanelCollapsed] = useState<{ [modelId: string]: boolean }>(() => {
+  // Initialize panel widths and collapsed states
+  const [panelWidths, setPanelWidths] = useState<{ [modelId: string]: number }>(
+    () => {
+      const stored = getPanelWidths();
+      const initial: { [modelId: string]: number } = {};
+      enabledModels.forEach((model) => {
+        initial[model.id] = stored[model.id] || 380; // Default width
+      });
+      return initial;
+    }
+  );
+
+  const [panelCollapsed, setPanelCollapsed] = useState<{
+    [modelId: string]: boolean;
+  }>(() => {
     const stored = getPanelCollapsed();
     const initial: { [modelId: string]: boolean } = {};
-    enabledModels.forEach(model => {
+    enabledModels.forEach((model) => {
       initial[model.id] = stored[model.id] || false; // Default not collapsed
     });
     return initial;
@@ -324,21 +328,21 @@ export default function MultiPanelChatArea({ models, messages, chatInput, onMode
   useEffect(() => {
     const storedWidths = getPanelWidths();
     const storedCollapsed = getPanelCollapsed();
-    
+
     const newWidths: { [modelId: string]: number } = {};
     const newCollapsed: { [modelId: string]: boolean } = {};
-    
-    enabledModels.forEach(model => {
+
+    enabledModels.forEach((model) => {
       newWidths[model.id] = storedWidths[model.id] || 380;
       newCollapsed[model.id] = storedCollapsed[model.id] || false;
     });
-    
+
     setPanelWidths(newWidths);
     setPanelCollapsed(newCollapsed);
   }, [enabledModels]);
 
   const handleWidthChange = (modelId: string, width: number) => {
-    setPanelWidths(prev => ({
+    setPanelWidths((prev) => ({
       ...prev,
       [modelId]: width,
     }));
@@ -346,7 +350,7 @@ export default function MultiPanelChatArea({ models, messages, chatInput, onMode
   };
 
   const handleToggleCollapse = (modelId: string) => {
-    setPanelCollapsed(prev => {
+    setPanelCollapsed((prev) => {
       const newCollapsed = !prev[modelId];
       savePanelCollapsed(modelId, newCollapsed);
       return {
@@ -359,47 +363,47 @@ export default function MultiPanelChatArea({ models, messages, chatInput, onMode
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        bgcolor: '#1a1a1a',
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        bgcolor: "#1a1a1a",
         flex: 1,
-        overflow: 'hidden', // Prevent whole app scroll
+        overflow: "hidden", // Prevent whole app scroll
       }}
     >
       {/* Multi-Panel Messages Container */}
       <Box
         sx={{
           flex: 1,
-          display: 'flex',
-          overflowX: 'auto', // Horizontal scroll for panels
-          overflowY: 'hidden',
-          '&::-webkit-scrollbar': {
-            height: '8px',
+          display: "flex",
+          overflowX: "auto", // Horizontal scroll for panels
+          overflowY: "hidden",
+          "&::-webkit-scrollbar": {
+            height: "8px",
           },
-          '&::-webkit-scrollbar-track': {
-            background: '#1a1a1a',
+          "&::-webkit-scrollbar-track": {
+            background: "#1a1a1a",
           },
-          '&::-webkit-scrollbar-thumb': {
-            background: '#444',
-            borderRadius: '4px',
+          "&::-webkit-scrollbar-thumb": {
+            background: "#444",
+            borderRadius: "4px",
           },
-          '&::-webkit-scrollbar-thumb:hover': {
-            background: '#555',
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: "#555",
           },
         }}
       >
         {enabledModels.length === 0 ? (
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '100%',
-              color: '#666',
-              fontSize: '18px',
-              textAlign: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              color: "#666",
+              fontSize: "18px",
+              textAlign: "center",
             }}
           >
             <Box>
@@ -407,7 +411,8 @@ export default function MultiPanelChatArea({ models, messages, chatInput, onMode
                 No AI models enabled
               </Typography>
               <Typography>
-                Enable at least one AI model from the tabs above to start chatting
+                Enable at least one AI model from the tabs above to start
+                chatting
               </Typography>
             </Box>
           </Box>
@@ -431,7 +436,7 @@ export default function MultiPanelChatArea({ models, messages, chatInput, onMode
       {/* Input Area */}
       <Box
         sx={{
-          borderTop: '1px solid #404040',
+          borderTop: "1px solid #404040",
           p: 2,
         }}
       >

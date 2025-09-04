@@ -8,7 +8,7 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import { Add, Settings, Delete } from "@mui/icons-material";
+import { Add, Settings, Delete, ChevronLeft, ChevronRight } from "@mui/icons-material";
 
 interface Chat {
   id: string;
@@ -24,6 +24,7 @@ interface SidebarProps {
   onSettingsClick: () => void;
   onDeleteChat?: (chatId: string) => void;
   isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export default function Sidebar({
@@ -34,6 +35,7 @@ export default function Sidebar({
   onSettingsClick,
   onDeleteChat,
   isCollapsed = false,
+  onToggleCollapse,
 }: SidebarProps) {
   const groupedChats = chats.reduce((acc, chat) => {
     if (!acc[chat.date]) {
@@ -58,51 +60,79 @@ export default function Sidebar({
         display: "flex", 
         alignItems: "center", 
         mb: 3,
-        justifyContent: isCollapsed ? "center" : "flex-start"
+        justifyContent: isCollapsed ? "center" : "space-between",
+        position: "relative"
       }}>
-        <Box
-          sx={{
-            width: 32,
-            height: 32,
-            bgcolor: "#00d4aa",
-            borderRadius: "8px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            mr: isCollapsed ? 0 : 2,
-          }}
-        >
-          <Typography
-            sx={{ color: "white", fontWeight: "bold", fontSize: "16px" }}
+        <Box sx={{ 
+          display: "flex", 
+          alignItems: "center",
+        }}>
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: "#00d4aa",
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mr: isCollapsed ? 0 : 2,
+            }}
           >
-            AI
-          </Typography>
+            <Typography
+              sx={{ color: "white", fontWeight: "bold", fontSize: "16px" }}
+            >
+              AI
+            </Typography>
+          </Box>
+          {!isCollapsed && (
+            <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
+             Chat with AI
+            </Typography>
+          )}
         </Box>
-        {!isCollapsed && (
-          <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
-           Chat with AI
-          </Typography>
+        
+        {/* Collapse/Expand Button */}
+        {onToggleCollapse && (
+          <IconButton
+            onClick={onToggleCollapse}
+            sx={{
+              color: "#888",
+              position: isCollapsed ? "absolute" : "static",
+              top: isCollapsed ? "40px" : "auto",
+              left: isCollapsed ? "50%" : "auto",
+              transform: isCollapsed ? "translateX(-50%)" : "none",
+              "&:hover": {
+                color: "white",
+                bgcolor: "#333",
+              },
+            }}
+            size="small"
+          >
+            {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
+          </IconButton>
         )}
       </Box>
 
       {/* New Chat Button */}
       {isCollapsed ? (
-        <IconButton
-          onClick={onNewChat}
-          sx={{
-            mb: 2,
-            color: "white",
-            bgcolor: "transparent",
-            border: "1px solid #404040",
-            borderRadius: 1,
-            "&:hover": {
-              borderColor: "#606060",
-              bgcolor: "#333",
-            },
-          }}
-        >
-          <Add />
-        </IconButton>
+        // <IconButton
+        //   onClick={onNewChat}
+        //   sx={{
+        //     mb: 2,
+        //     color: "white",
+        //     bgcolor: "transparent",
+        //     border: "1px solid #404040",
+        //     borderRadius: 1,
+        //     "&:hover": {
+        //       borderColor: "#606060",
+        //       bgcolor: "#333",
+        //     },
+        //   }}
+        // >
+        //   <Add />
+        // </IconButton>
+        <></>
       ) : (
         <Button
           variant="outlined"

@@ -9,13 +9,14 @@ import {
   KeyboardArrowDown,
   Launch
 } from '@mui/icons-material';
+import type { ReactElement } from 'react';
 
 export interface AIModel {
   id: string;
   name: string;
   displayName: string;
   enabled: boolean;
-  icon?: string;
+  icon?: string | ReactElement;
   color?: string;
 }
 

@@ -9,7 +9,8 @@ import type { AIModel } from './components/AIModelTabs';
 import { hasAPIKey } from './utils/apiKeys';
 import { sendToAI, type ChatMessage } from './services/aiServices';
 import { saveChatsToStorage, loadChatsFromStorage } from './utils/chatStorage';
-import { getSidebarCollapsed } from './utils/panelStorage';
+import { getSidebarCollapsed, saveSidebarCollapsed } from './utils/panelStorage';
+import { ChatGptIcon, GeminiAi, DeepseekIcon, PerplexicityIcon, ClaudeIcon } from './components/shared/Icons';
 
 interface Message {
   id: string;
@@ -28,48 +29,54 @@ interface Chat {
 
 function App() {
   const [currentView, setCurrentView] = useState<'chat' | 'settings'>('chat');
-  const [sidebarCollapsed] = useState(() => getSidebarCollapsed());
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => getSidebarCollapsed());
+
+  const handleSidebarToggle = () => {
+    const newCollapsed = !sidebarCollapsed;
+    setSidebarCollapsed(newCollapsed);
+    saveSidebarCollapsed(newCollapsed);
+  };
   
   const [aiModels, setAiModels] = useState<AIModel[]>([
     {
       id: 'gpt-5-nano',
       name: 'gpt-5-nano',
-      displayName: 'GPT-5 nano',
+      displayName: 'Chat Gpt',
       enabled: true,
-      icon: '🤖',
-      color: '#10a37f',
+      icon: <ChatGptIcon sx={{ fontSize: 20 }} />,
+      // color: '#10a37f',
     },
     {
       id: 'gemini-2.5-lite',
       name: 'gemini-2.5-lite',
-      displayName: 'Gemini 2.5 Lite',
+      displayName: 'Gemini',
       enabled: true,
-      icon: '✨',
-      color: '#4285f4',
+      icon: <GeminiAi sx={{ fontSize: 20 }} />,
+      // color: '#4285f4',
     },
     {
       id: 'deepseek-chat',
       name: 'deepseek-chat',
       displayName: 'DeepSeek Chat',
       enabled: true,
-      icon: '🌊',
-      color: '#1976d2',
+      icon: <DeepseekIcon sx={{ fontSize: 20 }} />,
+      // color: '#1976d2',
     },
     {
       id: 'perplexity-sonar',
       name: 'perplexity-sonar',
-      displayName: 'Perplexity Sonar',
+      displayName: 'Perplexity',
       enabled: true,
-      icon: '🔍',
-      color: '#9c27b0',
+      icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
+      // color: '#9c27b0',
     },
     {
       id: 'claude-3-haiku',
       name: 'claude-3-haiku',
-      displayName: 'Claude 3 Haiku',
+      displayName: 'Claude',
       enabled: true,
-      icon: '📝',
-      color: '#ff6b35',
+      icon: <ClaudeIcon sx={{ fontSize: 20 }} />,
+      // color: '#ff6b35',
     },
   ]);
   
@@ -238,6 +245,7 @@ function App() {
 
   return (
     <ChatLayout
+      sidebarCollapsed={sidebarCollapsed}
       sidebar={
         <Sidebar
           onNewChat={handleNewChat}
@@ -247,6 +255,7 @@ function App() {
           onSettingsClick={() => setCurrentView('settings')}
           onDeleteChat={handleDeleteChat}
           isCollapsed={sidebarCollapsed}
+          onToggleCollapse={handleSidebarToggle}
         />
       }
       chatArea={
