@@ -21,7 +21,7 @@ const theme = createTheme({
             backgroundColor: "rgba(25, 118, 210, 0.08)",
           },
           "&.Mui-focusVisible": {
-            borderColor: "#133487",
+            borderColor: "transparent",
           },
         },
         contained: {
