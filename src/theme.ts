@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: `'Montserrat', 'Roboto', sans-serif`,
+    fontFamily: `'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif`,
   },
   components: {
     MuiButton: {
@@ -21,7 +21,7 @@ const theme = createTheme({
             backgroundColor: "rgba(25, 118, 210, 0.08)",
           },
           "&.Mui-focusVisible": {
-            borderColor: "#133487",
+            borderColor: "transparent",
           },
         },
         contained: {

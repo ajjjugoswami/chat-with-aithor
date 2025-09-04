@@ -1,6 +1,6 @@
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import { ExpandLess, Key } from "@mui/icons-material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { hasAPIKey } from "../utils/apiKeys";
@@ -14,6 +14,9 @@ import {
   getPanelCollapsed,
   savePanelCollapsed,
 } from "../utils/panelStorage";
+import Lottie from "lottie-react";
+import chatbotAnimation from "./shared/animation/chatbot.json";
+import GeminiRobo from "./shared/animation/geminiRobo.json";
 
 interface Message {
   id: string;
@@ -92,7 +95,6 @@ function ModelPanel({
               >
                 <ExpandLess />
               </IconButton>
-              
             </Box>
           </>
         )}
@@ -176,9 +178,25 @@ function ModelPanel({
                   fontSize: "14px",
                 }}
               >
-                <Typography variant="body2">
-                  Start a conversation to see {model.displayName} responses
-                </Typography>
+                {model.displayName === "ChatGPT" ? (
+                  <Lottie
+                    animationData={GeminiRobo}
+                    style={{
+                      width: 250,
+                      height: 250,
+                    }}
+                    loop={true}
+                  />
+                ) : (
+                  <Lottie
+                    animationData={chatbotAnimation}
+                    style={{
+                      width: 250,
+                      height: 250,
+                    }}
+                    loop={true}
+                  />
+                )}
               </Box>
             ) : (
               modelMessages.map((message) => (
@@ -226,12 +244,13 @@ function MessageBubble({
   message: Message;
   modelColor?: string;
 }) {
-  const isThinking = message.content === "Thinking..." && message.sender === 'ai';
-  
+  const isThinking =
+    message.content === "Thinking..." && message.sender === "ai";
+
   return (
     <FormattedMessage
       content={message.content}
-      isUser={message.sender === 'user'}
+      isUser={message.sender === "user"}
       modelColor={modelColor}
       timestamp={message.timestamp}
       isTyping={isThinking}
@@ -252,7 +271,10 @@ export default function MultiPanelChatArea({
   chatInput,
   onModelToggle,
 }: MultiPanelChatAreaProps) {
-  const enabledModels = models.filter((model) => model.enabled);
+  const enabledModels = useMemo(
+    () => models.filter((model) => model.enabled),
+    [models]
+  );
 
   // Initialize panel widths and collapsed states
   const [panelWidths, setPanelWidths] = useState<{ [modelId: string]: number }>(
@@ -380,7 +402,7 @@ export default function MultiPanelChatArea({
               isCollapsed={panelCollapsed[model.id] || false}
               onWidthChange={(width) => handleWidthChange(model.id, width)}
               onToggleCollapse={() => handleToggleCollapse(model.id)}
-              showRightHandle={index < enabledModels.length - 1} // No handle on last panel
+              showRightHandle={index < enabledModels.length} // No handle on last panel
             />
           ))
         )}

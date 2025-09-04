@@ -1,4 +1,18 @@
 import { type SvgIconProps } from "@mui/material";
+import { Person } from '@mui/icons-material';
+
+export function UserIcon(props: SvgIconProps) {
+  return (
+    <Person 
+      {...props}
+      sx={{ 
+        color: '#007aff', 
+        fontSize: 24,
+        ...props.sx 
+      }} 
+    />
+  );
+}
 
 export function ChatGptIcon(props: SvgIconProps) {
   return (

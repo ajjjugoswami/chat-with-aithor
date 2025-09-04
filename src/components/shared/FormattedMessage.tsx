@@ -1,5 +1,6 @@
-import { Box, Typography, IconButton } from '@mui/material';
+import { Box, Typography, IconButton, Avatar } from '@mui/material';
 import { ContentCopy, Check } from '@mui/icons-material';
+import { UserIcon } from './Icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
@@ -58,40 +59,90 @@ export default function FormattedMessage({
         sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          mb: 1,
+          mb: 2,
+          alignItems: 'flex-start',
+          gap: 1.5,
         }}
       >
         <Box
           sx={{
-            maxWidth: '80%',
-            p: 1.5,
-            borderRadius: 2,
-            bgcolor: '#007aff',
-            color: 'white',
-            wordBreak: 'break-word',
-            fontSize: '14px',
-            lineHeight: 1.4,
-            position: 'relative',
+            maxWidth: '75%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
           }}
         >
-          <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-            {content}
+          {/* User question label */}
+          <Typography
+            variant="caption"
+            sx={{
+              color: '#888',
+              fontSize: '12px',
+              mb: 0.5,
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+            }}
+          >
+            You
           </Typography>
-          {timestamp && (
-            <Typography
-              variant="caption"
-              sx={{
-                fontSize: '11px',
-                opacity: 0.7,
-                display: 'block',
-                textAlign: 'right',
-                mt: 0.5,
+          
+          {/* Message bubble */}
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: '18px 18px 4px 18px',
+              bgcolor: '#007aff',
+              color: 'white',
+              wordBreak: 'break-word',
+              fontSize: '14px',
+              lineHeight: 1.5,
+              position: 'relative',
+              boxShadow: '0 2px 8px rgba(0, 122, 255, 0.2)',
+              border: '1px solid rgba(0, 122, 255, 0.3)',
+            }}
+          >
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                whiteSpace: 'pre-wrap',
+                fontWeight: 400,
               }}
             >
-              {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {content}
             </Typography>
-          )}
+            {timestamp && (
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '11px',
+                  opacity: 0.8,
+                  display: 'block',
+                  textAlign: 'right',
+                  mt: 1,
+                  pt: 0.5,
+                }}
+              >
+                {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Typography>
+            )}
+          </Box>
         </Box>
+        
+        {/* User avatar */}
+        <Avatar
+          sx={{
+            width: 36,
+            height: 36,
+            bgcolor: '#007aff',
+            color: 'white',
+            fontSize: '18px',
+            mt: 0.5,
+          }}
+        >
+          <UserIcon sx={{ fontSize: 20 ,color:"#fff"}} />
+        </Avatar>
       </Box>
     );
   }
@@ -103,19 +154,42 @@ export default function FormattedMessage({
         sx={{
           display: 'flex',
           justifyContent: 'flex-start',
-          mb: 1,
+          mb: 2,
+          alignItems: 'flex-start',
+          gap: 1.5,
         }}
       >
+        {/* AI Model indicator */}
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            bgcolor: modelColor || '#4fc3f7',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: 'white',
+            flexShrink: 0,
+            mt: 0.5,
+          }}
+        >
+          AI
+        </Box>
+        
         <Box
           sx={{
             p: 2,
-            borderRadius: 2,
+            borderRadius: '18px 18px 18px 4px',
             bgcolor: '#2a2a2a',
             color: 'white',
             border: `1px solid ${modelColor}30`,
             display: 'flex',
             alignItems: 'center',
             gap: 1,
+            boxShadow: `0 2px 8px ${modelColor}15`,
           }}
         >
           <Box
@@ -152,13 +226,35 @@ export default function FormattedMessage({
       sx={{
         display: 'flex',
         justifyContent: 'flex-start',
-        mb: 1,
+        mb: 2,
+        alignItems: 'flex-start',
+        gap: 1.5,
       }}
     >
+      {/* AI Model indicator */}
       <Box
         sx={{
-          maxWidth: '100%',
-          borderRadius: 2,
+          width: 36,
+          height: 36,
+          borderRadius: '50%',
+          bgcolor: modelColor || '#4fc3f7',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          color: 'white',
+          flexShrink: 0,
+          mt: 0.5,
+        }}
+      >
+        AI
+      </Box>
+      
+      <Box
+        sx={{
+          maxWidth: 'calc(100% - 60px)',
+          borderRadius: '18px 18px 18px 4px',
           bgcolor: '#2a2a2a',
           color: 'white',
           wordBreak: 'break-word',
@@ -167,6 +263,7 @@ export default function FormattedMessage({
           border: `1px solid ${modelColor}30`,
           overflow: 'hidden',
           position: 'relative',
+          boxShadow: `0 2px 8px ${modelColor}15`,
           '&:hover .message-actions': {
             opacity: 1,
           },
