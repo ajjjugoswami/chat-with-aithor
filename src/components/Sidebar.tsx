@@ -8,7 +8,8 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import { Add, Settings, Delete, ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { Add, Settings, Delete, ChevronLeft, ChevronRight, Logout } from "@mui/icons-material";
+import { useAuth } from "../hooks/useAuth";
 
 interface Chat {
   id: string;
@@ -37,6 +38,8 @@ export default function Sidebar({
   isCollapsed = false,
   onToggleCollapse,
 }: SidebarProps) {
+  const { signOut, user } = useAuth();
+  
   const groupedChats = chats.reduce((acc, chat) => {
     if (!acc[chat.date]) {
       acc[chat.date] = [];
@@ -225,6 +228,29 @@ export default function Sidebar({
       {/* Bottom Section */}
       <Box sx={{ mt: "auto" }}>
         {!isCollapsed && <Divider sx={{ bgcolor: "#404040", mb: 2 }} />}
+
+        {/* User Info and Sign Out */}
+        {!isCollapsed && user && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" sx={{ color: "#888", mb: 1 }}>
+              {user.name}
+            </Typography>
+            <Button
+              startIcon={<Logout />}
+              onClick={signOut}
+              sx={{ 
+                color: "#888", 
+                textTransform: "none",
+                "&:hover": {
+                  color: "#f44336",
+                  bgcolor: "rgba(244, 67, 54, 0.1)",
+                }
+              }}
+            >
+              Sign Out
+            </Button>
+          </Box>
+        )}
 
         {/* Settings */}
         {isCollapsed ? (
