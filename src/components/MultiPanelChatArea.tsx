@@ -14,6 +14,9 @@ import {
   getPanelCollapsed,
   savePanelCollapsed,
 } from "../utils/panelStorage";
+import Lottie from "lottie-react";
+import chatbotAnimation from "./shared/animation/chatbot.json";
+import GeminiRobo from "./shared/animation/geminiRobo.json";
 
 interface Message {
   id: string;
@@ -92,7 +95,6 @@ function ModelPanel({
               >
                 <ExpandLess />
               </IconButton>
-              
             </Box>
           </>
         )}
@@ -176,9 +178,25 @@ function ModelPanel({
                   fontSize: "14px",
                 }}
               >
-                <Typography variant="body2">
-                  Start a conversation to see {model.displayName} responses
-                </Typography>
+                {model.displayName === "ChatGPT" ? (
+                  <Lottie
+                    animationData={GeminiRobo}
+                    style={{
+                      width: 250,
+                      height: 250,
+                    }}
+                    loop={true}
+                  />
+                ) : (
+                  <Lottie
+                    animationData={chatbotAnimation}
+                    style={{
+                      width: 250,
+                      height: 250,
+                    }}
+                    loop={true}
+                  />
+                )}
               </Box>
             ) : (
               modelMessages.map((message) => (
@@ -226,12 +244,13 @@ function MessageBubble({
   message: Message;
   modelColor?: string;
 }) {
-  const isThinking = message.content === "Thinking..." && message.sender === 'ai';
-  
+  const isThinking =
+    message.content === "Thinking..." && message.sender === "ai";
+
   return (
     <FormattedMessage
       content={message.content}
-      isUser={message.sender === 'user'}
+      isUser={message.sender === "user"}
       modelColor={modelColor}
       timestamp={message.timestamp}
       isTyping={isThinking}
