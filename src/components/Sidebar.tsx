@@ -7,6 +7,7 @@ import {
   ListItemText,
   Divider,
   IconButton,
+  Avatar,
 } from "@mui/material";
 import { Add, Settings, Delete, ChevronLeft, ChevronRight, Logout } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
@@ -237,39 +238,23 @@ export default function Sidebar({
       <Box sx={{ mt: "auto" }}>
         {!isCollapsed && <Divider sx={{ bgcolor: "#404040", mb: 2 }} />}
 
-        {/* User Info and Sign Out */}
-        {!isCollapsed && user && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body2" sx={{ color: "#888", mb: 1 }}>
-              {user.name}
-            </Typography>
-            <Button
-              startIcon={<Logout />}
-              onClick={signOut}
-              sx={{ 
-                color: "#888", 
-                textTransform: "none",
-                "&:hover": {
-                  color: "#f44336",
-                  bgcolor: "rgba(244, 67, 54, 0.1)",
-                }
-              }}
-            >
-              Sign Out
-            </Button>
-          </Box>
-        )}
-
         {/* Settings */}
         {isCollapsed ? (
           <IconButton
             onClick={onSettingsClick}
             sx={{
-              color: "#888",
+              color: "#bbb",
+              mb: 2,
+              border: "1px solid #404040",
+              borderRadius: "8px",
               "&:hover": {
                 color: "white",
                 bgcolor: "#333",
+                borderColor: "#606060",
+                transform: "translateY(-1px)",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
               },
+              transition: "all 0.2s ease-in-out",
             }}
           >
             <Settings />
@@ -278,10 +263,162 @@ export default function Sidebar({
           <Button
             startIcon={<Settings />}
             onClick={onSettingsClick}
-            sx={{ color: "#888", textTransform: "none", outline: "none" }}
+            sx={{ 
+              color: "#bbb", 
+              textTransform: "none", 
+              outline: "none",
+              mb: 2,
+              justifyContent: "flex-start",
+              width: "100%",
+              padding: "8px 16px",
+              borderRadius: "8px",
+              border: "1px solid transparent",
+              "&:hover": {
+                color: "white",
+                bgcolor: "#333",
+                borderColor: "#606060",
+                transform: "translateY(-1px)",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+              },
+              transition: "all 0.2s ease-in-out",
+            }}
           >
             Settings
           </Button>
+        )}
+
+        {/* User Panel */}
+        {user && (
+          <Box
+            sx={{
+              position: "relative",
+              borderRadius: "16px",
+              p: "2px", // Space for gradient border
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: "2px",
+                left: "2px",
+                right: "2px",
+                bottom: "2px",
+                background: "#1a1a1a",
+                borderRadius: "14px",
+                zIndex: 1,
+              },
+            }}
+          >
+            <Box
+              sx={{
+                position: "relative",
+                zIndex: 2,
+                p: isCollapsed ? 1.5 : 2,
+                display: "flex",
+                flexDirection: isCollapsed ? "column" : "row",
+                alignItems: "start",
+                gap: isCollapsed ? 1 : 2,
+                borderRadius: "14px",
+              }}
+            >
+              {/* User Avatar */}
+              <Avatar
+                src={user.picture}
+                alt={user.name}
+                sx={{
+                  width: isCollapsed ? 36 : 44,
+                  height: isCollapsed ? 36 : 44,
+                  border: "2px solid transparent",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  "& .MuiAvatar-img": {
+                    borderRadius: "50%",
+                  },
+                }}
+              />
+
+              {/* User Info and Sign Out Button */}
+              {!isCollapsed && (
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "white",
+                      fontWeight: 600,
+                      mb: 0.5,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {user.name}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "#bbb",
+                      display: "block",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      mb: 1.5,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {user.email}
+                  </Typography>
+                  <Button
+                    startIcon={<Logout />}
+                    onClick={signOut}
+                    size="small"
+                    sx={{
+                      color: "#bbb",
+                      textTransform: "none",
+                      fontSize: "0.75rem",
+                      minHeight: "32px",
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      border: "1px solid #404040",
+                      width: "100%",
+                      justifyContent: "flex-start",
+                      "&:hover": {
+                        color: "#fff",
+                        bgcolor: "rgba(244, 67, 54, 0.1)",
+                        borderColor: "#f44336",
+                        transform: "translateY(-1px)",
+                        boxShadow: "0 4px 8px rgba(244, 67, 54, 0.2)",
+                      },
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                  >
+                    Sign Out
+                  </Button>
+                </Box>
+              )}
+
+              {/* Collapsed Sign Out Button */}
+              {isCollapsed && (
+                <IconButton
+                  onClick={signOut}
+                  size="small"
+                  sx={{
+                    color: "#bbb",
+                    border: "1px solid #404040",
+                    borderRadius: "8px",
+                    "&:hover": {
+                      color: "#fff",
+                      bgcolor: "rgba(244, 67, 54, 0.1)",
+                      borderColor: "#f44336",
+                      transform: "translateY(-1px)",
+                      boxShadow: "0 4px 8px rgba(244, 67, 54, 0.2)",
+                    },
+                    transition: "all 0.2s ease-in-out",
+                  }}
+                >
+                  <Logout fontSize="small" />
+                </IconButton>
+              )}
+            </Box>
+          </Box>
         )}
       </Box>
     </Box>
