@@ -227,6 +227,69 @@ export async function sendToClaude(
   }
 }
 
+// Deepseek API Integration
+export async function sendToDeepseek(
+  messages: ChatMessage[],
+  modelId: string
+): Promise<AIResponse> {
+  const apiKey = getAPIKeyForModel(modelId);
+
+  if (!apiKey) {
+    return { success: false, error: "API key not found" };
+  }
+
+  try {
+    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: messages,
+        max_tokens: 1000,
+        temperature: 0.7,
+        stream: false,
+      }),
+    });
+
+    console.log("Deepseek API Request:", {
+      model: "deepseek-chat",
+      messagesCount: messages.length,
+      status: response.status,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Deepseek API Error:", errorData);
+      return {
+        success: false,
+        error: `Deepseek Error: ${
+          errorData.error?.message ||
+          `HTTP ${response.status}: ${response.statusText}`
+        }`,
+      };
+    }
+
+    const data = await response.json();
+    console.log("Deepseek API Response:", data);
+    const assistantMessage = data.choices?.[0]?.message?.content;
+
+    if (!assistantMessage) {
+      return { success: false, error: "No response from Deepseek" };
+    }
+
+    return { success: true, message: assistantMessage };
+  } catch (error) {
+    console.error("Deepseek API Error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 // Main function to route messages to appropriate AI service
 export async function sendToAI(
   messages: ChatMessage[],
@@ -241,6 +304,8 @@ export async function sendToAI(
     return sendToGemini(messages, modelId);
   } else if (modelId.includes("claude") || modelId.includes("Claude")) {
     return sendToClaude(messages, modelId);
+  } else if (modelId.includes("deepseek") || modelId.includes("Deepseek")) {
+    return sendToDeepseek(messages, modelId);
   } else {
     return { success: false, error: `Unsupported AI model: ${modelId}` };
   }
