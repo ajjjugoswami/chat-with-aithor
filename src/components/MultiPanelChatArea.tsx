@@ -402,7 +402,7 @@ export default function MultiPanelChatArea({
               isCollapsed={panelCollapsed[model.id] || false}
               onWidthChange={(width) => handleWidthChange(model.id, width)}
               onToggleCollapse={() => handleToggleCollapse(model.id)}
-              showRightHandle={index < enabledModels.length - 1} // No handle on last panel
+              showRightHandle={index < enabledModels.length} // No handle on last panel
             />
           ))
         )}
