@@ -128,7 +128,6 @@ export default function Sidebar({
         )}
       </Box>
 
-      {/* New Chat Button */}
       {isCollapsed ? (
         // <IconButton
         //   onClick={onNewChat}
