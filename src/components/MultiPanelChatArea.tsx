@@ -7,6 +7,7 @@ import { hasAPIKey } from "../utils/apiKeys";
 import APIKeyDialog from "./APIKeyDialog";
 import { saveAPIKey } from "../utils/apiKeys";
 import ResizablePanel from "./ResizablePanel";
+import FormattedMessage from "./shared/FormattedMessage";
 import {
   getPanelWidths,
   savePanelWidth,
@@ -225,59 +226,13 @@ function MessageBubble({
   message: Message;
   modelColor?: string;
 }) {
-  const isUser = message.sender === "user";
-
-  if (isUser) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          mb: 1,
-        }}
-      >
-        <Box
-          sx={{
-            maxWidth: "80%",
-            p: 1.5,
-            borderRadius: 2,
-            bgcolor: "#007aff",
-            color: "white",
-            wordBreak: "break-word",
-            fontSize: "14px",
-            lineHeight: 1.4,
-          }}
-        >
-          {message.content}
-        </Box>
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-start",
-        mb: 1,
-      }}
-    >
-      <Box
-        sx={{
-          maxWidth: "100%",
-          p: 2,
-          borderRadius: 2,
-          bgcolor: "#2a2a2a",
-          color: "white",
-          wordBreak: "break-word",
-          fontSize: "14px",
-          lineHeight: 1.5,
-          border: `1px solid ${modelColor}30`,
-        }}
-      >
-        {message.content}
-      </Box>
-    </Box>
+    <FormattedMessage
+      content={message.content}
+      isUser={message.sender === 'user'}
+      modelColor={modelColor}
+      timestamp={message.timestamp}
+    />
   );
 }
 

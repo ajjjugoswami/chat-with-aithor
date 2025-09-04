@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
+import FormattedMessage from './shared/FormattedMessage';
 
 interface Message {
   id: string;
@@ -69,28 +70,11 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
 }
 
 function MessageBubble({ message }: { message: Message }) {
-  const isUser = message.sender === 'user';
-
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
-        mb: 2,
-      }}
-    >
-      <Box
-        sx={{
-          maxWidth: '70%',
-          p: 2,
-          borderRadius: 2,
-          bgcolor: isUser ? '#007aff' : '#2a2a2a',
-          color: 'white',
-          wordBreak: 'break-word',
-        }}
-      >
-        {message.content}
-      </Box>
-    </Box>
+    <FormattedMessage
+      content={message.content}
+      isUser={message.sender === 'user'}
+      timestamp={message.timestamp}
+    />
   );
 }
