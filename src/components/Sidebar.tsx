@@ -79,9 +79,9 @@ export default function Sidebar({
         >
           <Box
             sx={{
-              width: 32,
-              height: 32,
-              bgcolor: "#00d4aa",
+              width: 35,
+              height: 35,
+              bgcolor: "#fff0",
               borderRadius: "8px",
               display: "flex",
               alignItems: "center",
@@ -89,18 +89,20 @@ export default function Sidebar({
               mr: isCollapsed ? 0 : 2,
             }}
           >
-            <Typography
-              sx={{ color: "white", fontWeight: "bold", fontSize: "16px" }}
-            >
-              AI
-            </Typography>
+            <img src="/public/aithor.png" style={{ width: "35px" }} />
           </Box>
           {!isCollapsed && (
             <Typography
               variant="h6"
-              sx={{ color: "white", fontWeight: "bold" }}
+              sx={{ 
+                color: "white", 
+                fontWeight: "bold",
+                fontFamily: "'Orbitron', 'Roboto Mono', 'Monaco', 'Consolas', monospace",
+                letterSpacing: "2px",
+                fontSize: "1.4rem"
+              }}
             >
-              Chat with AI
+               AITHOR
             </Typography>
           )}
         </Box>
