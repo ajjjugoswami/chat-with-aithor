@@ -1,6 +1,6 @@
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import { ExpandLess, Key } from "@mui/icons-material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { hasAPIKey } from "../utils/apiKeys";
@@ -271,7 +271,10 @@ export default function MultiPanelChatArea({
   chatInput,
   onModelToggle,
 }: MultiPanelChatAreaProps) {
-  const enabledModels = models.filter((model) => model.enabled);
+  const enabledModels = useMemo(
+    () => models.filter((model) => model.enabled),
+    [models]
+  );
 
   // Initialize panel widths and collapsed states
   const [panelWidths, setPanelWidths] = useState<{ [modelId: string]: number }>(
