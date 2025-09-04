@@ -55,7 +55,7 @@ function App() {
       displayName: "ChatGPT",
       enabled: true,
       icon: <ChatGptIcon sx={{ fontSize: 20 }} />,
-      // color: '#10a37f',
+      color: '#10a37f',
     },
     {
       id: "gemini-2.5-lite",
@@ -63,7 +63,7 @@ function App() {
       displayName: "Gemini",
       enabled: true,
       icon: <GeminiAi sx={{ fontSize: 20 }} />,
-      // color: '#4285f4',
+      color: '#4285f4',
     },
     {
       id: "deepseek-chat",
@@ -71,7 +71,7 @@ function App() {
       displayName: "DeepSeek Chat",
       enabled: true,
       icon: <DeepseekIcon sx={{ fontSize: 20 }} />,
-      // color: '#1976d2',
+      color: '#1976d2',
     },
     {
       id: "perplexity-sonar",
@@ -79,7 +79,7 @@ function App() {
       displayName: "Perplexity",
       enabled: true,
       icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
-      // color: '#9c27b0',
+      color: '#9c27b0',
     },
     {
       id: "claude-3-haiku",
@@ -87,7 +87,7 @@ function App() {
       displayName: "Claude",
       enabled: true,
       icon: <ClaudeIcon sx={{ fontSize: 20 }} />,
-      // color: '#ff6b35',
+      color: '#ff6b35',
     },
   ]);
 
