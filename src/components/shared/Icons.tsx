@@ -72,8 +72,8 @@ export function PerplexicityIcon(props: SvgIconProps) {
       viewBox="0 0 48 48"
       width="30px"
       height="30px"
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
     >
       <linearGradient
         id="f1cRcgrFgpE5Wk07TriTIa"
@@ -83,16 +83,16 @@ export function PerplexicityIcon(props: SvgIconProps) {
         y2="44.121"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset=".002" stop-color="#9c55d4" />
-        <stop offset=".003" stop-color="#20808d" />
-        <stop offset=".373" stop-color="#218f9b" />
-        <stop offset="1" stop-color="#22b1bc" />
+        <stop offset=".002" stopColor="#9c55d4" />
+        <stop offset=".003" stopColor="#20808d" />
+        <stop offset=".373" stopColor="#218f9b" />
+        <stop offset="1" stopColor="#22b1bc" />
       </linearGradient>
       <path
         fill="url(#f1cRcgrFgpE5Wk07TriTIa)"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M11.469,4l11.39,10.494v-0.002V4.024h2.217v10.517	L36.518,4v11.965h4.697v17.258h-4.683v10.654L25.077,33.813v10.18h-2.217V33.979L11.482,44V33.224H6.785V15.965h4.685V4z M21.188,18.155H9.002v12.878h2.477v-4.062L21.188,18.155z M13.699,27.943v11.17l9.16-8.068V19.623L13.699,27.943z M25.141,30.938	V19.612l9.163,8.321v5.291h0.012v5.775L25.141,30.938z M36.532,31.033h2.466V18.155H26.903l9.629,8.725V31.033z M34.301,15.965	V9.038l-7.519,6.927H34.301z M21.205,15.965h-7.519V9.038L21.205,15.965z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       />
     </svg>
   );
@@ -106,7 +106,7 @@ export function ClaudeIcon(props: SvgIconProps) {
       viewBox="0 0 48 48"
       width="30px"
       height="30px"
-      shape-rendering="optimizeQuality"
+      shapeRendering="optimizeQuality"
       baseProfile="basic"
     >
       <linearGradient
@@ -117,13 +117,13 @@ export function ClaudeIcon(props: SvgIconProps) {
         y2="45.013"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset="0" stop-color="#d97757" />
-        <stop offset="1" stop-color="#db5b32" />
+        <stop offset="0" stopColor="#d97757" />
+        <stop offset="1" stopColor="#db5b32" />
       </linearGradient>
       <path
         fill="url(#Il_Yw9TpWsua81mVHsLWRa)"
         d="M11.239,30.934l8.264-4.637l0.139-0.403l-0.139-0.224h-0.403l-1.381-0.085l-4.722-0.128l-4.095-0.17l-3.968-0.213l-0.998-0.213	L3,23.628l0.096-0.615l0.839-0.564l1.203,0.105l2.657,0.182l3.988,0.275l2.893,0.17l4.285,0.445h0.681l0.096-0.275l-0.233-0.17	l-0.182-0.17l-4.127-2.796l-4.467-2.955l-2.34-1.702l-1.265-0.862l-0.638-0.808l-0.275-1.764l1.149-1.265l1.543,0.105l0.394,0.105	l1.563,1.203l3.338,2.584l4.359,3.21l0.638,0.53l0.255-0.182l0.031-0.128l-0.286-0.479l-2.371-4.285l-2.53-4.359L13.17,7.355	l-0.298-1.083c-0.105-0.445-0.182-0.82-0.182-1.276l1.307-1.775l0.723-0.233l1.744,0.233L17.2,3.858l1.083,2.479l1.756,3.902	l2.723,5.306l0.797,1.574l0.425,1.458l0.159,0.445h0.275v-0.255l0.224-2.989l0.414-3.67l0.403-4.722l0.139-1.33l0.658-1.594	L27.564,3.6l1.021,0.488l0.839,1.203l-0.116,0.777l-0.499,3.245l-0.978,5.082l-0.638,3.403h0.372l0.425-0.425l1.722-2.286	l2.893-3.616l1.276-1.435l1.489-1.585l0.956-0.754h1.807l1.33,1.977l-0.596,2.042l-1.86,2.36l-1.543,1.999l-2.212,2.978	l-1.381,2.382l0.128,0.19l0.329-0.031l4.997-1.064l2.7-0.488l3.222-0.553l1.458,0.681l0.159,0.692l-0.573,1.415l-3.446,0.851	l-4.041,0.808l-6.018,1.424l-0.074,0.054l0.085,0.105l2.711,0.255l1.16,0.062h2.839l5.287,0.394l1.381,0.913L45,28.26l-0.139,0.851	l-2.127,1.083l-2.87-0.681l-6.699-1.594l-2.297-0.573H30.55v0.19l1.914,1.872l3.508,3.168l4.393,4.084l0.224,1.01l-0.564,0.797	l-0.596-0.085l-3.86-2.904l-1.489-1.307l-3.372-2.839h-0.224v0.298l0.777,1.137l4.104,6.169l0.213,1.892l-0.298,0.615l-1.064,0.372	l-1.168-0.213l-2.402-3.372l-2.479-3.798l-1.999-3.403l-0.244,0.139l-1.18,12.709l-0.553,0.649l-1.276,0.488l-1.064-0.808	l-0.564-1.307l0.564-2.584l0.681-3.372l0.553-2.68l0.499-3.33l0.298-1.106l-0.02-0.074l-0.244,0.031l-2.51,3.446l-3.817,5.159	l-3.02,3.233l-0.723,0.286l-1.254-0.649l0.116-1.16l0.701-1.032l4.18-5.318l2.521-3.296l1.628-1.903l-0.011-0.275h-0.096	l-11.103,7.209l-1.977,0.255l-0.851-0.797l0.105-1.307l0.403-0.425l3.338-2.297l-0.011,0.011L11.239,30.934z"
-        shape-rendering="optimizeQuality"
+        shapeRendering="optimizeQuality"
       />
     </svg>
   );
@@ -147,13 +147,13 @@ export function GeminiAi(props: SvgIconProps) {
         y2="45.428"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset="0" stop-color="#ca5df5" />
-        <stop offset=".036" stop-color="#c05ff4" />
-        <stop offset=".293" stop-color="#806cea" />
-        <stop offset=".528" stop-color="#4d77e3" />
-        <stop offset=".731" stop-color="#297fdd" />
-        <stop offset=".895" stop-color="#1283da" />
-        <stop offset="1" stop-color="#0a85d9" />
+        <stop offset="0" stopColor="#ca5df5" />
+        <stop offset=".036" stopColor="#c05ff4" />
+        <stop offset=".293" stopColor="#806cea" />
+        <stop offset=".528" stopColor="#4d77e3" />
+        <stop offset=".731" stopColor="#297fdd" />
+        <stop offset=".895" stopColor="#1283da" />
+        <stop offset="1" stopColor="#0a85d9" />
       </linearGradient>
       <path
         fill="url(#8sl3bbNtWcumaCBCPc4S6a)"
