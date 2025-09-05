@@ -23,7 +23,8 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
   // Scroll to bottom when messages change (new messages or chat selection)
   useEffect(() => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
     }
   }, [messages]); // Trigger when messages array changes
 

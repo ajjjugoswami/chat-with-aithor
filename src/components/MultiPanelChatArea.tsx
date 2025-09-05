@@ -516,7 +516,7 @@ export default function MultiPanelChatArea({
       {/* Input Area */}
       <Box
         sx={{
-          p: 2,
+          p: isMobile ? 0 : 3,
           borderTop:
             mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
         }}
