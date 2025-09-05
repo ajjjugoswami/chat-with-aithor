@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -31,11 +31,7 @@ import {
   ExpandMore,
   Menu,
 } from "@mui/icons-material";
-import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-
-// Get Google Client ID from environment variables
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 // Styled Components
 const StyledAppBar = styled(AppBar)(() => ({
@@ -170,82 +166,7 @@ export default function StyledLandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  
-  // Authentication hooks
-  const { signIn, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const heroGoogleButtonRef = useRef<HTMLDivElement>(null);
-  const headerGoogleButtonRef = useRef<HTMLDivElement>(null);
-  const ctaGoogleButtonRef = useRef<HTMLDivElement>(null);
-
-  // Handle Google credential response
-  const handleCredentialResponse = useCallback((response: { credential: string }) => {
-    signIn(response.credential);
-    navigate('/');
-  }, [signIn, navigate]);
-
-  // Initialize Google Sign-In
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-      return;
-    }
-
-    const initializeGoogleSignIn = () => {
-      if (window.google && GOOGLE_CLIENT_ID) {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-        });
-
-        // Render Google buttons in different locations
-        if (heroGoogleButtonRef.current) {
-          window.google.accounts.id.renderButton(heroGoogleButtonRef.current, {
-            theme: 'filled_blue',
-            size: 'large',
-            type: 'standard',
-            shape: 'rectangular',
-            text: 'signup_with',
-            logo_alignment: 'left',
-          });
-        }
-
-        if (headerGoogleButtonRef.current) {
-          window.google.accounts.id.renderButton(headerGoogleButtonRef.current, {
-            theme: 'outline',
-            size: 'medium',
-            type: 'standard',
-            shape: 'rectangular',
-            text: 'signin_with',
-            logo_alignment: 'left',
-          });
-        }
-
-        if (ctaGoogleButtonRef.current) {
-          window.google.accounts.id.renderButton(ctaGoogleButtonRef.current, {
-            theme: 'filled_blue',
-            size: 'large',
-            type: 'standard',
-            shape: 'rectangular',
-            text: 'signin_with',
-            logo_alignment: 'left',
-          });
-        }
-      }
-    };
-
-    // Load Google Identity Services script
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.onload = initializeGoogleSignIn;
-    document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, [isAuthenticated, navigate, handleCredentialResponse]);
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -434,7 +355,21 @@ export default function StyledLandingPage() {
                     FAQ
                   </Typography>
                 </Box>
-                <Box ref={headerGoogleButtonRef} />
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/sign-up')}
+                  sx={{
+                    backgroundColor: "#059669",
+                    color: "white",
+                    px: 3,
+                    py: 1,
+                    "&:hover": {
+                      backgroundColor: "#047857",
+                    },
+                  }}
+                >
+                  Sign Up
+                </Button>
               </Box>
             )}
 
@@ -512,9 +447,24 @@ export default function StyledLandingPage() {
               platform while maintaining full control of your data.
             </Typography>
 
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <Box ref={heroGoogleButtonRef} />
-            </Box>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/sign-up')}
+              sx={{
+                backgroundColor: "#059669",
+                color: "white",
+                px: 4,
+                py: 2,
+                fontSize: "1.125rem",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#047857",
+                },
+              }}
+            >
+              Get Started Free
+            </Button>
           </Box>
         </Container>
       </HeroSection>
@@ -1062,16 +1012,24 @@ export default function StyledLandingPage() {
             Join thousands of users who use Aithor with their own API keys for
             maximum privacy and control.
           </Typography>
-          <Box 
-            sx={{ 
-              display: "flex", 
-              justifyContent: "center", 
-              width: { xs: "100%", sm: "auto" },
-              maxWidth: { xs: "20rem", sm: "none" },
-              mx: "auto",
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate('/sign-up')}
+            sx={{
+              backgroundColor: "white",
+              color: "#059669",
+              px: 4,
+              py: 2,
+              fontSize: "1.125rem",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#f3f4f6",
+              },
             }}
-            ref={ctaGoogleButtonRef} 
-          />
+          >
+            Start Chatting Now
+          </Button>
         </Container>
       </CTASection>
 

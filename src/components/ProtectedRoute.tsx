@@ -24,7 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/sign-up" replace />;
+    return <Navigate to="/landing-page" replace />;
   }
 
   return <>{children}</>;

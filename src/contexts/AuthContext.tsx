@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
@@ -26,6 +27,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
@@ -61,6 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (window.google) {
       window.google.accounts.id.disableAutoSelect();
     }
+    // Redirect to landing page
+    navigate('/landing-page');
   };
 
   const value = {
