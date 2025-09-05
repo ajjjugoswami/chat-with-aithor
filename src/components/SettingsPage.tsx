@@ -102,7 +102,7 @@ export default function SettingsPage({
                   sx={{
                     py: 2,
                     borderRadius: 1,
-                    "&:hover": { bgcolor: "#333" },
+                    "&:hover": { bgcolor: mode === 'light' ? '#f0f0f0' : "#333" },
                   }}
                 >
                   <div
@@ -118,13 +118,13 @@ export default function SettingsPage({
                     primary={
                       <Typography
                         variant="subtitle1"
-                        sx={{ color: "white", fontWeight: 500 }}
+                        sx={{ color: mode === 'light' ? '#333' : "white", fontWeight: 500 }}
                       >
                         {model.displayName}
                       </Typography>
                     }
                     secondary={
-                      <Typography variant="body2" sx={{ color: "#888" }}>
+                      <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : "#888" }}>
                         {model.name} - {model.enabled ? "Active" : "Inactive"}
                       </Typography>
                     }
@@ -160,17 +160,17 @@ export default function SettingsPage({
       {/* API Keys Section */}
       <Paper
         sx={{
-          bgcolor: "#2a2a2a",
-          border: "1px solid #404040",
+          bgcolor: mode === 'light' ? '#f8f9fa' : "#2a2a2a",
+          border: mode === 'light' ? "1px solid #e0e0e0" : "1px solid #404040",
           borderRadius: 2,
           mb: 3,
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
+          <Typography variant="h6" sx={{ mb: 2, color: mode === 'light' ? '#333' : "white" }}>
             API Keys
           </Typography>
-          <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>
+          <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : "#888", mb: 3 }}>
             Manage your API keys for different AI models. Only models with API
             keys will respond to your messages.
           </Typography>
@@ -186,7 +186,7 @@ export default function SettingsPage({
                     sx={{
                       py: 2,
                       borderRadius: 1,
-                      "&:hover": { bgcolor: "#333" },
+                      "&:hover": { bgcolor: mode === 'light' ? '#f0f0f0' : "#333" },
                     }}
                   >
                     <Avatar
@@ -206,7 +206,7 @@ export default function SettingsPage({
                         >
                           <Typography
                             variant="subtitle1"
-                            sx={{ color: "white", fontWeight: 500 }}
+                            sx={{ color: mode === 'light' ? '#333' : "#fff", fontWeight: 500 }}
                           >
                             {model.displayName}
                           </Typography>
@@ -216,7 +216,7 @@ export default function SettingsPage({
                               size="small"
                               sx={{
                                 bgcolor: model.color,
-                                color: "white",
+                                color: mode === 'light' ? '#fff' : "#fff",
                                 fontSize: "0.7rem",
                               }}
                             />

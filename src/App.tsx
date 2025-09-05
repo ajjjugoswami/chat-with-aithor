@@ -20,6 +20,7 @@ import {
   PerplexicityIcon,
   ClaudeIcon,
 } from "./components/shared/Icons";
+import { useTheme } from "./hooks/useTheme";
 
 interface Message {
   id: string;
@@ -47,6 +48,7 @@ function App() {
     setSidebarCollapsed(newCollapsed);
     saveSidebarCollapsed(newCollapsed);
   };
+  const { mode } = useTheme();
 
   const [aiModels, setAiModels] = useState<AIModel[]>([
     {
@@ -54,7 +56,7 @@ function App() {
       name: "gpt-4o-mini",
       displayName: "ChatGPT",
       enabled: true,
-      icon: <ChatGptIcon sx={{ fontSize: 20 }} />,
+      icon: <ChatGptIcon sx={{ fontSize: 20 ,color: mode === 'light' ? '#333' : "white"}} />,
       color: '#10a37f',
     },
     {

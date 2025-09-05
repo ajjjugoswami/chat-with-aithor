@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import type { AIModel } from "./AIModelTabs";
+import { useTheme } from "../hooks/useTheme";
 
 interface APIKeyDialogProps {
   open: boolean;
@@ -28,6 +29,7 @@ export default function APIKeyDialog({
 }: APIKeyDialogProps) {
   const [apiKey, setApiKey] = useState(existingKey);
   const [error, setError] = useState("");
+  const { mode } = useTheme();
 
   const handleSave = () => {
     if (!apiKey.trim()) {
@@ -60,20 +62,20 @@ export default function APIKeyDialog({
       fullWidth
       PaperProps={{
         sx: {
-          bgcolor: "#2a2a2a",
-          color: "white",
-          border: "1px solid #404040",
+          bgcolor: mode === 'light' ? "#ffffff" : "#2a2a2a",
+          color: mode === 'light' ? "#000000" : "white",
+          border: mode === 'light' ? "1px solid #e0e0e0" : "1px solid #404040",
         },
       }}
     >
-      <DialogTitle sx={{ color: "white" }}>
+      <DialogTitle sx={{ color: mode === 'light' ? "#000000" : "white" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {model && <div>{model.icon}</div>}
           <Box>
             <Typography variant="h6">
               {existingKey ? "Edit" : "Add"} API Key
             </Typography>
-            <Typography variant="body2" sx={{ color: "#888" }}>
+            <Typography variant="body2" sx={{ color: mode === 'light' ? "#666666" : "#888" }}>
               {model?.displayName}
             </Typography>
           </Box>
@@ -97,31 +99,31 @@ export default function APIKeyDialog({
           helperText={error || `Enter your ${model?.displayName} API key`}
           sx={{
             "& .MuiOutlinedInput-root": {
-              color: "white",
+              color: mode === 'light' ? "#000000" : "white",
               "& fieldset": {
-                borderColor: "#404040",
+                borderColor: mode === 'light' ? "#e0e0e0" : "#404040",
               },
               "&:hover fieldset": {
-                borderColor: "#606060",
+                borderColor: mode === 'light' ? "#bdbdbd" : "#606060",
               },
               "&.Mui-focused fieldset": {
                 borderColor: model?.color || "#007aff",
               },
             },
             "& .MuiInputLabel-root": {
-              color: "#888",
+              color: mode === 'light' ? "#666666" : "#888",
               "&.Mui-focused": {
                 color: model?.color || "#007aff",
               },
             },
             "& .MuiFormHelperText-root": {
-              color: error ? "#f44336" : "#888",
+              color: error ? "#f44336" : (mode === 'light' ? "#666666" : "#888"),
             },
           }}
         />
 
-        <Box sx={{ mt: 2, p: 2, bgcolor: "#1a1a1a", borderRadius: 1 }}>
-          <Typography variant="body2" sx={{ color: "#888" }}>
+        <Box sx={{ mt: 2, p: 2, bgcolor: mode === 'light' ? "#f5f5f5" : "#1a1a1a", borderRadius: 1 }}>
+          <Typography variant="body2" sx={{ color: mode === 'light' ? "#666666" : "#888" }}>
             💡 Your API key is stored locally in your browser and never sent to
             our servers.
           </Typography>
@@ -129,7 +131,7 @@ export default function APIKeyDialog({
       </DialogContent>
 
       <DialogActions sx={{ p: 3 }}>
-        <Button onClick={handleClose} sx={{ color: "#888" }}>
+        <Button onClick={handleClose} sx={{ color: mode === 'light' ? "#666666" : "#888" }}>
           Cancel
         </Button>
         <Button
