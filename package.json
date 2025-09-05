@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.2",
     "@types/prismjs": "^1.26.5",
     "lottie-react": "^2.4.1",
+    "lucide-react": "^0.542.0",
     "pdfjs-dist": "^5.4.149",
     "prismjs": "^1.30.0",
     "react": "^19.1.1",

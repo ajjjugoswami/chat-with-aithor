@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import App from '../App';
-import SignInPage from '../components/SignInPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import StyledLandingPage from './StyledLandingPage';
 
 export default function ThemedApp() {
   const { mode } = useTheme();
@@ -17,9 +17,9 @@ export default function ThemedApp() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/signin" element={<SignInPage />} />
+            <Route path="/" element={<StyledLandingPage />} />
             <Route 
-              path="/" 
+              path="/chat" 
               element={
                 <ProtectedRoute>
                   <App />
