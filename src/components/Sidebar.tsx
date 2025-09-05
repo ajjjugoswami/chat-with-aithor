@@ -103,7 +103,7 @@ export default function Sidebar({
               mr: isCollapsed ? 0 : 2,
             }}
           >
-            <img src="/public/logo.png" alt="Logo" style={{ height: 32 }} />
+            <img src="/logo.png" alt="Logo" style={{ height: 32 }} />
           </Box>
           {!isCollapsed && (
             <Typography

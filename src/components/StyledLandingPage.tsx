@@ -373,7 +373,7 @@ export default function StyledLandingPage() {
             sx={{ height: { xs: 56, sm: 64 }, justifyContent: "space-between" }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <img src="/public/logo.png" alt="Logo" style={{ height: 32 }} />
+              <img src="/logo.png" alt="Logo" style={{ height: 32 }} />
               <Typography
                 variant="h6"
                 sx={{
