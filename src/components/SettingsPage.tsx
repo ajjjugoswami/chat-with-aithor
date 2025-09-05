@@ -17,6 +17,7 @@ import { useState } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { getAllAPIKeys, removeAPIKey } from "../utils/apiKeys";
 import APIKeyDialog from "./APIKeyDialog";
+import { useTheme } from "../hooks/useTheme";
 
 interface SettingsPageProps {
   models: AIModel[];
@@ -29,6 +30,7 @@ export default function SettingsPage({
   onModelToggle,
   onBack,
 }: SettingsPageProps) {
+  const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
   const [apiKeys, setApiKeys] = useState(getAllAPIKeys());
@@ -52,8 +54,8 @@ export default function SettingsPage({
     <Box
       sx={{
         height: "100%",
-        bgcolor: "#1a1a1a",
-        color: "white",
+        bgcolor: mode === 'light' ? '#ffffff' : "#1a1a1a",
+        color: mode === 'light' ? '#333' : "white",
         overflow: "auto",
         p: 3,
       }}
@@ -63,9 +65,9 @@ export default function SettingsPage({
           <IconButton
             onClick={onBack}
             sx={{
-              color: "white",
+              color: mode === 'light' ? '#333' : "white",
               mr: 2,
-              "&:hover": { bgcolor: "#333" },
+              "&:hover": { bgcolor: mode === 'light' ? '#f0f0f0' : "#333" },
             }}
           >
             <ArrowBack />
@@ -79,17 +81,17 @@ export default function SettingsPage({
       {/* AI Models Section */}
       <Paper
         sx={{
-          bgcolor: "#2a2a2a",
-          border: "1px solid #404040",
+          bgcolor: mode === 'light' ? '#f8f9fa' : "#2a2a2a",
+          border: mode === 'light' ? "1px solid #e0e0e0" : "1px solid #404040",
           borderRadius: 2,
           mb: 3,
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
+          <Typography variant="h6" sx={{ mb: 2, color: mode === 'light' ? '#333' : "white" }}>
             AI Models
           </Typography>
-          <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>
+          <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : "#888", mb: 3 }}>
             Enable or disable AI models that will appear in your chat dashboard.
           </Typography>
 
@@ -266,24 +268,7 @@ export default function SettingsPage({
         </Box>
       </Paper>
 
-      {/* General Settings Section */}
-      <Paper
-        sx={{
-          bgcolor: "#2a2a2a",
-          border: "1px solid #404040",
-          borderRadius: 2,
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
-            General Settings
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#888" }}>
-            More settings coming soon...
-          </Typography>
-        </Box>
-      </Paper>
-
+     
       {/* API Key Dialog */}
       {selectedModel && (
         <APIKeyDialog

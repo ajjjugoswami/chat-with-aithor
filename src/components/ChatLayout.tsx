@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
+import { useTheme } from '../hooks/useTheme';
 
 interface ChatLayoutProps {
   sidebar: ReactNode;
@@ -8,14 +9,15 @@ interface ChatLayoutProps {
 }
 
 export default function ChatLayout({ sidebar, chatArea, sidebarCollapsed = false }: ChatLayoutProps) {
+  const { mode } = useTheme();
 
   return (
     <Box
       sx={{
         display: 'flex',
         height: '100vh',
-        bgcolor: '#1a1a1a',
-        color: 'white',
+        bgcolor: mode === 'light' ? '#ffffff' : '#1a1a1a',
+        color: mode === 'light' ? '#000000' : 'white',
         overflow: 'hidden',
       }}
     >
@@ -24,8 +26,8 @@ export default function ChatLayout({ sidebar, chatArea, sidebarCollapsed = false
         sx={{
           width: sidebarCollapsed ? 60 : 280,
           minWidth: sidebarCollapsed ? 60 : 280,
-          bgcolor: '#2a2a2a',
-          borderRight: '1px solid #404040',
+          bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
+          borderRight: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
           display: 'flex',
           flexDirection: 'column',
           flexShrink: 0,
@@ -44,6 +46,8 @@ export default function ChatLayout({ sidebar, chatArea, sidebarCollapsed = false
           position: 'relative',
           overflow: 'hidden', // Prevent chat area from causing app scroll
           minWidth: 0, // Allow flex shrinking
+                    backgroundColor: mode === "light" ? "#fff !important" : "#202020",
+
         }}
       >
         {chatArea}

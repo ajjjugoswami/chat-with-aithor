@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Box, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import DragHandle from './DragHandle';
+import { useTheme } from '../hooks/useTheme';
 
 interface ResizablePanelProps {
   children: React.ReactNode;
@@ -30,6 +31,7 @@ export default function ResizablePanel({
   collapsedWidth = 60,
   className,
 }: ResizablePanelProps) {
+  const { mode } = useTheme();
   const [width, setWidth] = useState(initialWidth);
   const [isDragging, setIsDragging] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -115,9 +117,9 @@ export default function ResizablePanel({
         display: 'flex',
         flexDirection: 'column',
         transition: isDragging ? 'none' : 'width 0.3s ease',
-        bgcolor: '#1a1a1a',
-        borderRight: showRightHandle ? '1px solid #333' : 'none',
-        borderLeft: showLeftHandle ? '1px solid #333' : 'none',
+        bgcolor: mode === 'light' ? '#ffffff' : '#1a1a1a',
+        borderRight: showRightHandle ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
+        borderLeft: showLeftHandle ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
       }}
     >
       {/* Main Content */}

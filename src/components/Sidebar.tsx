@@ -8,9 +8,12 @@ import {
   Divider,
   IconButton,
   Avatar,
+  Switch,
+  Tooltip,
 } from "@mui/material";
-import { Add, Settings, Delete, ChevronLeft, ChevronRight, Logout } from "@mui/icons-material";
+import { Add, Settings, Delete, ChevronLeft, ChevronRight, Logout, LightMode, DarkMode } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 
 interface Chat {
   id: string;
@@ -40,7 +43,8 @@ export default function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const { signOut, user } = useAuth();
-  
+  const { mode, toggleTheme } = useTheme();
+  console.log(user,"ajay")
   const groupedChats = chats.reduce((acc, chat) => {
     if (!acc[chat.date]) {
       acc[chat.date] = [];
@@ -57,6 +61,8 @@ export default function Sidebar({
         height: "100%",
         p: isCollapsed ? 1 : 2,
         alignItems: isCollapsed ? "center" : "stretch",
+        bgcolor: mode === 'light' ? '#f5f5f5' : 'background.paper',
+        borderRight: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
       }}
     >
       {/* Header with Logo */}
@@ -93,7 +99,7 @@ export default function Sidebar({
             <Typography
               variant="h6"
               sx={{ 
-                color: "white", 
+                color: mode === 'light' ? '#133487' : 'white', 
                 fontWeight: "bold",
                 fontFamily: "'Orbitron', 'Roboto Mono', 'Monaco', 'Consolas', monospace",
                 letterSpacing: "2px",
@@ -109,14 +115,14 @@ export default function Sidebar({
           <IconButton
             onClick={onToggleCollapse}
             sx={{
-              color: "#888",
+              color: mode === 'light' ? '#666' : '#888',
               position: isCollapsed ? "absolute" : "static",
               top: isCollapsed ? "40px" : "auto",
               left: isCollapsed ? "50%" : "auto",
               transform: isCollapsed ? "translateX(-50%)" : "none",
               "&:hover": {
-                color: "white",
-                bgcolor: "#333",
+                color: mode === 'light' ? '#333' : 'white',
+                bgcolor: mode === 'light' ? '#e0e0e0' : '#333',
               },
             }}
             size="small"
@@ -151,12 +157,12 @@ export default function Sidebar({
           onClick={onNewChat}
           sx={{
             mb: 2,
-            color: "white",
-            borderColor: "#404040",
+            color: mode === 'light' ? '#133487' : 'white',
+            borderColor: mode === 'light' ? '#133487' : '#404040',
             borderRadius: "12px",
             "&:hover": {
-              borderColor: "#606060",
-              bgcolor: "#333",
+              borderColor: mode === 'light' ? '#115293' : '#606060',
+              bgcolor: mode === 'light' ? 'rgba(19, 52, 135, 0.04)' : '#333',
             },
           }}
         >
@@ -167,7 +173,7 @@ export default function Sidebar({
       {/* Chats Section */}
       {!isCollapsed && (
         <>
-          <Typography variant="body2" sx={{ color: "#888", mb: 1 }}>
+          <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : '#888', mb: 1 }}>
             Chats
           </Typography>
 
@@ -175,7 +181,7 @@ export default function Sidebar({
           <Box sx={{ flex: 1, overflow: "auto" }}>
             {Object.entries(groupedChats).map(([date, dateChats]) => (
               <Box key={date} sx={{ mb: 2 }}>
-                <Typography variant="caption" sx={{ color: "#666", pl: 1 }}>
+                <Typography variant="caption" sx={{ color: mode === 'light' ? '#999' : '#666', pl: 1 }}>
                   {date}
                 </Typography>
                 <List dense>
@@ -185,9 +191,9 @@ export default function Sidebar({
                       sx={{
                         borderRadius: 1,
                         bgcolor:
-                          selectedChatId === chat.id ? "#333" : "transparent",
+                          selectedChatId === chat.id ? (mode === 'light' ? '#e3f2fd' : '#333') : "transparent",
                         "&:hover": {
-                          bgcolor: "#2a2a2a",
+                          bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
                           "& .delete-button": {
                             opacity: 1,
                           },
@@ -200,7 +206,7 @@ export default function Sidebar({
                         primary={chat.title}
                         primaryTypographyProps={{
                           variant: "body2",
-                          sx: { color: "white", cursor: "pointer" },
+                          sx: { color: mode === 'light' ? '#333' : 'white', cursor: "pointer" },
                         }}
                         sx={{ flex: 1 }}
                       />
@@ -215,7 +221,7 @@ export default function Sidebar({
                           sx={{
                             opacity: 0,
                             transition: "opacity 0.2s",
-                            color: "#666",
+                            color: mode === 'light' ? '#999' : '#666',
                             "&:hover": {
                               color: "#f44336",
                               bgcolor: "rgba(244, 67, 54, 0.1)",
@@ -236,24 +242,91 @@ export default function Sidebar({
 
       {/* Bottom Section */}
       <Box sx={{ mt: "auto" }}>
-        {!isCollapsed && <Divider sx={{ bgcolor: "#404040", mb: 2 }} />}
+        {!isCollapsed && <Divider sx={{ bgcolor: mode === 'light' ? '#e0e0e0' : '#404040', mb: 2 }} />}
+
+        {/* Theme Toggle */}
+        {isCollapsed ? (
+          <Tooltip title={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}>
+            <IconButton
+              onClick={toggleTheme}
+              sx={{
+                color: mode === 'light' ? '#666' : '#bbb',
+                mb: 1,
+                ml: 1,
+                border: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
+                borderRadius: "8px",
+                "&:hover": {
+                  color: mode === 'light' ? '#333' : 'white',
+                  bgcolor: mode === 'light' ? '#f0f0f0' : '#333',
+                  borderColor: mode === 'light' ? '#ccc' : '#606060',
+                  transform: "translateY(-1px)",
+                  boxShadow: mode === 'light' ? "0 4px 8px rgba(0, 0, 0, 0.1)" : "0 4px 8px rgba(0, 0, 0, 0.3)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              {mode === 'light' ? <LightMode /> : <DarkMode />}
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 1,
+              padding: "8px 16px",
+              borderRadius: "8px",
+              border: "1px solid transparent",
+              "&:hover": {
+                bgcolor: mode === 'light' ? '#f0f0f0' : '#333',
+                borderColor: mode === 'light' ? '#e0e0e0' : '#606060',
+                transform: "translateY(-1px)",
+                boxShadow: mode === 'light' ? "0 4px 8px rgba(0, 0, 0, 0.1)" : "0 4px 8px rgba(0, 0, 0, 0.3)",
+              },
+              transition: "all 0.2s ease-in-out",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              {mode === 'light' ? <LightMode sx={{ color: '#bbb' }} /> : <DarkMode sx={{ color: '#666' }} />}
+              <Typography sx={{ color: mode === 'light' ? '#666' : '#bbb', fontSize: "0.9rem" }}>
+                {mode === 'light' ? 'Light Mode' : 'Dark Mode'}
+              </Typography>
+            </Box>
+            <Switch
+              checked={mode === 'dark'}
+              onChange={toggleTheme}
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-checked": {
+                  color: "#667eea",
+                  "&:hover": {
+                    backgroundColor: "rgba(102, 126, 234, 0.08)",
+                  },
+                },
+                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                  backgroundColor: "#667eea",
+                },
+              }}
+            />
+          </Box>
+        )}
 
         {/* Settings */}
         {isCollapsed ? (
           <IconButton
             onClick={onSettingsClick}
             sx={{
-              color: "#bbb",
+              color: mode === 'light' ? '#666' : '#bbb',
               mb: 2,
               ml: 1,
-              border: "1px solid #404040",
+              border: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
               borderRadius: "8px",
               "&:hover": {
-                color: "white",
-                bgcolor: "#333",
-                borderColor: "#606060",
+                color: mode === 'light' ? '#333' : 'white',
+                bgcolor: mode === 'light' ? '#f0f0f0' : '#333',
+                borderColor: mode === 'light' ? '#ccc' : '#606060',
                 transform: "translateY(-1px)",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+                boxShadow: mode === 'light' ? "0 4px 8px rgba(0, 0, 0, 0.1)" : "0 4px 8px rgba(0, 0, 0, 0.3)",
               },
               transition: "all 0.2s ease-in-out",
             }}
@@ -265,7 +338,7 @@ export default function Sidebar({
             startIcon={<Settings />}
             onClick={onSettingsClick}
             sx={{ 
-              color: "#bbb", 
+              color: mode === 'light' ? '#666' : '#bbb', 
               textTransform: "none", 
               outline: "none",
               mb: 2,
@@ -275,11 +348,11 @@ export default function Sidebar({
               borderRadius: "8px",
               border: "1px solid transparent",
               "&:hover": {
-                color: "white",
-                bgcolor: "#333",
-                borderColor: "#606060",
+                color: mode === 'light' ? '#333' : 'white',
+                bgcolor: mode === 'light' ? '#f0f0f0' : '#333',
+                borderColor: mode === 'light' ? '#e0e0e0' : '#606060',
                 transform: "translateY(-1px)",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+                boxShadow: mode === 'light' ? "0 4px 8px rgba(0, 0, 0, 0.1)" : "0 4px 8px rgba(0, 0, 0, 0.3)",
               },
               transition: "all 0.2s ease-in-out",
             }}
@@ -303,7 +376,7 @@ export default function Sidebar({
                 left: "2px",
                 right: "2px",
                 bottom: "2px",
-                background: "#1a1a1a",
+                background: mode === 'light' ? '#f5f5f5' : '#1a1a1a',
                 borderRadius: "14px",
                 zIndex: 1,
               },
@@ -335,14 +408,14 @@ export default function Sidebar({
                   },
                 }}
               />
-
+ 
               {/* User Info and Sign Out Button */}
               {!isCollapsed && (
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography
                     variant="body2"
                     sx={{
-                      color: "white",
+                      color: mode === 'light' ? '#333' : 'white',
                       fontWeight: 600,
                       mb: 0.5,
                       overflow: "hidden",
@@ -356,7 +429,7 @@ export default function Sidebar({
                   <Typography
                     variant="caption"
                     sx={{
-                      color: "#bbb",
+                      color: mode === 'light' ? '#666' : '#bbb',
                       display: "block",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -372,13 +445,13 @@ export default function Sidebar({
                     onClick={signOut}
                     size="small"
                     sx={{
-                      color: "#bbb",
+                      color: mode === 'light' ? '#666' : '#bbb',
                       textTransform: "none",
                       fontSize: "0.75rem",
                       minHeight: "32px",
                       padding: "6px 12px",
                       borderRadius: "8px",
-                      border: "1px solid #404040",
+                      border: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
                       width: "100%",
                       justifyContent: "flex-start",
                       "&:hover": {
@@ -402,8 +475,8 @@ export default function Sidebar({
                   onClick={signOut}
                   size="small"
                   sx={{
-                    color: "#bbb",
-                    border: "1px solid #404040",
+                    color: mode === 'light' ? '#666' : '#bbb',
+                    border: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
                     borderRadius: "8px",
                     "&:hover": {
                       color: "#fff",

@@ -19,6 +19,7 @@ import {
   Code
 } from '@mui/icons-material';
 import { useState, useRef } from 'react';
+import { useTheme } from '../hooks/useTheme';
 
 interface UploadedFile {
   id: string;
@@ -34,6 +35,7 @@ interface ChatInputProps {
 }
 
 export default function ChatInput({ onSendMessage, disabled = false, selectedModel }: ChatInputProps) {
+  const { mode } = useTheme();
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -227,7 +229,9 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
           sx={{
             display: 'flex',
             alignItems: 'flex-end',
-            background: 'linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 50%, #1a1a1a 100%)',
+            background: mode === 'light' 
+              ? 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%)'
+              : 'linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 50%, #1a1a1a 100%)',
             borderRadius: 3.5,
             p: 1.5,
             gap: 1,
@@ -240,7 +244,9 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.08) 100%)',
+              background: mode === 'light'
+                ? 'linear-gradient(145deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.01) 50%, rgba(0,0,0,0.03) 100%)'
+                : 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.08) 100%)',
               pointerEvents: 'none',
             }
           }}
@@ -252,13 +258,17 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
               size="small"
               onClick={() => imageInputRef.current?.click()}
               sx={{ 
-                color: '#999',
-                background: 'rgba(255,255,255,0.05)',
+                color: mode === 'light' ? '#666' : '#999',
+                background: mode === 'light' 
+                  ? 'rgba(0,0,0,0.03)' 
+                  : 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                border: mode === 'light' 
+                  ? '1px solid rgba(0,0,0,0.1)' 
+                  : '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.3s ease',
                 '&:hover': { 
-                  color: '#fff', 
+                  color: mode === 'light' ? '#333' : '#fff', 
                   background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
                   transform: 'translateY(-2px)',
                   boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
@@ -273,13 +283,17 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
               size="small"
               onClick={() => fileInputRef.current?.click()}
               sx={{ 
-                color: '#999',
-                background: 'rgba(255,255,255,0.05)',
+                color: mode === 'light' ? '#666' : '#999',
+                background: mode === 'light' 
+                  ? 'rgba(0,0,0,0.03)' 
+                  : 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                border: mode === 'light' 
+                  ? '1px solid rgba(0,0,0,0.1)' 
+                  : '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.3s ease',
                 '&:hover': { 
-                  color: '#fff', 
+                  color: mode === 'light' ? '#333' : '#fff', 
                   background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
                   transform: 'translateY(-2px)',
                   boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
@@ -304,12 +318,12 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
           InputProps={{
             disableUnderline: true,
             sx: {
-              color: '#fff',
+              color: mode === 'light' ? '#333' : '#fff',
               fontSize: '16px',
               fontWeight: '400',
               lineHeight: '1.5',
               '& ::placeholder': {
-                color: '#888',
+                color: mode === 'light' ? '#666' : '#888',
                 opacity: 1,
                 fontStyle: 'italic',
               },
@@ -323,10 +337,14 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
               padding: '8px 12px',
               transition: 'all 0.3s ease',
               '&:hover': {
-                backgroundColor: 'rgba(255,255,255,0.02)',
+                backgroundColor: mode === 'light' 
+                  ? 'rgba(0,0,0,0.02)' 
+                  : 'rgba(255,255,255,0.02)',
               },
               '&.Mui-focused': {
-                backgroundColor: 'rgba(255,255,255,0.05)',
+                backgroundColor: mode === 'light' 
+                  ? 'rgba(0,0,0,0.05)' 
+                  : 'rgba(255,255,255,0.05)',
               }
             },
           }}
@@ -338,13 +356,17 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
             <IconButton
               size="small"
               sx={{ 
-                color: '#999',
-                background: 'rgba(255,255,255,0.05)',
+                color: mode === 'light' ? '#666' : '#999',
+                background: mode === 'light' 
+                  ? 'rgba(0,0,0,0.03)' 
+                  : 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                border: mode === 'light' 
+                  ? '1px solid rgba(0,0,0,0.1)' 
+                  : '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.3s ease',
                 '&:hover': { 
-                  color: '#fff', 
+                  color: mode === 'light' ? '#333' : '#fff', 
                   background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
                   transform: 'translateY(-2px)',
                   boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
@@ -362,7 +384,9 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
               sx={{
                 background: (message.trim() || uploadedFiles.length > 0)
                   ? 'linear-gradient(135deg, #00d4aa 0%, #00b894 50%, #00a085 100%)' 
-                  : 'rgba(255,255,255,0.1)',
+                  : mode === 'light' 
+                    ? 'rgba(0,0,0,0.1)' 
+                    : 'rgba(255,255,255,0.1)',
                 color: 'white',
                 border: '1px solid rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',

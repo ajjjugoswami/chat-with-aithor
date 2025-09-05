@@ -1,6 +1,23 @@
 import { createTheme } from "@mui/material/styles";
 
-const theme = createTheme({
+export const getTheme = (mode: 'light' | 'dark') => createTheme({
+  palette: {
+    mode,
+    primary: {
+      main: mode === 'light' ? '#133487' : '#667eea',
+    },
+    secondary: {
+      main: mode === 'light' ? '#115293' : '#764ba2',
+    },
+    background: {
+      default: mode === 'light' ? '#ffffff' : '#121212',
+      paper: mode === 'light' ? '#ffffff' : '#1a1a1a',
+    },
+    text: {
+      primary: mode === 'light' ? '#000000' : '#ffffff',
+      secondary: mode === 'light' ? '#666666' : '#bbbbbb',
+    },
+  },
   typography: {
     fontFamily: `'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif`,
   },
@@ -8,17 +25,17 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         outlined: {
-          borderColor: "#133487",
-          color: "#133487",
+          borderColor: mode === 'light' ? '#133487' : '#667eea',
+          color: mode === 'light' ? '#133487' : '#667eea',
           borderWidth: "2px",
           borderStyle: "solid",
           "&:hover": {
-            borderColor: "#115293",
-            backgroundColor: "rgba(25, 118, 210, 0.04)",
+            borderColor: mode === 'light' ? '#115293' : '#764ba2',
+            backgroundColor: mode === 'light' ? "rgba(25, 118, 210, 0.04)" : "rgba(102, 126, 234, 0.04)",
           },
           "&:active": {
-            borderColor: "#133487",
-            backgroundColor: "rgba(25, 118, 210, 0.08)",
+            borderColor: mode === 'light' ? '#133487' : '#667eea',
+            backgroundColor: mode === 'light' ? "rgba(25, 118, 210, 0.08)" : "rgba(102, 126, 234, 0.08)",
           },
           "&.Mui-focusVisible": {
             borderColor: "transparent",
@@ -51,20 +68,20 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#3B87C8",
+            borderColor: mode === 'light' ? '#3B87C8' : '#667eea',
             borderWidth: "2px",
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#3B87C8",
+            borderColor: mode === 'light' ? '#3B87C8' : '#667eea',
             borderWidth: "2px",
           },
           "&.Mui-disabled": {
-            backgroundColor: "#f5f5f5",
+            backgroundColor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#e0e0e0",
+              borderColor: mode === 'light' ? '#e0e0e0' : '#404040',
             },
             "& .MuiSelect-select": {
-              color: "#666",
+              color: mode === 'light' ? '#666' : '#888',
             },
           },
         },
@@ -75,12 +92,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "&.Mui-disabled": {
-            backgroundColor: "#f5f5f5",
+            backgroundColor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#e0e0e0",
+              borderColor: mode === 'light' ? '#e0e0e0' : '#404040',
             },
             "& .MuiSelect-select": {
-              color: "#666",
+              color: mode === 'light' ? '#666' : '#888',
             },
           },
           "& .MuiOutlinedInput-input": {
@@ -99,23 +116,23 @@ const theme = createTheme({
     MuiMenu: {
       styleOverrides: {
         paper: {
-          backgroundColor: "#fff",
+          backgroundColor: mode === 'light' ? '#fff' : '#2a2a2a',
           "&::-webkit-scrollbar": {
             width: "8px",
           },
           "&::-webkit-scrollbar-track": {
-            backgroundColor: "#f1f1f1",
+            backgroundColor: mode === 'light' ? '#f1f1f1' : '#404040',
             borderRadius: "8px",
           },
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#888",
+            backgroundColor: mode === 'light' ? '#888' : '#666',
             borderRadius: "8px",
           },
           "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#555",
+            backgroundColor: mode === 'light' ? '#555' : '#888',
           },
           scrollbarWidth: "thin",
-          scrollbarColor: "#888 #f1f1f1",
+          scrollbarColor: mode === 'light' ? '#888 #f1f1f1' : '#666 #404040',
           fontSize: "10px",
           maxHeight: "200px",
         },
@@ -125,10 +142,16 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           fontSize: "14px",
+          color: mode === 'light' ? '#000' : '#fff',
+          "&:hover": {
+            backgroundColor: mode === 'light' ? '#f5f5f5' : '#333',
+          },
         },
       },
     },
   },
 });
 
-export default theme;
+// Default theme for backwards compatibility
+const defaultTheme = getTheme('dark');
+export default defaultTheme;

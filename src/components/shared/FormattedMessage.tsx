@@ -8,6 +8,7 @@ import rehypeRaw from 'rehype-raw';
 import { useState } from 'react';
 import 'highlight.js/styles/vs2015.css'; // Dark theme for code highlighting
 import './message-styles.css'; // Custom message styles
+import { useTheme } from '../../hooks/useTheme';
 
 interface FormattedMessageProps {
   content: string;
@@ -24,6 +25,7 @@ export default function FormattedMessage({
   timestamp,
   isTyping = false 
 }: FormattedMessageProps) {
+  const { mode } = useTheme();
   const [copiedBlocks, setCopiedBlocks] = useState<Set<number>>(new Set());
   const [messageCopied, setMessageCopied] = useState(false);
 
@@ -76,7 +78,7 @@ export default function FormattedMessage({
           <Typography
             variant="caption"
             sx={{
-              color: '#888',
+              color: mode === 'light' ? '#666' : '#888',
               fontSize: '12px',
               mb: 0.5,
               fontWeight: 500,
@@ -93,7 +95,7 @@ export default function FormattedMessage({
             sx={{
               p: 2,
               borderRadius: '18px 18px 4px 18px',
-              bgcolor: '#007aff',
+              bgcolor: mode === 'light' ? '#1976d2' : '#007aff',
               color: 'white',
               wordBreak: 'break-word',
               fontSize: '14px',
@@ -183,8 +185,8 @@ export default function FormattedMessage({
           sx={{
             p: 2,
             borderRadius: '18px 18px 18px 4px',
-            bgcolor: '#2a2a2a',
-            color: 'white',
+            bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
+            color: mode === 'light' ? '#333' : 'white',
             border: `1px solid ${modelColor}30`,
             display: 'flex',
             alignItems: 'center',
@@ -255,8 +257,8 @@ export default function FormattedMessage({
         sx={{
           maxWidth: 'calc(100% - 60px)',
           borderRadius: '18px 18px 18px 4px',
-          bgcolor: '#2a2a2a',
-          color: 'white',
+          bgcolor: mode === 'light' ? '#f8f9fa' : '#2a2a2a',
+          color: mode === 'light' ? '#333' : 'white',
           wordBreak: 'break-word',
           fontSize: '14px',
           lineHeight: 1.5,
@@ -274,8 +276,8 @@ export default function FormattedMessage({
             position: 'relative',
             margin: '16px 0',
             borderRadius: '8px',
-            backgroundColor: '#1e1e1e !important',
-            border: '1px solid #333',
+            backgroundColor: mode === 'light' ? '#f1f1f1 !important' : '#1e1e1e !important',
+            border: mode === 'light' ? '1px solid #ddd' : '1px solid #333',
             overflow: 'hidden',
             '& code': {
               fontSize: '13px',
@@ -286,12 +288,12 @@ export default function FormattedMessage({
             },
           },
           '& code': {
-            backgroundColor: '#333',
+            backgroundColor: mode === 'light' ? '#e9ecef' : '#333',
             padding: '2px 6px',
             borderRadius: '4px',
             fontSize: '13px',
             fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
-            color: '#f8f8f2',
+            color: mode === 'light' ? '#495057' : '#f8f8f2',
           },
           '& pre code': {
             backgroundColor: 'transparent',

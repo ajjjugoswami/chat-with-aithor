@@ -10,6 +10,7 @@ import {
   Launch
 } from '@mui/icons-material';
 import type { ReactElement } from 'react';
+import { useTheme } from '../hooks/useTheme';
 
 export interface AIModel {
   id: string;
@@ -33,11 +34,13 @@ export default function AIModelTabs({
   onModelSelect, 
   onModelToggle 
 }: AIModelTabsProps) {
+  const { mode } = useTheme();
+  
   return (
     <Box
       sx={{
-        bgcolor: '#1a1a1a',
-        borderBottom: '1px solid #404040',
+        bgcolor: mode === 'light' ? '#f8f9fa' : '#1a1a1a',
+        borderBottom: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #404040',
         p: 2,
         display: 'flex',
         alignItems: 'center',
@@ -49,14 +52,14 @@ export default function AIModelTabs({
           height: '6px',
         },
         '&::-webkit-scrollbar-track': {
-          background: '#1a1a1a',
+          background: mode === 'light' ? '#f0f0f0' : '#1a1a1a',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: '#444',
+          background: mode === 'light' ? '#ccc' : '#444',
           borderRadius: '3px',
         },
         '&::-webkit-scrollbar-thumb:hover': {
-          background: '#555',
+          background: mode === 'light' ? '#bbb' : '#555',
         },
       }}
     >
@@ -68,10 +71,14 @@ export default function AIModelTabs({
             alignItems: 'center',
             gap: 1.5,
             minWidth: 'fit-content',
-            bgcolor: model.enabled ? '#2a2a2a' : '#1a1a1a',
+            bgcolor: model.enabled 
+              ? (mode === 'light' ? '#e3f2fd' : '#2a2a2a')
+              : (mode === 'light' ? '#ffffff' : '#1a1a1a'),
             borderRadius: 2,
             p: 1,
-            border: `1px solid ${model.enabled ? '#404040' : '#2a2a2a'}`,
+            border: `1px solid ${model.enabled 
+              ? (mode === 'light' ? '#bbdefb' : '#404040')
+              : (mode === 'light' ? '#e0e0e0' : '#2a2a2a')}`,
             transition: 'all 0.2s ease',
           }}
         >
@@ -115,29 +122,46 @@ export default function AIModelTabs({
                     {model.icon}
                   </Box>
                 )}
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 500,
+                  color: mode === 'light' ? '#333' : 'inherit'
+                }}>
                   {model.displayName}
                 </Typography>
                 <IconButton size="small" sx={{ p: 0, ml: 0.5 }}>
-                  <KeyboardArrowDown sx={{ fontSize: 16, color: '#888' }} />
+                  <KeyboardArrowDown sx={{ 
+                    fontSize: 16, 
+                    color: mode === 'light' ? '#666' : '#888' 
+                  }} />
                 </IconButton>
                 <IconButton size="small" sx={{ p: 0 }}>
-                  <Launch sx={{ fontSize: 14, color: '#888' }} />
+                  <Launch sx={{ 
+                    fontSize: 14, 
+                    color: mode === 'light' ? '#666' : '#888' 
+                  }} />
                 </IconButton>
               </Box>
             }
             onClick={() => onModelSelect(model.id)}
             sx={{
-              bgcolor: selectedModelId === model.id ? '#333' : 'transparent',
-              color: model.enabled ? 'white' : '#666',
-              border: `1px solid ${selectedModelId === model.id ? '#555' : 'transparent'}`,
+              bgcolor: selectedModelId === model.id 
+                ? (mode === 'light' ? '#e3f2fd' : '#333') 
+                : 'transparent',
+              color: model.enabled 
+                ? (mode === 'light' ? '#333' : 'white') 
+                : (mode === 'light' ? '#999' : '#666'),
+              border: `1px solid ${selectedModelId === model.id 
+                ? (mode === 'light' ? '#bbdefb' : '#555') 
+                : 'transparent'}`,
               borderRadius: 2,
               height: 40,
               cursor: 'pointer',
               opacity: model.enabled ? 1 : 0.6,
               transition: 'all 0.2s ease',
               '&:hover': {
-                bgcolor: selectedModelId === model.id ? '#404040' : '#333',
+                bgcolor: selectedModelId === model.id 
+                  ? (mode === 'light' ? '#bbdefb' : '#404040') 
+                  : (mode === 'light' ? '#f0f0f0' : '#333'),
               },
               '& .MuiChip-label': {
                 px: 2,

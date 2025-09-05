@@ -17,6 +17,7 @@ import {
 import Lottie from "lottie-react";
 import chatbotAnimation from "./shared/animation/chatbot.json";
 import GeminiRobo from "./shared/animation/geminiRobo.json";
+import { useTheme } from "../hooks/useTheme";
 
 interface Message {
   id: string;
@@ -46,6 +47,7 @@ function ModelPanel({
   onToggleCollapse,
   showRightHandle = true,
 }: ModelPanelProps) {
+  const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(hasAPIKey(model.id));
 
@@ -65,11 +67,12 @@ function ModelPanel({
       <Box
         sx={{
           p: 1,
-          borderBottom: "1px solid #333",
+          borderBottom:
+            mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
           display: "flex",
           alignItems: "center",
           gap: 2,
-          bgcolor: "#202020",
+          bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
           position: "sticky",
           top: 0,
           zIndex: 1,
@@ -79,10 +82,13 @@ function ModelPanel({
         {!isCollapsed && (
           <>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <div style={{marginTop:"4px"}}>{model.icon}</div>
+              <div style={{ marginTop: "4px" }}>{model.icon}</div>
               <Typography
                 variant="subtitle1"
-                sx={{ color: "white", fontWeight: 600 }}
+                sx={{
+                  color: mode === "light" ? "#333" : "white",
+                  fontWeight: 600,
+                }}
               >
                 {model.displayName}
               </Typography>
@@ -91,7 +97,10 @@ function ModelPanel({
               <IconButton
                 size="small"
                 onClick={onToggleCollapse}
-                sx={{ color: "#888", "&:hover": { color: "white" } }}
+                sx={{
+                  color: mode === "light" ? "#666" : "#888",
+                  "&:hover": { color: mode === "light" ? "#333" : "white" },
+                }}
               >
                 <ExpandLess />
               </IconButton>
@@ -117,14 +126,14 @@ function ModelPanel({
                 width: "6px",
               },
               "&::-webkit-scrollbar-track": {
-                background: "#1a1a1a",
+                background: mode === "light" ? "#f0f0f0" : "#1a1a1a",
               },
               "&::-webkit-scrollbar-thumb": {
-                background: "#444",
+                background: mode === "light" ? "#ccc" : "#444",
                 borderRadius: "3px",
               },
               "&::-webkit-scrollbar-thumb:hover": {
-                background: "#555",
+                background: mode === "light" ? "#bbb" : "#555",
               },
             }}
           >
@@ -142,7 +151,10 @@ function ModelPanel({
               >
                 <Typography
                   variant="body2"
-                  sx={{ color: "#666", textAlign: "center" }}
+                  sx={{
+                    color: mode === "light" ? "#999" : "#666",
+                    textAlign: "center",
+                  }}
                 >
                   Add your API key to start chatting with {model.displayName}
                 </Typography>
@@ -173,7 +185,7 @@ function ModelPanel({
                   alignItems: "center",
                   justifyContent: "center",
                   height: "100%",
-                  color: "#666",
+                  color: mode === "light" ? "#999" : "#666",
                   textAlign: "center",
                   fontSize: "14px",
                 }}
@@ -271,6 +283,7 @@ export default function MultiPanelChatArea({
   chatInput,
   onModelToggle,
 }: MultiPanelChatAreaProps) {
+  const { mode } = useTheme();
   const enabledModels = useMemo(
     () => models.filter((model) => model.enabled),
     [models]
@@ -341,7 +354,8 @@ export default function MultiPanelChatArea({
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        bgcolor: "#1a1a1a",
+        backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
+
         flex: 1,
         overflow: "hidden", // Prevent whole app scroll
       }}
@@ -357,14 +371,14 @@ export default function MultiPanelChatArea({
             height: "8px",
           },
           "&::-webkit-scrollbar-track": {
-            background: "#1a1a1a",
+            background: mode === "light" ? "#f0f0f0" : "#1a1a1a",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: "#444",
+            background: mode === "light" ? "#ccc" : "#444",
             borderRadius: "4px",
           },
           "&::-webkit-scrollbar-thumb:hover": {
-            background: "#555",
+            background: mode === "light" ? "#bbb" : "#555",
           },
         }}
       >
@@ -376,7 +390,7 @@ export default function MultiPanelChatArea({
               justifyContent: "center",
               width: "100%",
               height: "100%",
-              color: "#666",
+              color: mode === "light" ? "#999" : "#666",
               fontSize: "18px",
               textAlign: "center",
             }}
@@ -411,8 +425,9 @@ export default function MultiPanelChatArea({
       {/* Input Area */}
       <Box
         sx={{
-          borderTop: "1px solid #404040",
           p: 2,
+          borderTop:
+            mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
         }}
       >
         {chatInput}
