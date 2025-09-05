@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Avatar } from '@mui/material';
+import { Box, Typography, IconButton, Avatar, useMediaQuery } from '@mui/material';
 import { ContentCopy, Check } from '@mui/icons-material';
 import { UserIcon } from './Icons';
 import ReactMarkdown from 'react-markdown';
@@ -26,6 +26,7 @@ export default function FormattedMessage({
   isTyping = false 
 }: FormattedMessageProps) {
   const { mode } = useTheme();
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const [copiedBlocks, setCopiedBlocks] = useState<Set<number>>(new Set());
   const [messageCopied, setMessageCopied] = useState(false);
 
@@ -61,9 +62,9 @@ export default function FormattedMessage({
         sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          mb: 2,
+          mb: isMobile ? 1.5 : 2,
           alignItems: 'flex-start',
-          gap: 1.5,
+          gap: isMobile ? 1 : 1.5,
         }}
       >
         <Box
@@ -79,7 +80,7 @@ export default function FormattedMessage({
             variant="caption"
             sx={{
               color: mode === 'light' ? '#666' : '#888',
-              fontSize: '12px',
+              fontSize: isMobile ? '11px' : '12px',
               mb: 0.5,
               fontWeight: 500,
               display: 'flex',
@@ -93,12 +94,12 @@ export default function FormattedMessage({
           {/* Message bubble */}
           <Box
             sx={{
-              p: 2,
+              p: isMobile ? 1.5 : 2,
               borderRadius: '18px 18px 4px 18px',
               bgcolor: mode === 'light' ? '#1976d2' : '#007aff',
               color: 'white',
               wordBreak: 'break-word',
-              fontSize: '14px',
+              fontSize: isMobile ? '13px' : '14px',
               lineHeight: 1.5,
               position: 'relative',
               boxShadow: '0 2px 8px rgba(0, 122, 255, 0.2)',
@@ -156,22 +157,22 @@ export default function FormattedMessage({
         sx={{
           display: 'flex',
           justifyContent: 'flex-start',
-          mb: 2,
+          mb: isMobile ? 1.5 : 2,
           alignItems: 'flex-start',
-          gap: 1.5,
+          gap: isMobile ? 1 : 1.5,
         }}
       >
         {/* AI Model indicator */}
         <Box
           sx={{
-            width: 36,
-            height: 36,
+            width: isMobile ? 28 : 36,
+            height: isMobile ? 28 : 36,
             borderRadius: '50%',
             bgcolor: modelColor || '#4fc3f7',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '16px',
+            fontSize: isMobile ? '12px' : '16px',
             fontWeight: 'bold',
             color: 'white',
             flexShrink: 0,
@@ -183,7 +184,7 @@ export default function FormattedMessage({
         
         <Box
           sx={{
-            p: 2,
+            p: isMobile ? 1.5 : 2,
             borderRadius: '18px 18px 18px 4px',
             bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
             color: mode === 'light' ? '#333' : 'white',
@@ -228,22 +229,22 @@ export default function FormattedMessage({
       sx={{
         display: 'flex',
         justifyContent: 'flex-start',
-        mb: 2,
+        mb: isMobile ? 1.5 : 2,
         alignItems: 'flex-start',
-        gap: 1.5,
+        gap: isMobile ? 1 : 1.5,
       }}
     >
       {/* AI Model indicator */}
       <Box
         sx={{
-          width: 36,
-          height: 36,
+          width: isMobile ? 28 : 36,
+          height: isMobile ? 28 : 36,
           borderRadius: '50%',
           bgcolor: modelColor || '#4fc3f7',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '16px',
+          fontSize: isMobile ? '12px' : '16px',
           fontWeight: 'bold',
           color: 'white',
           flexShrink: 0,
@@ -255,12 +256,12 @@ export default function FormattedMessage({
       
       <Box
         sx={{
-          maxWidth: 'calc(100% - 60px)',
+          maxWidth: isMobile ? 'calc(100% - 40px)' : 'calc(100% - 60px)',
           borderRadius: '18px 18px 18px 4px',
           bgcolor: mode === 'light' ? '#f8f9fa' : '#2a2a2a',
           color: mode === 'light' ? '#333' : 'white',
           wordBreak: 'break-word',
-          fontSize: '14px',
+          fontSize: isMobile ? '13px' : '14px',
           lineHeight: 1.5,
           border: `1px solid ${modelColor}30`,
           overflow: 'hidden',
@@ -270,20 +271,20 @@ export default function FormattedMessage({
             opacity: 1,
           },
           '& .markdown-content': {
-            p: 2,
+            p: isMobile ? 1.5 : 2,
           },
           '& pre': {
             position: 'relative',
-            margin: '16px 0',
+            margin: isMobile ? '12px 0' : '16px 0',
             borderRadius: '8px',
             backgroundColor: mode === 'light' ? '#f1f1f1 !important' : '#1e1e1e !important',
             border: mode === 'light' ? '1px solid #ddd' : '1px solid #333',
             overflow: 'hidden',
             '& code': {
-              fontSize: '13px',
+              fontSize: isMobile ? '12px' : '13px',
               lineHeight: 1.4,
               display: 'block',
-              padding: '12px',
+              padding: isMobile ? '8px' : '12px',
               background: 'transparent !important',
             },
           },

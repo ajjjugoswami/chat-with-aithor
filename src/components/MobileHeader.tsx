@@ -68,7 +68,7 @@ export default function MobileHeader({
           borderBottom: mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between", minHeight: "56px !important" }}>
+        <Toolbar sx={{ justifyContent: "space-between", minHeight: "48px !important", px: 1 }}>
           {/* Left side - Burger menu */}
           <IconButton
             edge="start"
@@ -87,14 +87,14 @@ export default function MobileHeader({
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Box
               sx={{
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <img src="/logo.png" alt="Logo" style={{ height: 24 }} />
+              <img src="/logo.png" alt="Logo" style={{ height: 20 }} />
             </Box>
             <Typography
               variant="h6"
@@ -102,8 +102,8 @@ export default function MobileHeader({
                 color: mode === "light" ? "#133487" : "white",
                 fontWeight: "bold",
                 fontFamily: "'Orbitron', 'Roboto Mono', 'Monaco', 'Consolas', monospace",
-                letterSpacing: "1px",
-                fontSize: "1.1rem",
+                letterSpacing: "0.5px",
+                fontSize: "0.9rem",
               }}
             >
               AITHOR

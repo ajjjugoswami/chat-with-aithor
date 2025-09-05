@@ -76,12 +76,12 @@ function ModelPanel({
       {/* Model Header */}
       <Box
         sx={{
-          p: 1,
+          p: isMobile ? 0.5 : 1,
           borderBottom:
             mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
           display: isMobile ? "none" : "flex",
           alignItems: "center",
-          gap: 2,
+          gap: isMobile ? 1 : 2,
           bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
           position: "sticky",
           top: 0,
@@ -91,13 +91,14 @@ function ModelPanel({
       >
         {!isCollapsed && (
           <>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 1 : 2 }}>
               <div style={{ marginTop: "4px" }}>{model.icon}</div>
               <Typography
                 variant="subtitle1"
                 sx={{
                   color: mode === "light" ? "#333" : "white",
                   fontWeight: 600,
+                  fontSize: isMobile ? "0.875rem" : "1rem",
                 }}
               >
                 {model.displayName}
@@ -140,11 +141,11 @@ function ModelPanel({
             sx={{
               flex: 1,
               overflowY: "auto",
-              p: 2,
+              p: isMobile ? 1 : 2,
               display: "flex",
               flexDirection: "column",
-              gap: 1.5,
-              minHeight: isMobile ? "calc(100dvh - 200px)" : "auto", // Ensure minimum height on mobile
+              gap: isMobile ? 1 : 1.5,
+              minHeight: isMobile ? "calc(100dvh - 150px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
               "&::-webkit-scrollbar": {
                 width: "6px",
@@ -396,7 +397,7 @@ export default function MultiPanelChatArea({
         display: "flex",
         flexDirection: "column",
         height: isMobile ? "auto" : "100%",
-        minHeight: isMobile ? "calc(100dvh - 56px)" : "100%", // Subtract header height
+        minHeight: isMobile ? "calc(100dvh - 48px)" : "100%", // Subtract smaller header height
         backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
         flex: 1,
         overflow: isMobile ? "visible" : "hidden",
@@ -419,9 +420,9 @@ export default function MultiPanelChatArea({
             sx={{
               "& .MuiTab-root": {
                 minWidth: "auto",
-                px: 2,
-                py: 1,
-                fontSize: "0.875rem",
+                px: 1.5,
+                py: 0.5,
+                fontSize: "0.75rem",
                 textTransform: "none",
                 color: mode === "light" ? "#666" : "#888",
                 "&.Mui-selected": {
@@ -520,7 +521,7 @@ export default function MultiPanelChatArea({
       {/* Input Area */}
       <Box
         sx={{
-          p: isMobile ? 0 : 3,
+          p: isMobile ? 0.5 : 3,
           borderTop:
             mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
         }}

@@ -5,7 +5,8 @@ import {
   Paper,
   Chip,
   Typography,
-  Tooltip
+  Tooltip,
+  useMediaQuery
 } from '@mui/material';
 import { 
   Send, 
@@ -36,6 +37,7 @@ interface ChatInputProps {
 
 export default function ChatInput({ onSendMessage, disabled = false, selectedModel }: ChatInputProps) {
   const { mode } = useTheme();
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -125,7 +127,7 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
   };
 
   return (
-    <Box sx={{ position: 'relative', p: 1 }}>
+    <Box sx={{ position: 'relative', p: isMobile ? 0.5 : 1 }}>
       {/* Hidden file inputs */}
       <input
         type="file"
@@ -252,10 +254,10 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
           }}
         >
         {/* File attachment buttons */}
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
+        <Box sx={{ display: 'flex', gap: isMobile ? 0.25 : 0.5 }}>
           <Tooltip title="Upload Image">
             <IconButton
-              size="small"
+              size={isMobile ? "small" : "small"}
               onClick={() => imageInputRef.current?.click()}
               sx={{ 
                 color: mode === 'light' ? '#666' : '#999',
@@ -267,6 +269,8 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                   ? '1px solid rgba(0,0,0,0.1)' 
                   : '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.3s ease',
+                width: isMobile ? 28 : 32,
+                height: isMobile ? 28 : 32,
                 '&:hover': { 
                   color: mode === 'light' ? '#333' : '#fff', 
                   background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
@@ -275,12 +279,12 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                 },
               }}
             >
-              <Image />
+              <Image sx={{ fontSize: isMobile ? '0.9rem' : '1rem' }} />
             </IconButton>
           </Tooltip>
           <Tooltip title="Upload File">
             <IconButton
-              size="small"
+              size={isMobile ? "small" : "small"}
               onClick={() => fileInputRef.current?.click()}
               sx={{ 
                 color: mode === 'light' ? '#666' : '#999',
@@ -292,6 +296,8 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                   ? '1px solid rgba(0,0,0,0.1)' 
                   : '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.3s ease',
+                width: isMobile ? 28 : 32,
+                height: isMobile ? 28 : 32,
                 '&:hover': { 
                   color: mode === 'light' ? '#333' : '#fff', 
                   background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
@@ -300,7 +306,7 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                 },
               }}
             >
-              <AttachFile />
+              <AttachFile sx={{ fontSize: isMobile ? '0.9rem' : '1rem' }} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -319,7 +325,7 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
             disableUnderline: true,
             sx: {
               color: mode === 'light' ? '#333' : '#fff',
-              fontSize: '16px',
+              fontSize: isMobile ? '14px' : '16px',
               fontWeight: '400',
               lineHeight: '1.5',
               '& ::placeholder': {
@@ -334,7 +340,7 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
             '& .MuiInputBase-root': {
               bgcolor: 'transparent',
               borderRadius: 2,
-              padding: '8px 12px',
+              padding: isMobile ? '6px 8px' : '8px 12px',
               transition: 'all 0.3s ease',
               '&:hover': {
                 backgroundColor: mode === 'light' 
@@ -381,6 +387,7 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
             <IconButton
               onClick={handleSend}
               disabled={(!message.trim() && uploadedFiles.length === 0) || disabled}
+              size={isMobile ? "small" : "medium"}
               sx={{
                 background: (message.trim() || uploadedFiles.length > 0)
                   ? 'linear-gradient(135deg, #00d4aa 0%, #00b894 50%, #00a085 100%)' 
@@ -391,6 +398,8 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                 border: '1px solid rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
                 transition: 'all 0.3s ease',
+                width: isMobile ? 32 : 40,
+                height: isMobile ? 32 : 40,
                 '&:hover': {
                   background: (message.trim() || uploadedFiles.length > 0)
                     ? 'linear-gradient(135deg, #00e6c0 0%, #00d4aa 50%, #00b894 100%)' 
@@ -407,7 +416,7 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                 },
               }}
             >
-              <Send />
+              <Send sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }} />
             </IconButton>
           </Tooltip>
         </Box>
