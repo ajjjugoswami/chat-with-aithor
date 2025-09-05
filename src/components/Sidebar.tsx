@@ -560,6 +560,150 @@ export default function Sidebar({
           )}
         </Box>
       )}
+
+      {isMobile && (
+        <>
+          {user && (
+            <Box
+              sx={{
+                position: "relative",
+                borderRadius: "16px",
+                p: "2px", // Space for gradient border
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: "2px",
+                  left: "2px",
+                  right: "2px",
+                  bottom: "2px",
+                  background: mode === "light" ? "#f5f5f5" : "#1a1a1a",
+                  borderRadius: "14px",
+                  zIndex: 1,
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  position: "relative",
+                  zIndex: 2,
+                  p: isCollapsed ? 1.5 : 2,
+                  display: "flex",
+                  flexDirection: isCollapsed ? "column" : "row",
+                  alignItems: "start",
+                  gap: isCollapsed ? 1 : 2,
+                  borderRadius: "14px",
+                }}
+              >
+                {/* User Avatar */}
+                <Avatar
+                  src={user.picture}
+                  alt={user.name}
+                  sx={{
+                    width: isCollapsed ? 30 : 44,
+                    height: isCollapsed ? 30 : 44,
+                    border: "2px solid transparent",
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    "& .MuiAvatar-img": {
+                      borderRadius: "50%",
+                    },
+                  }}
+                />
+
+                {/* User Info and Sign Out Button */}
+                {!isCollapsed && (
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: mode === "light" ? "#333" : "white",
+                        fontWeight: 600,
+                        mb: 0.5,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      {user.name}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: mode === "light" ? "#666" : "#bbb",
+                        display: "block",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        mb: 1.5,
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      {user.email}
+                    </Typography>
+                    <Button
+                      startIcon={<Logout />}
+                      onClick={signOut}
+                      size="small"
+                      sx={{
+                        color: mode === "light" ? "#666" : "#bbb",
+                        textTransform: "none",
+                        fontSize: "0.75rem",
+                        minHeight: "32px",
+                        padding: "6px 12px",
+                        borderRadius: "8px",
+                        border:
+                          mode === "light"
+                            ? "1px solid #e0e0e0"
+                            : "1px solid #404040",
+                        width: "100%",
+                        justifyContent: "flex-start",
+                        "&:hover": {
+                          color: "#fff",
+                          bgcolor: "rgba(244, 67, 54, 0.1)",
+                          borderColor: "#f44336",
+                          transform: "translateY(-1px)",
+                          boxShadow: "0 4px 8px rgba(244, 67, 54, 0.2)",
+                        },
+                        transition: "all 0.2s ease-in-out",
+                      }}
+                    >
+                      Sign Out
+                    </Button>
+                  </Box>
+                )}
+
+                {/* Collapsed Sign Out Button */}
+                {isCollapsed && (
+                  <IconButton
+                    onClick={signOut}
+                    size="small"
+                    sx={{
+                      color: mode === "light" ? "#666" : "#bbb",
+                      border:
+                        mode === "light"
+                          ? "1px solid #e0e0e0"
+                          : "1px solid #404040",
+                      borderRadius: "8px",
+                      "&:hover": {
+                        color: "#fff",
+                        bgcolor: "rgba(244, 67, 54, 0.1)",
+                        borderColor: "#f44336",
+                        transform: "translateY(-1px)",
+                        boxShadow: "0 4px 8px rgba(244, 67, 54, 0.2)",
+                      },
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                  >
+                    <Logout fontSize="small" />
+                  </IconButton>
+                )}
+              </Box>
+            </Box>
+          )}
+        </>
+      )}
     </Box>
   );
 }
