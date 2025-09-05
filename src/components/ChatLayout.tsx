@@ -17,10 +17,12 @@ export default function ChatLayout({ sidebar, chatArea, sidebarCollapsed = false
       sx={{
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
-        height: '100vh',
+        height: isMobile ? '100dvh' : '100vh', // Use dvh for mobile
+        minHeight: isMobile ? '100svh' : '100vh', // Fallback for older browsers
         bgcolor: mode === 'light' ? '#ffffff' : '#1a1a1a',
         color: mode === 'light' ? '#000000' : 'white',
-        overflow: 'hidden',
+        overflow: isMobile ? 'auto' : 'hidden',
+        position: isMobile ? 'relative' : 'static',
       }}
     >
       {/* Mobile Header - Show only on mobile */}
@@ -51,8 +53,10 @@ export default function ChatLayout({ sidebar, chatArea, sidebarCollapsed = false
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          overflow: 'hidden', // Prevent chat area from causing app scroll
-          minWidth: 0, // Allow flex shrinking
+          overflow: isMobile ? 'visible' : 'hidden',
+          minWidth: 0,
+          height: isMobile ? 'auto' : '100%',
+          minHeight: isMobile ? 'calc(100dvh - 56px)' : 'auto', // Subtract header height on mobile
           backgroundColor: mode === "light" ? "#fff !important" : "#202020",
         }}
       >

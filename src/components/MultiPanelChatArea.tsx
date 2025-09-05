@@ -144,6 +144,8 @@ function ModelPanel({
               display: "flex",
               flexDirection: "column",
               gap: 1.5,
+              minHeight: isMobile ? "calc(100dvh - 200px)" : "auto", // Ensure minimum height on mobile
+              height: isMobile ? "auto" : "100%",
               "&::-webkit-scrollbar": {
                 width: "6px",
               },
@@ -393,10 +395,12 @@ export default function MultiPanelChatArea({
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100%",
+        height: isMobile ? "auto" : "100%",
+        minHeight: isMobile ? "calc(100dvh - 56px)" : "100%", // Subtract header height
         backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
         flex: 1,
-        overflow: "hidden", // Prevent whole app scroll
+        overflow: isMobile ? "visible" : "hidden",
+        position: "relative",
       }}
     >
     
