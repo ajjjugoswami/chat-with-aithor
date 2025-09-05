@@ -145,7 +145,7 @@ function ModelPanel({
               display: "flex",
               flexDirection: "column",
               gap: isMobile ? 1 : 1.5,
-              minHeight: isMobile ? "100dvh" : "auto", // Reduced for smaller header
+              minHeight: isMobile ? "calc(100dvh - 150px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
               "&::-webkit-scrollbar": {
                 width: "6px",
@@ -397,7 +397,7 @@ export default function MultiPanelChatArea({
         display: "flex",
         flexDirection: "column",
         height: isMobile ? "auto" : "100%",
-        minHeight: isMobile ? "100dvh" : "100%", // Subtract smaller header height
+        minHeight: isMobile ? "calc(100dvh - 48px)" : "100%", // Subtract smaller header height
         backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
         flex: 1,
         overflow: isMobile ? "visible" : "hidden",
