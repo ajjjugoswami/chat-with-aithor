@@ -18,7 +18,7 @@ export default function ThemedApp() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/landing-page" element={<StyledLandingPage />} />
+            <Route path="/" element={<StyledLandingPage />} />
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route 
               path="/chat" 
@@ -28,7 +28,7 @@ export default function ThemedApp() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/" element={<Navigate to="/landing-page" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
       </Router>

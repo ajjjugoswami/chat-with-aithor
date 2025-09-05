@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       window.google.accounts.id.disableAutoSelect();
     }
     // Redirect to landing page
-    navigate('/landing-page');
+    navigate('/');
   };
 
   const value = {

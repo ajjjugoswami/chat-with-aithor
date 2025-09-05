@@ -327,7 +327,7 @@ export default function SignUpPage() {
               Want to learn more?{" "}
               <Typography
                 component="span"
-                onClick={() => navigate('/landing-page')}
+                onClick={() => navigate('/')}
                 sx={{
                   color: "#059669",
                   cursor: "pointer",
