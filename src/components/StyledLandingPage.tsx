@@ -31,7 +31,7 @@ import {
   ExpandMore,
   Menu,
 } from "@mui/icons-material";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 // Styled Components
 const StyledAppBar = styled(AppBar)(() => ({
@@ -357,7 +357,7 @@ export default function StyledLandingPage() {
                 </Box>
                 <Button
                   variant="contained"
-                  onClick={() => navigate('/sign-up')}
+                  onClick={() => navigate("/sign-up")}
                   sx={{
                     backgroundColor: "#059669",
                     color: "white",
@@ -446,25 +446,6 @@ export default function StyledLandingPage() {
               own API keys. Switch between models seamlessly in one unified
               platform while maintaining full control of your data.
             </Typography>
-
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate('/sign-up')}
-              sx={{
-                backgroundColor: "#059669",
-                color: "white",
-                px: 4,
-                py: 2,
-                fontSize: "1.125rem",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "#047857",
-                },
-              }}
-            >
-              Get Started Free
-            </Button>
           </Box>
         </Container>
       </HeroSection>
@@ -691,7 +672,6 @@ export default function StyledLandingPage() {
                   >
                     Front Developer
                   </Typography>
-                  
                 </Box>
               </DeveloperHeader>
               <CardContent sx={{ p: { xs: 2, sm: 3, lg: 4 } }}>
@@ -812,7 +792,6 @@ export default function StyledLandingPage() {
                   >
                     Frontend Developer
                   </Typography>
-                  
                 </Box>
               </DeveloperHeader>
               <CardContent sx={{ p: { xs: 2, sm: 3, lg: 4 } }}>
@@ -1015,7 +994,7 @@ export default function StyledLandingPage() {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate('/sign-up')}
+            onClick={() => navigate("/sign-up")}
             sx={{
               backgroundColor: "white",
               color: "#059669",

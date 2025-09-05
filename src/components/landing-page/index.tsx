@@ -1,0 +1,8 @@
+export { default as Header } from './Header';
+export { default as HeroSection } from './HeroSection';
+export { default as FeaturesSection } from './FeaturesSection';
+export { default as AIModelsSection } from './AIModelsSection';
+export { default as DeveloperSection } from './DeveloperSection';
+export { default as APIKeysSection } from './APIKeysSection';
+export { default as CTASection } from './CTASection';
+export { default as Footer } from './Footer';

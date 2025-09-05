@@ -5,7 +5,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from '../theme';
 import { useTheme } from '../hooks/useTheme';
-import StyledLandingPage from './StyledLandingPage';
+import LandingPage from './LandingPage';
 import SignUpPage from './SignUpPage';
 
 export default function ThemedApp() {
@@ -18,7 +18,7 @@ export default function ThemedApp() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<StyledLandingPage />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route 
               path="/chat" 
