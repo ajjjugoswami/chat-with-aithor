@@ -16,6 +16,7 @@ interface ResizablePanelProps {
   showLeftHandle?: boolean;
   collapsedWidth?: number;
   className?: string;
+  isMobile?: boolean;
 }
 
 export default function ResizablePanel({
@@ -30,6 +31,7 @@ export default function ResizablePanel({
   showLeftHandle = false,
   collapsedWidth = 60,
   className,
+  isMobile = false,
 }: ResizablePanelProps) {
   const { mode } = useTheme();
   const [width, setWidth] = useState(initialWidth);
@@ -38,7 +40,7 @@ export default function ResizablePanel({
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
 
-  const actualWidth = isCollapsed ? collapsedWidth : width;
+  const actualWidth = isMobile ? '100%' : (isCollapsed ? collapsedWidth : width);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isCollapsed) return;
@@ -111,15 +113,15 @@ export default function ResizablePanel({
       className={className}
       sx={{
         width: actualWidth,
-        minWidth: actualWidth,
-        maxWidth: actualWidth,
+        minWidth: isMobile ? 'auto' : actualWidth,
+        maxWidth: isMobile ? 'none' : actualWidth,
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         transition: isDragging ? 'none' : 'width 0.3s ease',
         bgcolor: mode === 'light' ? '#ffffff' : '#1a1a1a',
-        borderRight: showRightHandle ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
-        borderLeft: showLeftHandle ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
+        borderRight: (showRightHandle && !isMobile) ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
+        borderLeft: (showLeftHandle && !isMobile) ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
       }}
     >
       {/* Main Content */}
@@ -135,7 +137,7 @@ export default function ResizablePanel({
       </Box>
 
       {/* Left Resize Handle */}
-      {showLeftHandle && (
+      {showLeftHandle && !isMobile && (
         <DragHandle 
           onMouseDown={handleMouseDown}
           position="left"
@@ -144,7 +146,7 @@ export default function ResizablePanel({
       )}
 
       {/* Right Resize Handle */}
-      {showRightHandle && (
+      {showRightHandle && !isMobile && (
         <DragHandle 
           onMouseDown={handleMouseDown}
           position="right"

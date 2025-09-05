@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Button } from "@mui/material";
+import { Box, Typography, IconButton, Button, useMediaQuery, Tabs, Tab } from "@mui/material";
 import { ExpandLess, Key } from "@mui/icons-material";
 import { useState, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
@@ -36,6 +36,7 @@ interface ModelPanelProps {
   onWidthChange: (width: number) => void;
   onToggleCollapse: () => void;
   showRightHandle?: boolean;
+  isMobile?: boolean;
 }
 
 function ModelPanel({
@@ -46,6 +47,7 @@ function ModelPanel({
   onWidthChange,
   onToggleCollapse,
   showRightHandle = true,
+  isMobile = false,
 }: ModelPanelProps) {
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
@@ -77,7 +79,7 @@ function ModelPanel({
           p: 1,
           borderBottom:
             mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
-          display: "flex",
+          display: isMobile ? "none" : "flex",
           alignItems: "center",
           gap: 2,
           bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
@@ -101,22 +103,33 @@ function ModelPanel({
                 {model.displayName}
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <IconButton
-                size="small"
-                onClick={onToggleCollapse}
-                sx={{
-                  color: mode === "light" ? "#666" : "#888",
-                  "&:hover": { color: mode === "light" ? "#333" : "white" },
-                }}
-              >
-                <ExpandLess />
-              </IconButton>
-            </Box>
+            {/* Only show collapse button on desktop */}
+            {!isMobile && (
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <IconButton
+                  size="small"
+                  onClick={onToggleCollapse}
+                  sx={{
+                    color: mode === "light" ? "#666" : "#888",
+                    "&:hover": { color: mode === "light" ? "#333" : "white" },
+                  }}
+                >
+                  <ExpandLess />
+                </IconButton>
+              </Box>
+            )}
           </>
         )}
 
-        {isCollapsed && <div onClick={onToggleCollapse}>{model.icon}</div>}
+        {/* Only show collapsed state on desktop */}
+        {!isMobile && isCollapsed && (
+          <div 
+            onClick={onToggleCollapse}
+            style={{ cursor: 'pointer' }}
+          >
+            {model.icon}
+          </div>
+        )}
       </Box>
 
       {/* Messages Area - Only show when not collapsed */}
@@ -252,6 +265,7 @@ function ModelPanel({
       onWidthChange={onWidthChange}
       showRightHandle={showRightHandle}
       collapsedWidth={60}
+      isMobile={isMobile}
     >
       {panelContent}
     </ResizablePanel>
@@ -279,11 +293,24 @@ function MessageBubble({
   );
 }
 
+interface Chat {
+  id: string;
+  title: string;
+  date: string;
+}
+
 interface MultiPanelChatAreaProps {
   models: AIModel[];
   messages: Message[];
   chatInput: ReactNode;
   onModelToggle?: (modelId: string) => void;
+  // Mobile header props
+  onNewChat: () => void;
+  chats: Chat[];
+  selectedChatId?: string;
+  onChatSelect: (chatId: string) => void;
+  onSettingsClick: () => void;
+  onDeleteChat?: (chatId: string) => void;
 }
 
 export default function MultiPanelChatArea({
@@ -293,6 +320,7 @@ export default function MultiPanelChatArea({
   onModelToggle,
 }: MultiPanelChatAreaProps) {
   const { mode } = useTheme();
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const enabledModels = useMemo(
     () => models.filter((model) => model.enabled),
     [models]
@@ -320,6 +348,9 @@ export default function MultiPanelChatArea({
     });
     return initial;
   });
+
+  // Mobile panel selection state
+  const [selectedMobilePanel, setSelectedMobilePanel] = useState(0);
 
   // Update states when models change
   useEffect(() => {
@@ -364,20 +395,63 @@ export default function MultiPanelChatArea({
         flexDirection: "column",
         height: "100%",
         backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
-
         flex: 1,
         overflow: "hidden", // Prevent whole app scroll
       }}
     >
+    
+      {isMobile && enabledModels.length > 0 && (
+        <Box
+          sx={{
+            borderBottom: mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
+            bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
+          }}
+        >
+          <Tabs
+            value={selectedMobilePanel}
+            onChange={(_, newValue) => setSelectedMobilePanel(newValue)}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              "& .MuiTab-root": {
+                minWidth: "auto",
+                px: 2,
+                py: 1,
+                fontSize: "0.875rem",
+                textTransform: "none",
+                color: mode === "light" ? "#666" : "#888",
+                "&.Mui-selected": {
+                  color: mode === "light" ? "#333" : "white",
+                },
+              },
+              "& .MuiTabs-indicator": {
+                backgroundColor: mode === "light" ? "#333" : "white",
+              },
+            }}
+          >
+            {enabledModels.map((model) => (
+              <Tab
+                key={model.id}
+                label={model.displayName}
+                icon={model.icon}
+                iconPosition="start"
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+              />
+            ))}
+          </Tabs>
+        </Box>
+      )}
       {/* Multi-Panel Messages Container */}
       <Box
         sx={{
           flex: 1,
           display: "flex",
-          overflowX: "auto", // Horizontal scroll for panels
-          overflowY: "hidden",
+          flexDirection: isMobile ? "column" : "row",
+          overflowX: isMobile ? "hidden" : "auto", // Horizontal scroll for panels on desktop
+          overflowY: isMobile ? "auto" : "hidden", // Vertical scroll for panels on mobile
           "&::-webkit-scrollbar": {
-            height: "8px",
+            height: isMobile ? "6px" : "8px",
+            width: isMobile ? "6px" : "8px",
           },
           "&::-webkit-scrollbar-track": {
             background: mode === "light" ? "#f0f0f0" : "#1a1a1a",
@@ -415,19 +489,27 @@ export default function MultiPanelChatArea({
             </Box>
           </Box>
         ) : (
-          enabledModels.map((model, index) => (
-            <ModelPanel
-              key={model.id}
-              model={model}
-              messages={messages}
-              onToggle={onModelToggle}
-              width={panelWidths[model.id] || 380}
-              isCollapsed={panelCollapsed[model.id] || false}
-              onWidthChange={(width) => handleWidthChange(model.id, width)}
-              onToggleCollapse={() => handleToggleCollapse(model.id)}
-              showRightHandle={index < enabledModels.length} // No handle on last panel
-            />
-          ))
+          enabledModels.map((model, index) => {
+            // On mobile, only show the selected panel
+            if (isMobile && index !== selectedMobilePanel) {
+              return null;
+            }
+            
+            return (
+              <ModelPanel
+                key={model.id}
+                model={model}
+                messages={messages}
+                onToggle={onModelToggle}
+                width={isMobile ? window.innerWidth : (panelWidths[model.id] || 380)} // Full width on mobile
+                isCollapsed={isMobile ? false : (panelCollapsed[model.id] || false)} // Never collapsed on mobile
+                onWidthChange={(width) => handleWidthChange(model.id, width)}
+                onToggleCollapse={() => handleToggleCollapse(model.id)}
+                showRightHandle={!isMobile && index < enabledModels.length - 1} // No handles on mobile, and don't show on last panel
+                isMobile={isMobile} // Pass mobile state
+              />
+            );
+          })
         )}
       </Box>
 

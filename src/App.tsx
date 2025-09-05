@@ -21,6 +21,8 @@ import {
   ClaudeIcon,
 } from "./components/shared/Icons";
 import { useTheme } from "./hooks/useTheme";
+import MobileHeader from "./components/MobileHeader";
+import { useMediaQuery } from "@mui/material";
 
 interface Message {
   id: string;
@@ -56,8 +58,12 @@ function App() {
       name: "gpt-4o-mini",
       displayName: "ChatGPT",
       enabled: true,
-      icon: <ChatGptIcon sx={{ fontSize: 20 ,color: mode === 'light' ? '#333' : "white"}} />,
-      color: '#10a37f',
+      icon: (
+        <ChatGptIcon
+          sx={{ fontSize: 20, color: mode === "light" ? "#333" : "white" }}
+        />
+      ),
+      color: "#10a37f",
     },
     {
       id: "gemini-2.5-lite",
@@ -65,7 +71,7 @@ function App() {
       displayName: "Gemini",
       enabled: true,
       icon: <GeminiAi sx={{ fontSize: 20 }} />,
-      color: '#4285f4',
+      color: "#4285f4",
     },
     {
       id: "deepseek-chat",
@@ -73,7 +79,7 @@ function App() {
       displayName: "DeepSeek Chat",
       enabled: true,
       icon: <DeepseekIcon sx={{ fontSize: 20 }} />,
-      color: '#1976d2',
+      color: "#1976d2",
     },
     {
       id: "perplexity-sonar",
@@ -81,7 +87,7 @@ function App() {
       displayName: "Perplexity",
       enabled: true,
       icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
-      color: '#9c27b0',
+      color: "#9c27b0",
     },
     {
       id: "claude-3-haiku",
@@ -89,7 +95,7 @@ function App() {
       displayName: "Claude",
       enabled: true,
       icon: <ClaudeIcon sx={{ fontSize: 20 }} />,
-      color: '#ff6b35',
+      color: "#ff6b35",
     },
   ]);
 
@@ -272,21 +278,35 @@ function App() {
       )
     );
   };
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   return (
     <ChatLayout
       sidebarCollapsed={sidebarCollapsed}
       sidebar={
-        <Sidebar
-          onNewChat={handleNewChat}
-          chats={chats}
-          selectedChatId={selectedChatId}
-          onChatSelect={setSelectedChatId}
-          onSettingsClick={() => setCurrentView("settings")}
-          onDeleteChat={handleDeleteChat}
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={handleSidebarToggle}
-        />
+        <>
+          {isMobile ? (
+            <MobileHeader
+              onNewChat={handleNewChat}
+              chats={chats}
+              selectedChatId={selectedChatId}
+              onChatSelect={setSelectedChatId}
+              onSettingsClick={() => setCurrentView("settings")}
+              onDeleteChat={handleDeleteChat}
+            />
+          ) : (
+            <Sidebar
+              onNewChat={handleNewChat}
+              chats={chats}
+              selectedChatId={selectedChatId}
+              onChatSelect={setSelectedChatId}
+              onSettingsClick={() => setCurrentView("settings")}
+              onDeleteChat={handleDeleteChat}
+              isCollapsed={sidebarCollapsed}
+              onToggleCollapse={handleSidebarToggle}
+            />
+          )}
+        </>
       }
       chatArea={
         currentView === "settings" ? (
@@ -300,6 +320,12 @@ function App() {
             models={aiModels}
             messages={selectedChat?.messages || []}
             onModelToggle={handleModelToggle}
+            onNewChat={handleNewChat}
+            chats={chats}
+            selectedChatId={selectedChatId}
+            onChatSelect={setSelectedChatId}
+            onSettingsClick={() => setCurrentView("settings")}
+            onDeleteChat={handleDeleteChat}
             chatInput={
               <ChatInput
                 onSendMessage={handleSendMessage}
