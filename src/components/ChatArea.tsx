@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
 import FormattedMessage from "./shared/FormattedMessage";
 import { useTheme } from "../hooks/useTheme";
 
@@ -17,6 +18,14 @@ interface ChatAreaProps {
 
 export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
   const { mode } = useTheme();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom when messages change (new messages or chat selection)
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]); // Trigger when messages array changes
 
   return (
     <Box
@@ -30,6 +39,7 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
     >
       {/* Messages Container */}
       <Box
+        ref={scrollContainerRef}
         sx={{
           flex: 1,
           overflowY: "auto",

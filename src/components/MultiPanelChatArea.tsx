@@ -1,6 +1,6 @@
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import { ExpandLess, Key } from "@mui/icons-material";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { hasAPIKey } from "../utils/apiKeys";
@@ -50,10 +50,18 @@ function ModelPanel({
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(hasAPIKey(model.id));
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const modelMessages = messages.filter(
     (msg) => msg.sender === "user" || msg.modelId === model.id
   );
+
+  // Scroll to bottom when messages change (new messages or chat selection)
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]); // Trigger when messages array changes (new messages or chat selection)
 
   const handleSaveAPIKey = (modelId: string, apiKey: string) => {
     saveAPIKey(modelId, apiKey, model.displayName);
@@ -115,6 +123,7 @@ function ModelPanel({
       {!isCollapsed && (
         <>
           <Box
+            ref={scrollContainerRef}
             sx={{
               flex: 1,
               overflowY: "auto",
@@ -237,7 +246,7 @@ function ModelPanel({
     <ResizablePanel
       initialWidth={width}
       minWidth={300}
-      maxWidth={600}
+      maxWidth={1000}
       isCollapsed={isCollapsed}
       onToggleCollapse={onToggleCollapse}
       onWidthChange={onWidthChange}

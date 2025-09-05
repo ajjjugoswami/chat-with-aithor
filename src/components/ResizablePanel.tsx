@@ -22,7 +22,7 @@ export default function ResizablePanel({
   children,
   initialWidth,
   minWidth,
-  maxWidth = 800,
+  maxWidth = 1000,
   isCollapsed = false,
   onToggleCollapse,
   onWidthChange,
