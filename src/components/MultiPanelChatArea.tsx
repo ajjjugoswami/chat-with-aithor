@@ -510,7 +510,7 @@ export default function MultiPanelChatArea({
                 isCollapsed={isMobile ? false : (panelCollapsed[model.id] || false)} // Never collapsed on mobile
                 onWidthChange={(width) => handleWidthChange(model.id, width)}
                 onToggleCollapse={() => handleToggleCollapse(model.id)}
-                showRightHandle={!isMobile && index < enabledModels.length - 1} // No handles on mobile, and don't show on last panel
+                showRightHandle={!isMobile && index < enabledModels.length} // No handles on mobile, and don't show on last panel
                 isMobile={isMobile} // Pass mobile state
               />
             );
