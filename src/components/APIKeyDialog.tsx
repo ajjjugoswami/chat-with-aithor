@@ -8,7 +8,7 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { useTheme } from "../hooks/useTheme";
 
@@ -30,6 +30,11 @@ export default function APIKeyDialog({
   const [apiKey, setApiKey] = useState(existingKey);
   const [error, setError] = useState("");
   const { mode } = useTheme();
+
+  // Update apiKey state when existingKey prop changes
+  useEffect(() => {
+    setApiKey(existingKey);
+  }, [existingKey]);
 
   const handleSave = () => {
     if (!apiKey.trim()) {
@@ -62,7 +67,7 @@ export default function APIKeyDialog({
       fullWidth
       PaperProps={{
         sx: {
-          bgcolor: mode === 'light' ? "#ffffff" : "#2a2a2a",
+          bgcolor: mode === 'light' ? "#ffffff" : "#000",
           color: mode === 'light' ? "#000000" : "white",
           border: mode === 'light' ? "1px solid #e0e0e0" : "1px solid #404040",
         },

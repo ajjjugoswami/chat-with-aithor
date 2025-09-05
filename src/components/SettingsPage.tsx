@@ -13,9 +13,9 @@ import {
   Chip,
 } from "@mui/material";
 import { ArrowBack, Key, Edit, Delete } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { AIModel } from "./AIModelTabs";
-import { getAllAPIKeys, removeAPIKey } from "../utils/apiKeys";
+import { getAllAPIKeys, removeAPIKey, saveAPIKey, getAPIKeyForModel } from "../utils/apiKeys";
 import APIKeyDialog from "./APIKeyDialog";
 import { useTheme } from "../hooks/useTheme";
 
@@ -35,20 +35,31 @@ export default function SettingsPage({
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
   const [apiKeys, setApiKeys] = useState(getAllAPIKeys());
 
+  // Refresh API keys when component mounts and when dialog closes
+  useEffect(() => {
+    setApiKeys(getAllAPIKeys());
+  }, []);
+
   const handleEditAPIKey = (model: AIModel) => {
     setSelectedModel(model);
     setApiKeyDialogOpen(true);
   };
 
-  const handleSaveAPIKey = () => {
-    setApiKeys(getAllAPIKeys()); // Refresh the list
+  const handleSaveAPIKey = (modelId: string, apiKey: string) => {
+    const model = models.find(m => m.id === modelId);
+    if (model) {
+      saveAPIKey(modelId, apiKey, model.displayName);
+    }
+    // Force refresh by getting fresh data from localStorage
+    setApiKeys(getAllAPIKeys());
     setApiKeyDialogOpen(false);
     setSelectedModel(null);
   };
 
   const handleRemoveAPIKey = (modelId: string) => {
     removeAPIKey(modelId);
-    setApiKeys(getAllAPIKeys()); // Refresh the list
+    // Force refresh by getting fresh data from localStorage
+    setApiKeys(getAllAPIKeys());
   };
   return (
     <Box
@@ -276,6 +287,7 @@ export default function SettingsPage({
           onClose={() => setApiKeyDialogOpen(false)}
           model={selectedModel}
           onSave={handleSaveAPIKey}
+          existingKey={getAPIKeyForModel(selectedModel.id) || ""}
         />
       )}
     </Box>
