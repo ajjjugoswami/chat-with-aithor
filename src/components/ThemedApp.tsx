@@ -17,9 +17,9 @@ export default function ThemedApp() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<StyledLandingPage />} />
+            <Route path="/sign-up" element={<StyledLandingPage />} />
             <Route 
-              path="/chat" 
+              path="/" 
               element={
                 <ProtectedRoute>
                   <App />
