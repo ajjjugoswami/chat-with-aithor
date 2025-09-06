@@ -1,4 +1,14 @@
-import { Box, Typography, IconButton, Button, useMediaQuery, Tabs, Tab, Switch, FormControlLabel } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Button,
+  useMediaQuery,
+  Tabs,
+  Tab,
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
 import { ExpandLess, Key } from "@mui/icons-material";
 import { useState, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
@@ -18,6 +28,7 @@ import {
 } from "../utils/panelStorage";
 import Lottie from "lottie-react";
 import chatbotAnimation from "./shared/animation/chatbot.json";
+import perplexicityAniamtion from "./shared/animation/perplexcityAnimation.json";
 import GeminiRobo from "./shared/animation/geminiRobo.json";
 import { useTheme } from "../hooks/useTheme";
 
@@ -73,7 +84,7 @@ function ModelPanel({
       if (msg.sender === "ai") {
         return msg.modelId === model.id;
       }
-      
+
       // For user messages, only show if this panel was enabled when the message was sent
       if (msg.sender === "user") {
         // If enabledPanels is not set (backward compatibility), show all user messages
@@ -83,19 +94,24 @@ function ModelPanel({
         // Only show user message if this panel was enabled when it was sent
         return msg.enabledPanels.includes(model.id);
       }
-      
+
       return false;
     });
-    
-    console.log(`Panel ${model.displayName} - isEnabled: ${isEnabled}, modelMessages: ${modelMessages.length}`);
-    console.log(`Panel ${model.displayName} - filteredMessages: ${modelMessages.length}`);
+
+    console.log(
+      `Panel ${model.displayName} - isEnabled: ${isEnabled}, modelMessages: ${modelMessages.length}`
+    );
+    console.log(
+      `Panel ${model.displayName} - filteredMessages: ${modelMessages.length}`
+    );
     return modelMessages;
   }, [messages, model.id, isEnabled, model.displayName]);
 
   // Scroll to bottom when messages change (new messages or chat selection)
   useEffect(() => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
     }
   }, [filteredMessages]); // Trigger when filtered messages array changes
 
@@ -125,7 +141,13 @@ function ModelPanel({
       >
         {!isCollapsed && (
           <>
-            <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 1 : 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: isMobile ? 1 : 2,
+              }}
+            >
               <div style={{ marginTop: "4px" }}>{model.icon}</div>
               <Typography
                 variant="subtitle1"
@@ -146,11 +168,13 @@ function ModelPanel({
                   onChange={onToggleEnabled}
                   size="small"
                   sx={{
-                    '& .MuiSwitch-thumb': {
-                      backgroundColor: isEnabled ? model.color : '#ccc',
+                    "& .MuiSwitch-thumb": {
+                      backgroundColor: isEnabled ? model.color : "#ccc",
                     },
-                    '& .MuiSwitch-track': {
-                      backgroundColor: isEnabled ? `${model.color}40` : '#e0e0e0',
+                    "& .MuiSwitch-track": {
+                      backgroundColor: isEnabled
+                        ? `${model.color}40`
+                        : "#e0e0e0",
                     },
                   }}
                 />
@@ -166,11 +190,13 @@ function ModelPanel({
                       onChange={onToggleEnabled}
                       size="small"
                       sx={{
-                        '& .MuiSwitch-thumb': {
-                          backgroundColor: isEnabled ? model.color : '#ccc',
+                        "& .MuiSwitch-thumb": {
+                          backgroundColor: isEnabled ? model.color : "#ccc",
                         },
-                        '& .MuiSwitch-track': {
-                          backgroundColor: isEnabled ? `${model.color}40` : '#e0e0e0',
+                        "& .MuiSwitch-track": {
+                          backgroundColor: isEnabled
+                            ? `${model.color}40`
+                            : "#e0e0e0",
                         },
                       }}
                     />
@@ -195,10 +221,7 @@ function ModelPanel({
 
         {/* Only show collapsed state on desktop */}
         {!isMobile && isCollapsed && (
-          <div 
-            onClick={onToggleCollapse}
-            style={{ cursor: 'pointer' }}
-          >
+          <div onClick={onToggleCollapse} style={{ cursor: "pointer" }}>
             {model.icon}
           </div>
         )}
@@ -252,7 +275,8 @@ function ModelPanel({
                     textAlign: "center",
                   }}
                 >
-                  Panel is disabled. Enable it to start chatting with {model.displayName}
+                  Panel is disabled. Enable it to start chatting with{" "}
+                  {model.displayName}
                 </Typography>
               </Box>
             ) : !hasApiKey ? (
@@ -311,19 +335,19 @@ function ModelPanel({
                 {model.displayName === "ChatGPT" ? (
                   <Lottie
                     animationData={GeminiRobo}
-                    style={{
-                      width: 250,
-                      height: 250,
-                    }}
+                    style={{ width: 250, height: 250 }}
+                    loop={true}
+                  />
+                ) : model.displayName === "Gemini" ? (
+                  <Lottie
+                    animationData={chatbotAnimation}
+                    style={{ width: 250, height: 250 }}
                     loop={true}
                   />
                 ) : (
                   <Lottie
-                    animationData={chatbotAnimation}
-                    style={{
-                      width: 250,
-                      height: 250,
-                    }}
+                    animationData={perplexicityAniamtion}
+                    style={{ width: 250, height: 250 }}
                     loop={true}
                   />
                 )}
@@ -416,7 +440,7 @@ export default function MultiPanelChatArea({
   onModelToggle,
 }: MultiPanelChatAreaProps) {
   const { mode } = useTheme();
-  const isMobile = useMediaQuery('(max-width: 640px)');
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const enabledModels = useMemo(
     () => models.filter((model) => model.enabled),
     [models]
@@ -503,7 +527,9 @@ export default function MultiPanelChatArea({
     console.log(`Toggling panel enabled for ${modelId}`);
     setPanelEnabled((prev) => {
       const newEnabled = !prev[modelId];
-      console.log(`Panel ${modelId} - old: ${prev[modelId]}, new: ${newEnabled}`);
+      console.log(
+        `Panel ${modelId} - old: ${prev[modelId]}, new: ${newEnabled}`
+      );
       savePanelEnabled(modelId, newEnabled);
       return {
         ...prev,
@@ -525,11 +551,11 @@ export default function MultiPanelChatArea({
         position: "relative",
       }}
     >
-    
       {isMobile && enabledModels.length > 0 && (
         <Box
           sx={{
-            borderBottom: mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
+            borderBottom:
+              mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
             bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
           }}
         >
@@ -620,15 +646,19 @@ export default function MultiPanelChatArea({
             if (isMobile && index !== selectedMobilePanel) {
               return null;
             }
-            
+
             return (
               <ModelPanel
                 key={`${model.id}-${panelEnabled[model.id]}`}
                 model={model}
                 messages={messages}
                 onToggle={onModelToggle}
-                width={isMobile ? window.innerWidth : (panelWidths[model.id] || 380)} // Full width on mobile
-                isCollapsed={isMobile ? false : (panelCollapsed[model.id] || false)} // Never collapsed on mobile
+                width={
+                  isMobile ? window.innerWidth : panelWidths[model.id] || 380
+                } // Full width on mobile
+                isCollapsed={
+                  isMobile ? false : panelCollapsed[model.id] || false
+                } // Never collapsed on mobile
                 isEnabled={panelEnabled[model.id] !== false}
                 onWidthChange={(width) => handleWidthChange(model.id, width)}
                 onToggleCollapse={() => handleToggleCollapse(model.id)}
