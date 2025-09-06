@@ -13,7 +13,9 @@ import {
   getSidebarCollapsed,
   saveSidebarCollapsed,
   getPanelEnabled,
+  getPanelVariant,
 } from "./utils/panelStorage";
+import { getDefaultVariantForModel } from "./types/modelVariants";
 import {
   ChatGptIcon,
   GeminiAi,
@@ -237,7 +239,12 @@ function App() {
         );
 
         // Call real AI API
-        const response = await sendToAI(conversationHistory, model.id);
+        // Get the selected variant for this model, fallback to default if not found
+        const selectedVariantId = getPanelVariant(model.id);
+        const defaultVariant = getDefaultVariantForModel(model.id);
+        const actualModelId = selectedVariantId || defaultVariant?.id || model.id;
+        
+        const response = await sendToAI(conversationHistory, actualModelId);
 
         // Replace loading message with actual response
         const aiMessage: Message = {

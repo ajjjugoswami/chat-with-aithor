@@ -25,11 +25,26 @@ export async function sendToChatGPT(
 
   try {
     // Map model IDs to actual OpenAI model names
-    let actualModel = "gpt-3.5-turbo";
-    if (modelId.includes("gpt-4")) {
-      actualModel = "gpt-4o-mini"; // Free tier model
-    } else if (modelId.includes("gpt-3.5")) {
-      actualModel = "gpt-3.5-turbo";
+    let actualModel = "gpt-4o-mini"; // Default to free tier
+    
+    switch (modelId) {
+      case "gpt-4o-mini":
+        actualModel = "gpt-4o-mini";
+        break;
+      case "gpt-4":
+        actualModel = "gpt-4";
+        break;
+      case "gpt-3.5-turbo":
+        actualModel = "gpt-3.5-turbo";
+        break;
+      default:
+        // Fallback for backward compatibility
+        if (modelId.includes("gpt-4")) {
+          actualModel = "gpt-4o-mini"; // Free tier model
+        } else if (modelId.includes("gpt-3.5")) {
+          actualModel = "gpt-3.5-turbo";
+        }
+        break;
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -96,8 +111,24 @@ export async function sendToGemini(
     // Get only the latest user message for Gemini
     const latestMessage = messages[messages.length - 1];
 
-    // Use gemini-1.5-flash for free tier
-    const modelName = "gemini-1.5-flash";
+    // Map model IDs to actual Gemini model names
+    let modelName = "gemini-1.5-flash"; // Default to free tier
+    
+    switch (modelId) {
+      case "gemini-2.5-lite":
+        modelName = "gemini-1.5-flash"; // Map to available free model
+        break;
+      case "gemini-2.5-flash":
+        modelName = "gemini-1.5-flash";
+        break;
+      case "gemini-1.5-pro":
+        modelName = "gemini-1.5-pro";
+        break;
+      default:
+        // Fallback for backward compatibility
+        modelName = "gemini-1.5-flash";
+        break;
+    }
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
@@ -186,6 +217,25 @@ export async function sendToClaude(
   }
 
   try {
+    // Map model IDs to actual Claude model names
+    let actualModel = "claude-3-haiku-20240307"; // Default to free tier
+    
+    switch (modelId) {
+      case "claude-3-haiku":
+        actualModel = "claude-3-haiku-20240307";
+        break;
+      case "claude-3-sonnet":
+        actualModel = "claude-3-sonnet-20240229";
+        break;
+      case "claude-3-opus":
+        actualModel = "claude-3-opus-20240229";
+        break;
+      default:
+        // Fallback for backward compatibility
+        actualModel = "claude-3-haiku-20240307";
+        break;
+    }
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -194,7 +244,7 @@ export async function sendToClaude(
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-3-sonnet-20240229",
+        model: actualModel,
         max_tokens: 1000,
         messages: messages.filter((msg) => msg.role !== "system"),
         system: messages.find((msg) => msg.role === "system")?.content,
@@ -239,6 +289,22 @@ export async function sendToDeepseek(
   }
 
   try {
+    // Map model IDs to actual DeepSeek model names
+    let actualModel = "deepseek-chat"; // Default to free tier
+    
+    switch (modelId) {
+      case "deepseek-chat":
+        actualModel = "deepseek-chat";
+        break;
+      case "deepseek-coder":
+        actualModel = "deepseek-coder";
+        break;
+      default:
+        // Fallback for backward compatibility
+        actualModel = "deepseek-chat";
+        break;
+    }
+
     const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -246,7 +312,7 @@ export async function sendToDeepseek(
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        model: actualModel,
         messages: messages,
         max_tokens: 1000,
         temperature: 0.7,
@@ -255,7 +321,7 @@ export async function sendToDeepseek(
     });
 
     console.log("Deepseek API Request:", {
-      model: "deepseek-chat",
+      model: actualModel,
       messagesCount: messages.length,
       status: response.status,
     });
@@ -336,6 +402,22 @@ export async function sendToPerplexity(
       formattedMessages.pop();
     }
 
+    // Map model IDs to actual Perplexity model names
+    let actualModel = "sonar"; // Default to free tier
+    
+    switch (modelId) {
+      case "perplexity-sonar":
+        actualModel = "sonar";
+        break;
+      case "perplexity-sonar-pro":
+        actualModel = "sonar-pro";
+        break;
+      default:
+        // Fallback for backward compatibility
+        actualModel = "sonar";
+        break;
+    }
+
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
       headers: {
@@ -343,7 +425,7 @@ export async function sendToPerplexity(
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "sonar",
+        model: actualModel,
         messages: formattedMessages,
         max_tokens: 1000,
         temperature: 0.7,
@@ -352,7 +434,7 @@ export async function sendToPerplexity(
     });
 
     console.log("Perplexity API Request:", {
-      model: "sonar",
+      model: actualModel,
       messagesCount: messages.length,
       status: response.status,
     });

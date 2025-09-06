@@ -108,3 +108,38 @@ export function saveSidebarCollapsed(collapsed: boolean) {
     // Ignore localStorage errors
   }
 }
+
+// Panel variant storage utilities
+const PANEL_VARIANTS_KEY = 'chat-panel-variants';
+
+interface PanelVariants {
+  [modelId: string]: string; // variant ID
+}
+
+export function getPanelVariants(): PanelVariants {
+  try {
+    const stored = localStorage.getItem(PANEL_VARIANTS_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function savePanelVariant(modelId: string, variantId: string) {
+  try {
+    const variants = getPanelVariants();
+    variants[modelId] = variantId;
+    localStorage.setItem(PANEL_VARIANTS_KEY, JSON.stringify(variants));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+export function getPanelVariant(modelId: string): string | null {
+  try {
+    const variants = getPanelVariants();
+    return variants[modelId] || null;
+  } catch {
+    return null;
+  }
+}

@@ -18,6 +18,7 @@ import APIKeyDialog from "./APIKeyDialog";
 import { saveAPIKey } from "../utils/apiKeys";
 import ResizablePanel from "./ResizablePanel";
 import FormattedMessage from "./shared/FormattedMessage";
+import ModelVariantSelector from "./ModelVariantSelector";
 import {
   getPanelWidths,
   savePanelWidth,
@@ -25,7 +26,14 @@ import {
   savePanelCollapsed,
   getPanelEnabled,
   savePanelEnabled,
+  getPanelVariants,
+  savePanelVariant,
 } from "../utils/panelStorage";
+import {
+  getVariantsForModel,
+  getDefaultVariantForModel,
+  type ModelVariant,
+} from "../types/modelVariants";
 import Lottie from "lottie-react";
 import chatbotAnimation from "./shared/animation/chatbot.json";
 import perplexicityAniamtion from "./shared/animation/perplexcityAnimation.json";
@@ -53,6 +61,8 @@ interface ModelPanelProps {
   onToggleEnabled: () => void;
   showRightHandle?: boolean;
   isMobile?: boolean;
+  selectedVariant: ModelVariant;
+  onVariantChange: (variant: ModelVariant) => void;
 }
 
 function ModelPanel({
@@ -66,6 +76,8 @@ function ModelPanel({
   onToggleEnabled,
   showRightHandle = true,
   isMobile = false,
+  selectedVariant,
+  onVariantChange,
 }: ModelPanelProps) {
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
@@ -146,6 +158,7 @@ function ModelPanel({
                 display: "flex",
                 alignItems: "center",
                 gap: isMobile ? 1 : 2,
+                flex: 1,
               }}
             >
               <div style={{ marginTop: "4px" }}>{model.icon}</div>
@@ -156,11 +169,23 @@ function ModelPanel({
                   fontWeight: 600,
                   fontSize: isMobile ? "0.875rem" : "1rem",
                   opacity: isEnabled ? 1 : 0.5,
-                  flex: 1,
                 }}
               >
                 {model.displayName}
+                {/* Show selected variant if different from base model */}
               </Typography>
+
+              {/* Model Variant Selector - show on desktop, always visible but disabled without API key */}
+              {!isMobile && (
+                <ModelVariantSelector
+                  variants={getVariantsForModel(model.id)}
+                  selectedVariant={selectedVariant}
+                  onVariantSelect={onVariantChange}
+                  disabled={!hasApiKey || !isEnabled}
+                  size="small"
+                />
+              )}
+
               {/* Show toggle switch on mobile */}
               {isMobile && (
                 <Switch
@@ -480,6 +505,36 @@ export default function MultiPanelChatArea({
     return initial;
   });
 
+  // Model variants state - track selected variant for each panel
+  const [selectedVariants, setSelectedVariants] = useState<{
+    [modelId: string]: ModelVariant;
+  }>(() => {
+    const initial: { [modelId: string]: ModelVariant } = {};
+    const storedVariants = getPanelVariants();
+
+    enabledModels.forEach((model) => {
+      const storedVariantId = storedVariants[model.id];
+      let selectedVariant: ModelVariant | null = null;
+
+      if (storedVariantId) {
+        // Try to find the stored variant
+        const variants = getVariantsForModel(model.id);
+        selectedVariant =
+          variants.find((v) => v.id === storedVariantId) || null;
+      }
+
+      // Fall back to default if stored variant not found
+      if (!selectedVariant) {
+        selectedVariant = getDefaultVariantForModel(model.id);
+      }
+
+      if (selectedVariant) {
+        initial[model.id] = selectedVariant;
+      }
+    });
+    return initial;
+  });
+
   // Mobile panel selection state
   const [selectedMobilePanel, setSelectedMobilePanel] = useState(0);
 
@@ -488,20 +543,48 @@ export default function MultiPanelChatArea({
     const storedWidths = getPanelWidths();
     const storedCollapsed = getPanelCollapsed();
     const storedEnabled = getPanelEnabled();
+    const storedVariants = getPanelVariants();
 
     const newWidths: { [modelId: string]: number } = {};
     const newCollapsed: { [modelId: string]: boolean } = {};
     const newEnabled: { [modelId: string]: boolean } = {};
+    const newVariants: { [modelId: string]: ModelVariant } = {};
 
     enabledModels.forEach((model) => {
       newWidths[model.id] = storedWidths[model.id] || 380;
       newCollapsed[model.id] = storedCollapsed[model.id] || false;
       newEnabled[model.id] = storedEnabled[model.id] !== false; // Default enabled
+
+      // Initialize variant if not already set
+      const storedVariantId = storedVariants[model.id];
+      let selectedVariant: ModelVariant | null = null;
+
+      if (storedVariantId) {
+        const variants = getVariantsForModel(model.id);
+        selectedVariant =
+          variants.find((v) => v.id === storedVariantId) || null;
+      }
+
+      if (!selectedVariant) {
+        selectedVariant = getDefaultVariantForModel(model.id);
+      }
+
+      if (selectedVariant) {
+        newVariants[model.id] = selectedVariant;
+      }
     });
 
     setPanelWidths(newWidths);
     setPanelCollapsed(newCollapsed);
     setPanelEnabled(newEnabled);
+
+    // Only update variants for new models, preserve existing selections
+    setSelectedVariants((prev) => ({
+      ...prev,
+      ...Object.fromEntries(
+        Object.entries(newVariants).filter(([modelId]) => !prev[modelId])
+      ),
+    }));
   }, [enabledModels]);
 
   const handleWidthChange = (modelId: string, width: number) => {
@@ -536,6 +619,15 @@ export default function MultiPanelChatArea({
         [modelId]: newEnabled,
       };
     });
+  };
+
+  const handleVariantChange = (modelId: string, variant: ModelVariant) => {
+    setSelectedVariants((prev) => ({
+      ...prev,
+      [modelId]: variant,
+    }));
+    // Save to localStorage
+    savePanelVariant(modelId, variant.id);
   };
 
   return (
@@ -665,6 +757,13 @@ export default function MultiPanelChatArea({
                 onToggleEnabled={() => handleToggleEnabled(model.id)}
                 showRightHandle={!isMobile && index < enabledModels.length} // No handles on mobile, and don't show on last panel
                 isMobile={isMobile} // Pass mobile state
+                selectedVariant={
+                  selectedVariants[model.id] ||
+                  getDefaultVariantForModel(model.id)!
+                }
+                onVariantChange={(variant) =>
+                  handleVariantChange(model.id, variant)
+                }
               />
             );
           })

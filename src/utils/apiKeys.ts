@@ -1,4 +1,5 @@
 // API Key management utilities
+import { MODEL_VARIANTS } from '../types/modelVariants';
 
 export interface APIKey {
   modelId: string;
@@ -55,8 +56,34 @@ export const removeAPIKey = (modelId: string): void => {
 
 export const getAPIKeyForModel = (modelId: string): string | null => {
   const apiKeys = getStoredAPIKeys();
-  const apiKey = apiKeys.find(key => key.modelId === modelId);
-  return apiKey ? apiKey.key : null;
+  
+  // First try exact match (for base models)
+  let apiKey = apiKeys.find(key => key.modelId === modelId);
+  if (apiKey) {
+    return apiKey.key;
+  }
+  
+  // If no exact match, try to find the base model for this variant
+  const baseModelId = findBaseModelForVariant(modelId);
+  if (baseModelId) {
+    apiKey = apiKeys.find(key => key.modelId === baseModelId);
+    if (apiKey) {
+      return apiKey.key;
+    }
+  }
+  
+  return null;
+};
+
+// Helper function to find the base model ID for a variant
+const findBaseModelForVariant = (variantId: string): string | null => {
+  for (const modelWithVariants of MODEL_VARIANTS) {
+    const hasVariant = modelWithVariants.variants.some(variant => variant.id === variantId);
+    if (hasVariant) {
+      return modelWithVariants.baseModelId;
+    }
+  }
+  return null;
 };
 
 export const hasAPIKey = (modelId: string): boolean => {
