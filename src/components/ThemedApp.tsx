@@ -28,7 +28,8 @@ export default function ThemedApp() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/" element={<Navigate to="/" replace />} />
+            {/* Redirect any unknown routes to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
       </Router>

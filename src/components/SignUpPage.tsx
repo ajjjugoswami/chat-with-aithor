@@ -102,13 +102,13 @@ export default function SignUpPage() {
   // Handle Google credential response
   const handleCredentialResponse = useCallback((response: { credential: string }) => {
     signIn(response.credential);
-    navigate('/chat');
+    navigate('/');
   }, [signIn, navigate]);
 
   // Initialize Google Sign-In
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/chat');
+      navigate('/');
       return;
     }
 

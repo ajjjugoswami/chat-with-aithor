@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import {
   Header,
   HeroSection,
@@ -11,6 +14,21 @@ import {
 } from "./landing-page";
 
 export default function LandingPage() {
+  const { isAuthenticated, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If user is authenticated, redirect to chat
+    if (!loading && isAuthenticated) {
+      navigate('/chat');
+    }
+  }, [isAuthenticated, loading, navigate]);
+
+  // Don't render landing page if user is authenticated
+  if (isAuthenticated) {
+    return null;
+  }
+
   return (
     <Box
       sx={{
