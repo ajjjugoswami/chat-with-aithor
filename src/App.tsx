@@ -73,6 +73,14 @@ function App() {
       icon: <GeminiAi sx={{ fontSize: 20 }} />,
       color: "#4285f4",
     },
+     {
+      id: "perplexity-sonar",
+      name: "perplexity-sonar",
+      displayName: "Perplexity",
+      enabled: true,
+      icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
+      color: "#9c27b0",
+    },
     {
       id: "deepseek-chat",
       name: "deepseek-chat",
@@ -81,14 +89,7 @@ function App() {
       icon: <DeepseekIcon sx={{ fontSize: 20 }} />,
       color: "#1976d2",
     },
-    {
-      id: "perplexity-sonar",
-      name: "perplexity-sonar",
-      displayName: "Perplexity",
-      enabled: true,
-      icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
-      color: "#9c27b0",
-    },
+    
     {
       id: "claude-3-haiku",
       name: "claude-3-haiku",

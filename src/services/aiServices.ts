@@ -290,6 +290,103 @@ export async function sendToDeepseek(
   }
 }
 
+// Perplexity API Integration
+export async function sendToPerplexity(
+  messages: ChatMessage[],
+  modelId: string
+): Promise<AIResponse> {
+  const apiKey = getAPIKeyForModel(modelId);
+
+  if (!apiKey) {
+    return { success: false, error: "API key not found" };
+  }
+
+  try {
+    // Format messages to ensure proper alternating pattern for Perplexity
+    const formattedMessages: ChatMessage[] = [];
+    
+    // Add system messages first (if any)
+    const systemMessages = messages.filter(msg => msg.role === "system");
+    formattedMessages.push(...systemMessages);
+    
+    // Process user and assistant messages to ensure alternating pattern
+    const conversationMessages = messages.filter(msg => msg.role !== "system");
+    let lastRole: string | null = null;
+    
+    for (const message of conversationMessages) {
+      // Skip consecutive messages from the same role to maintain alternating pattern
+      if (message.role !== lastRole) {
+        formattedMessages.push(message);
+        lastRole = message.role;
+      } else if (message.role === "user") {
+        // If we have consecutive user messages, combine them
+        const lastMessage = formattedMessages[formattedMessages.length - 1];
+        if (lastMessage && lastMessage.role === "user") {
+          lastMessage.content += "\n\n" + message.content;
+        } else {
+          formattedMessages.push(message);
+        }
+      }
+    }
+    
+    // Ensure the conversation ends with a user message
+    const lastMessage = formattedMessages[formattedMessages.length - 1];
+    if (lastMessage && lastMessage.role === "assistant") {
+      // Remove the last assistant message if it's the final message
+      formattedMessages.pop();
+    }
+
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "sonar",
+        messages: formattedMessages,
+        max_tokens: 1000,
+        temperature: 0.7,
+        stream: false
+      }),
+    });
+
+    console.log("Perplexity API Request:", {
+      model: "sonar",
+      messagesCount: messages.length,
+      status: response.status,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Perplexity API Error:", errorData);
+      return {
+        success: false,
+        error: `Perplexity Error: ${
+          errorData.error?.message ||
+          `HTTP ${response.status}: ${response.statusText}`
+        }`,
+      };
+    }
+
+    const data = await response.json();
+    console.log("Perplexity API Response:", data);
+    const assistantMessage = data.choices?.[0]?.message?.content;
+
+    if (!assistantMessage) {
+      return { success: false, error: "No response from Perplexity" };
+    }
+
+    return { success: true, message: assistantMessage };
+  } catch (error) {
+    console.error("Perplexity API Error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 // Main function to route messages to appropriate AI service
 export async function sendToAI(
   messages: ChatMessage[],
@@ -306,6 +403,8 @@ export async function sendToAI(
     return sendToClaude(messages, modelId);
   } else if (modelId.includes("deepseek") || modelId.includes("Deepseek")) {
     return sendToDeepseek(messages, modelId);
+  } else if (modelId.includes("perplexity") || modelId.includes("sonar")) {
+    return sendToPerplexity(messages, modelId);
   } else {
     return { success: false, error: `Unsupported AI model: ${modelId}` };
   }
