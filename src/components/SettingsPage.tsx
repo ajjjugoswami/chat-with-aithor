@@ -2,17 +2,12 @@ import {
   Box,
   Typography,
   Switch,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Avatar,
-  Divider,
-  Paper,
   IconButton,
   Chip,
+  Card,
+  CardContent,
 } from "@mui/material";
-import { ArrowBack, Key, Edit, Delete } from "@mui/icons-material";
+import { ArrowLeft, Zap, Key, Edit, Trash2, Wifi } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { getAllAPIKeys, removeAPIKey, saveAPIKey, getAPIKeyForModel } from "../utils/apiKeys";
@@ -65,221 +60,354 @@ export default function SettingsPage({
     <Box
       sx={{
         height: "100%",
-        bgcolor: mode === 'light' ? '#ffffff' : "#1a1a1a",
-        color: mode === 'light' ? '#333' : "white",
+        bgcolor: mode === 'light' ? '#ffffff' : "#121212",
+        color: mode === 'light' ? '#1a1a1a' : "white",
         overflow: "auto",
         p: 3,
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         {onBack && (
           <IconButton
             onClick={onBack}
             sx={{
-              color: mode === 'light' ? '#333' : "white",
+              color: mode === 'light' ? '#1a1a1a' : "white",
               mr: 2,
-              "&:hover": { bgcolor: mode === 'light' ? '#f0f0f0' : "#333" },
+              "&:hover": { bgcolor: mode === 'light' ? '#f3f4f6' : "#1a1a1a" },
+              p: 1,
             }}
           >
-            <ArrowBack />
+            <ArrowLeft size={20} />
           </IconButton>
         )}
-        <Typography variant="h4" sx={{ fontWeight: 600 }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: mode === 'light' ? '#1a1a1a' : "white" }}>
           Settings
         </Typography>
       </Box>
 
       {/* AI Models Section */}
-      <Paper
-        sx={{
-          bgcolor: mode === 'light' ? '#f8f9fa' : "#2a2a2a",
-          border: mode === 'light' ? "1px solid #e0e0e0" : "1px solid #404040",
-          borderRadius: 2,
-          mb: 3,
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: mode === 'light' ? '#333' : "white" }}>
+      <Box sx={{ mb: 5 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Box
+            sx={{
+              width: 20,
+              height: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mr: 2,
+            }}
+          >
+            <Zap size={16} color="#8b5cf6" />
+          </Box>
+          <Typography variant="h6" sx={{ color: mode === 'light' ? '#1a1a1a' : "white", fontWeight: 600, fontSize: "1.1rem" }}>
             AI Models
           </Typography>
-          <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : "#888", mb: 3 }}>
-            Enable or disable AI models that will appear in your chat dashboard.
-          </Typography>
-
-          <List>
-            {models.map((model, index) => (
-              <Box key={model.id}>
-                <ListItem
-                  sx={{
-                    py: 2,
-                    borderRadius: 1,
-                    "&:hover": { bgcolor: mode === 'light' ? '#f0f0f0' : "#333" },
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      marginRight: 20,
-                    }}
-                  >
-                    {model.icon}
-                  </div>
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ color: mode === 'light' ? '#333' : "white", fontWeight: 500 }}
-                      >
-                        {model.displayName}
-                      </Typography>
-                    }
-                    secondary={
-                      <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : "#888" }}>
-                        {model.name} - {model.enabled ? "Active" : "Inactive"}
-                      </Typography>
-                    }
-                  />
-                  <ListItemSecondaryAction>
-                    <Switch
-                      checked={model.enabled}
-                      onChange={() => onModelToggle(model.id)}
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: model.color,
-                        },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: model.color,
-                          },
-                        "& .MuiSwitch-track": {
-                          backgroundColor: "#666",
-                        },
-                      }}
-                    />
-                  </ListItemSecondaryAction>
-                </ListItem>
-                {index < models.length - 1 && (
-                  <Divider sx={{ bgcolor: "#404040", mx: 2 }} />
-                )}
-              </Box>
-            ))}
-          </List>
         </Box>
-      </Paper>
+        <Typography variant="body2" sx={{ color: mode === 'light' ? '#6b7280' : "#9ca3af", mb: 3, fontSize: "0.9rem" }}>
+          Enable or disable AI models that will appear in your chat dashboard.
+        </Typography>
 
-      {/* API Keys Section */}
-      <Paper
-        sx={{
-          bgcolor: mode === 'light' ? '#f8f9fa' : "#2a2a2a",
-          border: mode === 'light' ? "1px solid #e0e0e0" : "1px solid #404040",
-          borderRadius: 2,
-          mb: 3,
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: mode === 'light' ? '#333' : "white" }}>
-            API Keys
-          </Typography>
-          <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : "#888", mb: 3 }}>
-            Manage your API keys for different AI models. Only models with API
-            keys will respond to your messages.
-          </Typography>
-
-          <List>
-            {models.map((model, index) => {
-              const modelApiKey = apiKeys.find(
-                (key) => key.modelId === model.id
-              );
-              return (
-                <Box key={model.id}>
-                  <ListItem
-                    sx={{
-                      py: 2,
-                      borderRadius: 1,
-                      "&:hover": { bgcolor: mode === 'light' ? '#f0f0f0' : "#333" },
-                    }}
-                  >
-                    <Avatar
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" },
+            gap: 2,
+          }}
+        >
+          {models.map((model) => (
+            <Box
+              key={model.id}
+              sx={{
+                borderRadius: 3,
+                padding: '1px',
+                background: mode === 'light'
+                  ? 'linear-gradient(135deg, #e5e7eb, #d1d5db, #f3f4f6) padding-box, linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899) border-box'
+                  : 'linear-gradient(135deg, #1e1e1e, #121212, #1a1a1a) padding-box, linear-gradient(135deg, #667eea, #764ba2, #667eea) border-box',
+                border: '1px solid transparent',
+                position: 'relative',
+                overflow: 'visible',
+              }}
+            >
+              <Card
+                sx={{
+                  bgcolor: mode === 'light' ? '#ffffff' : "#0e0e0e",
+                  border: 'none',
+                  borderRadius: 3,
+                  position: "relative",
+                  overflow: "visible",
+                  minHeight: 140,
+                  boxShadow: mode === 'light' 
+                    ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    : '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                <CardContent sx={{ p: 2.5 }}>
+                  <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+                    <Box
                       sx={{
                         width: 40,
                         height: 40,
-                        bgcolor: model.color,
+                        borderRadius: 2,
+                        borderColor: model.color || "#4c1d95",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         mr: 2,
+                        flexShrink: 0,
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                       }}
                     >
-                      <Key />
-                    </Avatar>
-                    <ListItemText
-                      primary={
+                      {model.icon}
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography 
+                        variant="subtitle1" 
+                        sx={{ 
+                          color: mode === 'light' ? '#1a1a1a' : "white", 
+                          fontWeight: 600,
+                          fontSize: "1rem",
+                          mb: 0.5,
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {model.displayName}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: mode === 'light' ? '#6b7280' : "#9ca3af",
+                          fontSize: "0.8rem",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {model.name}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 2 }}>
+                    <Chip
+                      label={model.enabled ? "Active" : "Inactive"}
+                      size="small"
+                      sx={{
+                        bgcolor: model.enabled 
+                          ? (mode === 'light' ? "#dcfce7" : "#064e3b")
+                          : (mode === 'light' ? "#f3f4f6" : "#374151"),
+                        color: model.enabled 
+                          ? (mode === 'light' ? "#15803d" : "#10b981")
+                          : (mode === 'light' ? "#6b7280" : "#9ca3af"),
+                        fontSize: "0.7rem",
+                        fontWeight: 500,
+                        height: 20,
+                        borderRadius: 2,
+                        "& .MuiChip-label": {
+                          px: 1,
+                        },
+                      }}
+                    />
+                    <Switch
+                      checked={model.enabled}
+                      onChange={() => onModelToggle(model.id)}
+                      size="small"
+                    />
+                  </Box>
+                </CardContent>
+                
+                {/* Connection indicator - just wifi icon */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                  }}
+                >
+                  <Wifi size={14} color="#10b981" />
+                </Box>
+              </Card>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      {/* API Keys Section */}
+      <Box>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Box
+            sx={{
+              width: 20,
+              height: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mr: 2,
+            }}
+          >
+            <Key size={16} color="#8b5cf6" />
+          </Box>
+          <Typography variant="h6" sx={{ color: mode === 'light' ? '#1a1a1a' : "white", fontWeight: 600, fontSize: "1.1rem" }}>
+            API Keys
+          </Typography>
+        </Box>
+        <Typography variant="body2" sx={{ color: mode === 'light' ? '#6b7280' : "#9ca3af", mb: 3, fontSize: "0.9rem" }}>
+          Manage your API keys for different AI models. Only models with API keys will respond to your messages.
+        </Typography>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" },
+            gap: 2,
+          }}
+        >
+          {models.map((model) => {
+            const modelApiKey = apiKeys.find((key) => key.modelId === model.id);
+            return (
+              <Box
+                key={model.id}
+                sx={{
+                  borderRadius: 3,
+                  padding: '1px',
+                  background: mode === 'light'
+                    ? 'linear-gradient(135deg, #e5e7eb, #d1d5db, #f3f4f6) padding-box, linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899) border-box'
+                    : 'linear-gradient(135deg, #1e1e1e, #121212, #1a1a1a) padding-box, linear-gradient(135deg, #667eea, #764ba2, #667eea) border-box',
+                  border: '1px solid transparent',
+                  position: 'relative',
+                  overflow: 'visible',
+                }}
+              >
+                <Card
+                  sx={{
+                    bgcolor: mode === 'light' ? '#ffffff' : "#0e0e0e",
+                    border: 'none',
+                    borderRadius: 3,
+                    position: "relative",
+                    overflow: "visible",
+                    minHeight: 100,
+                    boxShadow: mode === 'light' 
+                      ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                      : '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
                         <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 2,
+                            borderColor: model.color || "#4c1d95",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mr: 2,
+                            flexShrink: 0,
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                          }}
                         >
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ color: mode === 'light' ? '#333' : "#fff", fontWeight: 500 }}
-                          >
-                            {model.displayName}
-                          </Typography>
-                          {modelApiKey && (
-                            <Chip
-                              label="Configured"
-                              size="small"
-                              sx={{
-                                bgcolor: model.color,
-                                color: mode === 'light' ? '#fff' : "#fff",
-                                fontSize: "0.7rem",
+                          {model.icon}
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+                            <Typography 
+                              variant="subtitle1" 
+                              sx={{ 
+                                color: mode === 'light' ? '#1a1a1a' : "white", 
+                                fontWeight: 600,
+                                fontSize: "1rem",
+                                lineHeight: 1.2,
                               }}
-                            />
+                            >
+                              {model.displayName}
+                            </Typography>
+                            {modelApiKey && (
+                              <Chip
+                                label="Configured"
+                                size="small"
+                                sx={{
+                                  bgcolor: mode === 'light' ? "#dcfce7" : "#064e3b",
+                                  color: mode === 'light' ? "#15803d" : "#10b981",
+                                  fontSize: "0.7rem",
+                                  fontWeight: 500,
+                                  height: 18,
+                                  borderRadius: 2,
+                                  "& .MuiChip-label": {
+                                    px: 1,
+                                  },
+                                }}
+                              />
+                            )}
+                          </Box>
+                          {modelApiKey ? (
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: mode === 'light' ? '#6b7280' : "#9ca3af",
+                                fontSize: "0.8rem",
+                                lineHeight: 1.2,
+                              }}
+                            >
+                              Added on {new Date(modelApiKey.addedAt).toLocaleDateString()}
+                            </Typography>
+                          ) : (
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: mode === 'light' ? '#6b7280' : "#9ca3af",
+                                fontSize: "0.8rem",
+                                lineHeight: 1.2,
+                              }}
+                            >
+                              No API key configured
+                            </Typography>
                           )}
                         </Box>
-                      }
-                      secondary={
-                        <Typography variant="body2" sx={{ color: "#888" }}>
-                          {modelApiKey
-                            ? `Added on ${new Date(
-                                modelApiKey.addedAt
-                              ).toLocaleDateString()}`
-                            : "No API key configured"}
-                        </Typography>
-                      }
-                    />
-                    <ListItemSecondaryAction>
-                      <Box sx={{ display: "flex", gap: 1 }}>
+                      </Box>
+                      
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <IconButton
                           onClick={() => handleEditAPIKey(model)}
                           sx={{
-                            color: model.color,
-                            "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                            color: mode === 'light' ? '#6b7280' : "#6b7280",
+                            "&:hover": { 
+                              bgcolor: mode === 'light' ? 'rgba(107, 114, 128, 0.1)' : "rgba(156, 163, 175, 0.1)",
+                              color: mode === 'light' ? '#374151' : "#9ca3af",
+                            },
+                            width: 32,
+                            height: 32,
+                            p: 0.5,
                           }}
                         >
-                          <Edit />
+                          <Edit size={14} />
                         </IconButton>
                         {modelApiKey && (
                           <IconButton
                             onClick={() => handleRemoveAPIKey(model.id)}
                             sx={{
-                              color: "#f44336",
-                              "&:hover": { bgcolor: "rgba(244,67,54,0.1)" },
+                              color: mode === 'light' ? '#6b7280' : "#6b7280",
+                              "&:hover": { 
+                                bgcolor: "rgba(239, 68, 68, 0.1)",
+                                color: "#ef4444",
+                              },
+                              width: 32,
+                              height: 32,
+                              p: 0.5,
                             }}
                           >
-                            <Delete />
+                            <Trash2 size={14} />
                           </IconButton>
                         )}
                       </Box>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  {index < models.length - 1 && (
-                    <Divider sx={{ bgcolor: "#404040", mx: 2 }} />
-                  )}
-                </Box>
-              );
-            })}
-          </List>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Box>
+            );
+          })}
         </Box>
-      </Paper>
+      </Box>
 
-     
       {/* API Key Dialog */}
       {selectedModel && (
         <APIKeyDialog

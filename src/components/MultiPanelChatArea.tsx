@@ -194,11 +194,7 @@ function ModelPanel({
                       "& .MuiSwitch-thumb": {
                         backgroundColor: isEnabled ? model.color : "#ccc",
                       },
-                      "& .MuiSwitch-track": {
-                        backgroundColor: isEnabled
-                          ? `${model.color}40`
-                          : "#e0e0e0",
-                      },
+                      
                     }}
                   />
                 }
