@@ -85,47 +85,7 @@ export const getTheme = (mode: "light" | "dark") =>
       },
     },
     components: {
-      // Global scrollbar styling
-      MuiCssBaseline: {
-        styleOverrides: {
-          "*": {
-            "&::-webkit-scrollbar": {
-              width: "8px",
-              height: "8px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background:
-                mode === "light"
-                  ? "rgba(0, 0, 0, 0.05)"
-                  : "rgba(255, 255, 255, 0.05)",
-              borderRadius: "10px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background:
-                mode === "light"
-                  ? "linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.6) 100%)"
-                  : "linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%)",
-              borderRadius: "10px",
-              border:
-                mode === "light"
-                  ? "1px solid rgba(255, 255, 255, 0.2)"
-                  : "1px solid rgba(0, 0, 0, 0.2)",
-              "&:hover": {
-                background:
-                  mode === "light"
-                    ? "linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%)"
-                    : "linear-gradient(135deg, rgba(102, 126, 234, 1) 0%, rgba(118, 75, 162, 1) 100%)",
-              },
-            },
-            "&::-webkit-scrollbar-corner": {
-              background:
-                mode === "light"
-                  ? "rgba(0, 0, 0, 0.05)"
-                  : "rgba(255, 255, 255, 0.05)",
-            },
-          },
-        },
-      },
+      
       MuiButton: {
         styleOverrides: {
           outlined: {
