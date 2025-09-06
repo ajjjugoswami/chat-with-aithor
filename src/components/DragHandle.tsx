@@ -40,10 +40,6 @@ export default function DragHandle({ onMouseDown, position, isVisible = true }: 
             bgcolor: '#007aff',
           },
         },
-        '&:hover .drag-icon': {
-          opacity: 1,
-          color: '#007aff',
-        },
         '&:active': {
           bgcolor: 'rgba(0, 122, 255, 0.3)',
         },
@@ -54,9 +50,12 @@ export default function DragHandle({ onMouseDown, position, isVisible = true }: 
         sx={{
           color: '#666',
           fontSize: 14,
-          opacity: 0,
-          transition: 'all 0.2s ease',
+          opacity: 1, // 👈 always visible
+          transition: 'color 0.2s ease',
           transform: 'rotate(90deg)',
+          '&:hover': {
+            color: '#007aff',
+          },
         }}
       />
     </Box>

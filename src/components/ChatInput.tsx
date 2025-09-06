@@ -6,21 +6,50 @@ import {
   Chip,
   Typography,
   Tooltip,
-  useMediaQuery
+  useMediaQuery,
+  Dialog,
+  DialogContent,
+  CircularProgress,
 } from '@mui/material';
 import { 
   Send, 
   AttachFile, 
   Image,
   Mic,
+  MicOff,
   Close,
   InsertDriveFile,
   PictureAsPdf,
   Description,
   Code
 } from '@mui/icons-material';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTheme } from '../hooks/useTheme';
+
+declare global {
+  interface Window {
+    webkitSpeechRecognition: new () => SpeechRecognition;
+    SpeechRecognition: new () => SpeechRecognition;
+  }
+}
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onerror: (event: Event) => void;
+  onend: () => void;
+  onstart: () => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+}
 
 interface UploadedFile {
   id: string;
@@ -41,8 +70,108 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      
+      if (recognitionRef.current) {
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
+        recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onstart = () => {
+          setIsListening(true);
+        };
+
+        recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+          let finalTranscript = '';
+          let interimTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          if (finalTranscript) {
+            setMessage(prev => prev + finalTranscript);
+            setVoiceTranscript('');
+          } else {
+            setVoiceTranscript(interimTranscript);
+          }
+        };
+
+        recognitionRef.current.onerror = (event: Event) => {
+          console.error('Speech recognition error:', event);
+          setIsRecording(false);
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+          setIsRecording(false);
+          setVoiceTranscript('');
+        };
+      }
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
+
+  const startVoiceRecording = useCallback(() => {
+    if (recognitionRef.current && !isRecording) {
+      setIsRecording(true);
+      recognitionRef.current.start();
+    }
+  }, [isRecording]);
+
+  const stopVoiceRecording = useCallback(() => {
+    if (recognitionRef.current && isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [isRecording]);
+
+  const toggleVoiceRecording = useCallback(() => {
+    if (isRecording) {
+      stopVoiceRecording();
+    } else {
+      startVoiceRecording();
+    }
+  }, [isRecording, stopVoiceRecording, startVoiceRecording]);
+
+  // Global ESC key handler for voice recording
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isRecording) {
+        stopVoiceRecording();
+      }
+    };
+
+    if (isRecording) {
+      window.addEventListener('keydown', handleEscKey);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isRecording, stopVoiceRecording]);
 
   const getFileType = (file: File): UploadedFile['type'] => {
     if (file.type.startsWith('image/')) return 'image';
@@ -123,6 +252,10 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+    // Close voice recording on Escape
+    if (e.key === 'Escape' && isRecording) {
+      stopVoiceRecording();
     }
   };
 
@@ -321,10 +454,10 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
           multiline
           maxRows={6}
           placeholder={selectedModel ? `Ask ${selectedModel}...` : "Ask me anything..."}
-          value={message}
+          value={message + (isRecording && voiceTranscript ? ` ${voiceTranscript}` : '')}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          disabled={disabled}
+          disabled={disabled || isRecording}
           variant="standard"
           InputProps={{
             disableUnderline: true,
@@ -368,30 +501,51 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
           gap: 0.75, 
           alignItems: 'center', // Better alignment
         }}>
-          <Tooltip title="Voice Input">
+          <Tooltip title={isRecording ? "Stop Recording" : "Voice Input"}>
             <IconButton
               size="small"
+              onClick={toggleVoiceRecording}
               sx={{ 
-                color: mode === 'light' ? '#666' : '#999',
-                background: mode === 'light' 
-                  ? 'rgba(0,0,0,0.03)' 
-                  : 'rgba(255,255,255,0.05)',
+                color: isRecording 
+                  ? '#ff4444' 
+                  : (mode === 'light' ? '#666' : '#999'),
+                background: isRecording
+                  ? 'rgba(255, 68, 68, 0.1)'
+                  : (mode === 'light' 
+                    ? 'rgba(0,0,0,0.03)' 
+                    : 'rgba(255,255,255,0.05)'),
                 backdropFilter: 'blur(10px)',
-                border: mode === 'light' 
-                  ? '1px solid rgba(0,0,0,0.1)' 
-                  : '1px solid rgba(255,255,255,0.1)',
+                border: isRecording
+                  ? '1px solid rgba(255, 68, 68, 0.3)'
+                  : (mode === 'light' 
+                    ? '1px solid rgba(0,0,0,0.1)' 
+                    : '1px solid rgba(255,255,255,0.1)'),
                 transition: 'all 0.3s ease',
                 width: 36, // Consistent size
                 height: 36,
+                animation: isRecording ? 'pulse 1.5s infinite' : 'none',
                 '&:hover': { 
-                  color: mode === 'light' ? '#333' : '#fff', 
-                  background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
+                  color: isRecording ? '#ff6666' : (mode === 'light' ? '#333' : '#fff'), 
+                  background: isRecording
+                    ? 'rgba(255, 68, 68, 0.2)'
+                    : 'linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                  boxShadow: isRecording
+                    ? '0 4px 12px rgba(255, 68, 68, 0.4)'
+                    : '0 4px 12px rgba(102, 126, 234, 0.3)',
+                },
+                '@keyframes pulse': {
+                  '0%': { transform: 'scale(1)' },
+                  '50%': { transform: 'scale(1.1)' },
+                  '100%': { transform: 'scale(1)' },
                 },
               }}
             >
-              <Mic sx={{ fontSize: '1.1rem' }} />
+              {isRecording ? (
+                <MicOff sx={{ fontSize: '1.1rem' }} />
+              ) : (
+                <Mic sx={{ fontSize: '1.1rem' }} />
+              )}
             </IconButton>
           </Tooltip>
           
@@ -433,6 +587,119 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
           </Tooltip>
         </Box>
       </Paper>
+
+      {/* Voice Recording Dialog */}
+      <Dialog
+        open={isRecording}
+        onClose={stopVoiceRecording}
+        PaperProps={{
+          sx: {
+            bgcolor: mode === 'light' ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: 3,
+            border: mode === 'light' 
+              ? '1px solid rgba(0,0,0,0.1)' 
+              : '1px solid rgba(255,255,255,0.1)',
+            minWidth: 300,
+            maxWidth: 400,
+            position: 'relative',
+          }
+        }}
+      >
+        {/* Close button */}
+        <IconButton
+          onClick={stopVoiceRecording}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: mode === 'light' ? '#666' : '#999',
+            zIndex: 1,
+            background: mode === 'light' 
+              ? 'rgba(0,0,0,0.05)' 
+              : 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(10px)',
+            '&:hover': {
+              background: mode === 'light' 
+                ? 'rgba(0,0,0,0.1)' 
+                : 'rgba(255,255,255,0.1)',
+              color: mode === 'light' ? '#333' : '#fff',
+            },
+          }}
+        >
+          <Close sx={{ fontSize: '1.2rem' }} />
+        </IconButton>
+        
+        <DialogContent sx={{ textAlign: 'center', p: 4 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ position: 'relative' }}>
+              <CircularProgress
+                size={80}
+                sx={{
+                  color: '#ff4444',
+                  animation: 'pulse 1.5s infinite',
+                  '@keyframes pulse': {
+                    '0%': { opacity: 0.6, transform: 'scale(1)' },
+                    '50%': { opacity: 1, transform: 'scale(1.1)' },
+                    '100%': { opacity: 0.6, transform: 'scale(1)' },
+                  },
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  color: '#ff4444',
+                }}
+              >
+                <Mic sx={{ fontSize: '2rem' }} />
+              </Box>
+            </Box>
+            
+            <Typography variant="h6" sx={{ color: mode === 'light' ? '#333' : '#fff' }}>
+              {isListening ? 'Listening...' : 'Starting...'}
+            </Typography>
+            
+            {voiceTranscript && (
+              <Box
+                sx={{
+                  bgcolor: mode === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)',
+                  borderRadius: 2,
+                  p: 2,
+                  maxWidth: '100%',
+                  border: mode === 'light' 
+                    ? '1px solid rgba(0,0,0,0.1)' 
+                    : '1px solid rgba(255,255,255,0.1)',
+                }}
+              >
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: mode === 'light' ? '#666' : '#999',
+                    fontStyle: 'italic',
+                    minHeight: '1.5em'
+                  }}
+                >
+                  {voiceTranscript || 'Say something...'}
+                </Typography>
+              </Box>
+            )}
+            
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: mode === 'light' ? '#666' : '#888',
+                textAlign: 'center'
+              }}
+            >
+              Click the X or microphone button to stop recording
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
       </Box>
     </Box>
   );

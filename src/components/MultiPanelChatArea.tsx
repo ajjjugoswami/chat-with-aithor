@@ -386,7 +386,7 @@ function ModelPanel({
   return (
     <ResizablePanel
       initialWidth={width}
-      minWidth={300}
+      minWidth={410}
       maxWidth={1000}
       isCollapsed={isCollapsed}
       onToggleCollapse={onToggleCollapse}
