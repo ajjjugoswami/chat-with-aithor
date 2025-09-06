@@ -234,7 +234,7 @@ export default function Sidebar({
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
             color: "white",
             borderRadius: "10px",
-            py: 1,
+            py: 0.8,
             px: 3,
             fontWeight: 600,
             textTransform: "none",
