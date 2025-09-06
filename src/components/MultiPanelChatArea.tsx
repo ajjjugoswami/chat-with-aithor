@@ -27,6 +27,7 @@ interface Message {
   sender: "user" | "ai";
   timestamp: Date;
   modelId?: string;
+  enabledPanels?: string[]; // Track which panels were enabled when this message was sent
 }
 
 interface ModelPanelProps {
@@ -62,16 +63,33 @@ function ModelPanel({
 
   // Filter messages and handle panel enabled state
   const filteredMessages = useMemo(() => {
-    const modelMessages = messages.filter(
-      (msg) => msg.sender === "user" || msg.modelId === model.id
-    );
+    // Don't show any messages if panel is disabled
+    if (!isEnabled) {
+      return [];
+    }
+
+    const modelMessages = messages.filter((msg) => {
+      // For AI messages, only show if they belong to this model
+      if (msg.sender === "ai") {
+        return msg.modelId === model.id;
+      }
+      
+      // For user messages, only show if this panel was enabled when the message was sent
+      if (msg.sender === "user") {
+        // If enabledPanels is not set (backward compatibility), show all user messages
+        if (!msg.enabledPanels) {
+          return true;
+        }
+        // Only show user message if this panel was enabled when it was sent
+        return msg.enabledPanels.includes(model.id);
+      }
+      
+      return false;
+    });
     
     console.log(`Panel ${model.displayName} - isEnabled: ${isEnabled}, modelMessages: ${modelMessages.length}`);
-    
-    // Don't show any messages if panel is disabled
-    const result = isEnabled ? modelMessages : [];
-    console.log(`Panel ${model.displayName} - filteredMessages: ${result.length}`);
-    return result;
+    console.log(`Panel ${model.displayName} - filteredMessages: ${modelMessages.length}`);
+    return modelMessages;
   }, [messages, model.id, isEnabled, model.displayName]);
 
   // Scroll to bottom when messages change (new messages or chat selection)

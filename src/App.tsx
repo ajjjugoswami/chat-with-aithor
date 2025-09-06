@@ -31,6 +31,7 @@ interface Message {
   sender: "user" | "ai";
   timestamp: Date;
   modelId?: string;
+  enabledPanels?: string[]; // Track which panels were enabled when this message was sent
 }
 
 interface Chat {
@@ -162,11 +163,18 @@ function App() {
 
     const enabledModels = aiModels.filter((m) => m.enabled && hasAPIKey(m.id));
 
+    // Get currently enabled panel states
+    const currentPanelStates = getPanelEnabled();
+    const currentlyEnabledPanels = enabledModels
+      .filter(model => currentPanelStates[model.id] !== false)
+      .map(model => model.id);
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
       sender: "user",
       timestamp: new Date(),
+      enabledPanels: currentlyEnabledPanels, // Track which panels were enabled
     };
 
     // Add user message immediately

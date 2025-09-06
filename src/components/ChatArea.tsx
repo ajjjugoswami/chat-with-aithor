@@ -9,6 +9,8 @@ interface Message {
   content: string;
   sender: "user" | "ai";
   timestamp: Date;
+  modelId?: string;
+  enabledPanels?: string[];
 }
 
 interface ChatAreaProps {

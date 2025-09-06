@@ -5,6 +5,7 @@ export interface StoredMessage {
   sender: 'user' | 'ai';
   timestamp: string; // Store as string for JSON serialization
   modelId?: string;
+  enabledPanels?: string[]; // Track which panels were enabled when this message was sent
 }
 
 export interface StoredChat {
@@ -24,6 +25,7 @@ export interface Chat {
     sender: 'user' | 'ai';
     timestamp: Date;
     modelId?: string;
+    enabledPanels?: string[]; // Track which panels were enabled when this message was sent
   }[];
 }
 
