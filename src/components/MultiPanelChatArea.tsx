@@ -149,8 +149,7 @@ function ModelPanel({
           zIndex: 10,
           justifyContent: isCollapsed ? "center" : "space-between",
           backdropFilter: "blur(10px)",
-          borderRadius: "12px 12px 0 0",
-          boxShadow: mode === "light"
+           boxShadow: mode === "light"
             ? "0 2px 8px rgba(0, 0, 0, 0.04)"
             : "0 2px 8px rgba(0, 0, 0, 0.2)",
         }}
@@ -196,12 +195,12 @@ function ModelPanel({
                     checked={isEnabled}
                     onChange={onToggleEnabled}
                     size="small"
-                    sx={{
-                      "& .MuiSwitch-thumb": {
-                        backgroundColor: isEnabled ? model.color : "#ccc",
-                      },
+                    // sx={{
+                    //   "& .MuiSwitch-thumb": {
+                    //     backgroundColor: isEnabled ? model.color : "#ccc",
+                    //   },
                       
-                    }}
+                    // }}
                   />
                 }
                 label=""
