@@ -9,6 +9,7 @@ import { useState } from 'react';
 import 'highlight.js/styles/vs2015.css'; // Dark theme for code highlighting
 import './message-styles.css'; // Custom message styles
 import { useTheme } from '../../hooks/useTheme';
+import TypewriterMessage from './TypewriterMessage';
 
 interface FormattedMessageProps {
   content: string;
@@ -16,6 +17,7 @@ interface FormattedMessageProps {
   modelColor?: string;
   timestamp?: Date;
   isTyping?: boolean;
+  enableTypewriter?: boolean;
 }
 
 export default function FormattedMessage({ 
@@ -23,7 +25,8 @@ export default function FormattedMessage({
   isUser = false, 
   modelColor,
   timestamp,
-  isTyping = false 
+  isTyping = false,
+  enableTypewriter = false
 }: FormattedMessageProps) {
   const { mode } = useTheme();
   const isMobile = useMediaQuery('(max-width: 640px)');
@@ -471,92 +474,101 @@ export default function FormattedMessage({
           </IconButton>
         </Box>
         <Box className="markdown-content">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight, rehypeRaw]}
-            components={{
-              pre: ({ children, ...props }) => {
-                return (
-                  <Box sx={{ position: 'relative' }}>
-                    <pre {...props} style={{ padding: '12px' }}>
-                      {children}
-                    </pre>
-                  </Box>
-                );
-              },
-              code: ({ children, className, ...props }) => {
-                const isInline = !className;
-                const language = className?.replace('language-', '') || '';
-                const codeContent = typeof children === 'string' ? children : String(children);
-                const blockIndex = Math.random();
+          {enableTypewriter ? (
+            <TypewriterMessage
+              content={content}
+              speed={25}
+              isUser={false}
+              modelColor={modelColor}
+            />
+          ) : (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeHighlight, rehypeRaw]}
+              components={{
+                pre: ({ children, ...props }) => {
+                  return (
+                    <Box sx={{ position: 'relative' }}>
+                      <pre {...props} style={{ padding: '12px' }}>
+                        {children}
+                      </pre>
+                    </Box>
+                  );
+                },
+                code: ({ children, className, ...props }) => {
+                  const isInline = !className;
+                  const language = className?.replace('language-', '') || '';
+                  const codeContent = typeof children === 'string' ? children : String(children);
+                  const blockIndex = Math.random();
 
-                if (isInline) {
-                  return <code {...props}>{children}</code>;
-                }
+                  if (isInline) {
+                    return <code {...props}>{children}</code>;
+                  }
 
-                return (
-                  <Box sx={{ position: 'relative' }}>
-                    {language && (
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          right: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1,
-                          p: 1,
-                          backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                          borderBottomLeftRadius: '4px',
-                          zIndex: 1,
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
+                  return (
+                    <Box sx={{ position: 'relative' }}>
+                      {language && (
+                        <Box
                           sx={{
-                            color: '#888',
-                            fontSize: '11px',
-                            textTransform: 'uppercase',
-                            fontWeight: 'bold',
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            p: 1,
+                            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                            borderBottomLeftRadius: '4px',
+                            zIndex: 1,
                           }}
                         >
-                          {language}
-                        </Typography>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleCopyCode(codeContent, blockIndex)}
-                          sx={{
-                            color: mode === 'light' ? '#666' : '#888',
-                            bgcolor: mode === 'light' 
-                              ? 'rgba(255, 255, 255, 0.8)' 
-                              : 'rgba(0, 0, 0, 0.5)',
-                            '&:hover': { 
-                              color: mode === 'light' ? '#333' : 'white',
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: '#888',
+                              fontSize: '11px',
+                              textTransform: 'uppercase',
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            {language}
+                          </Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleCopyCode(codeContent, blockIndex)}
+                            sx={{
+                              color: mode === 'light' ? '#666' : '#888',
                               bgcolor: mode === 'light' 
-                                ? 'rgba(255, 255, 255, 1)' 
-                                : 'rgba(0, 0, 0, 0.8)',
-                            },
-                            p: 0.5,
-                          }}
-                        >
-                          {copiedBlocks.has(blockIndex) ? (
-                            <Check sx={{ fontSize: '14px' }} />
-                          ) : (
-                            <ContentCopy sx={{ fontSize: '14px' }} />
-                          )}
-                        </IconButton>
-                      </Box>
-                    )}
-                    <code {...props} style={{ paddingTop: language ? '32px' : '12px' }}>
-                      {children}
-                    </code>
-                  </Box>
-                );
-              },
-            }}
-          >
-            {content}
-          </ReactMarkdown>
+                                ? 'rgba(255, 255, 255, 0.8)' 
+                                : 'rgba(0, 0, 0, 0.5)',
+                              '&:hover': { 
+                                color: mode === 'light' ? '#333' : 'white',
+                                bgcolor: mode === 'light' 
+                                  ? 'rgba(255, 255, 255, 1)' 
+                                  : 'rgba(0, 0, 0, 0.8)',
+                              },
+                              p: 0.5,
+                            }}
+                          >
+                            {copiedBlocks.has(blockIndex) ? (
+                              <Check sx={{ fontSize: '14px' }} />
+                            ) : (
+                              <ContentCopy sx={{ fontSize: '14px' }} />
+                            )}
+                          </IconButton>
+                        </Box>
+                      )}
+                      <code {...props} style={{ paddingTop: language ? '32px' : '12px' }}>
+                        {children}
+                      </code>
+                    </Box>
+                  );
+                },
+              }}
+            >
+              {content}
+            </ReactMarkdown>
+          )}
           {timestamp && (
             <Typography
               variant="caption"

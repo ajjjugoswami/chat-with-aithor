@@ -306,7 +306,7 @@ function ModelPanel({
                     textAlign: "center",
                   }}
                 >
-                  Add your API key to start chatting with {model.displayName}
+                  Add your API key to start chatting with <br/> {model.displayName}
                 </Typography>
                 <Button
                   variant="contained"
@@ -417,6 +417,7 @@ function MessageBubble({
       modelColor={modelColor}
       timestamp={message.timestamp}
       isTyping={isThinking}
+      enableTypewriter={message.sender === "ai" && !isThinking}
     />
   );
 }

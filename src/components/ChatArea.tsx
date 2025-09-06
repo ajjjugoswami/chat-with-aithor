@@ -121,6 +121,7 @@ function MessageBubble({ message }: { message: Message }) {
       isUser={message.sender === "user"}
       timestamp={message.timestamp}
       isTyping={isThinking}
+      enableTypewriter={message.sender === "ai" && !isThinking}
     />
   );
 }
