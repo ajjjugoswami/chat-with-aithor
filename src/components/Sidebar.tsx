@@ -240,7 +240,7 @@ export default function Sidebar({
             fontWeight: 600,
             textTransform: "none",
             fontSize: "1rem",
-            boxShadow: "0 8px 25px rgba(102, 126, 234, 0.4)",
+            // boxShadow: "0 8px 25px rgba(102, 126, 234, 0.4)",
             border: "none",
             "&:hover": {
               background: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",

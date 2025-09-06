@@ -277,8 +277,8 @@ export default function FormattedMessage({
             position: 'relative',
             margin: isMobile ? '12px 0' : '16px 0',
             borderRadius: '8px',
-            backgroundColor: mode === 'light' ? '#f1f1f1 !important' : '#1e1e1e !important',
-            border: mode === 'light' ? '1px solid #ddd' : '1px solid #333',
+            backgroundColor: mode === 'light' ? '#f8f9fa !important' : '#1e1e1e !important',
+            border: mode === 'light' ? '1px solid #e9ecef' : '1px solid #333',
             overflow: 'hidden',
             '& code': {
               fontSize: isMobile ? '12px' : '13px',
@@ -286,6 +286,7 @@ export default function FormattedMessage({
               display: 'block',
               padding: isMobile ? '8px' : '12px',
               background: 'transparent !important',
+              color: mode === 'light' ? '#495057' : '#f8f8f2',
             },
           },
           '& code': {
@@ -310,7 +311,9 @@ export default function FormattedMessage({
             },
           },
           '& h1, & h2, & h3, & h4, & h5, & h6': {
-            color: modelColor || '#fff',
+            color: mode === 'light' 
+              ? (modelColor || '#1976d2') 
+              : (modelColor || '#fff'),
             marginTop: '20px',
             marginBottom: '12px',
             fontWeight: 'bold',
@@ -321,12 +324,16 @@ export default function FormattedMessage({
           },
           '& h1': {
             fontSize: '24px',
-            borderBottom: `2px solid ${modelColor || '#666'}`,
+            borderBottom: mode === 'light' 
+              ? `2px solid ${modelColor || '#1976d2'}` 
+              : `2px solid ${modelColor || '#666'}`,
             paddingBottom: '8px',
           },
           '& h2': {
             fontSize: '20px',
-            borderBottom: `1px solid ${modelColor || '#666'}`,
+            borderBottom: mode === 'light' 
+              ? `1px solid ${modelColor || '#1976d2'}` 
+              : `1px solid ${modelColor || '#666'}`,
             paddingBottom: '6px',
           },
           '& h3': {
@@ -350,12 +357,16 @@ export default function FormattedMessage({
             },
           },
           '& blockquote': {
-            borderLeft: `4px solid ${modelColor || '#666'}`,
+            borderLeft: mode === 'light' 
+              ? `4px solid ${modelColor || '#1976d2'}` 
+              : `4px solid ${modelColor || '#666'}`,
             paddingLeft: '16px',
             margin: '16px 0',
             fontStyle: 'italic',
             opacity: 0.9,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backgroundColor: mode === 'light' 
+              ? 'rgba(25, 118, 210, 0.05)' 
+              : 'rgba(255, 255, 255, 0.05)',
             padding: '12px 16px',
             borderRadius: '0 8px 8px 0',
           },
@@ -363,25 +374,31 @@ export default function FormattedMessage({
             borderCollapse: 'collapse',
             width: '100%',
             margin: '16px 0',
-            border: '1px solid #444',
+            border: mode === 'light' ? '1px solid #ddd' : '1px solid #444',
             borderRadius: '8px',
             overflow: 'hidden',
           },
           '& th, & td': {
-            border: '1px solid #444',
+            border: mode === 'light' ? '1px solid #ddd' : '1px solid #444',
             padding: '10px 14px',
             textAlign: 'left',
           },
           '& th': {
-            backgroundColor: '#333',
+            backgroundColor: mode === 'light' ? '#f5f5f5' : '#333',
             fontWeight: 'bold',
-            color: modelColor || '#fff',
+            color: mode === 'light' 
+              ? (modelColor || '#1976d2') 
+              : (modelColor || '#fff'),
           },
           '& tr:nth-of-type(even)': {
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            backgroundColor: mode === 'light' 
+              ? 'rgba(25, 118, 210, 0.02)' 
+              : 'rgba(255, 255, 255, 0.02)',
           },
           '& a': {
-            color: modelColor || '#4fc3f7',
+            color: mode === 'light' 
+              ? (modelColor || '#1976d2') 
+              : (modelColor || '#4fc3f7'),
             textDecoration: 'none',
             '&:hover': {
               textDecoration: 'underline',
@@ -389,17 +406,19 @@ export default function FormattedMessage({
           },
           '& hr': {
             border: 'none',
-            borderTop: `1px solid ${modelColor || '#666'}`,
+            borderTop: mode === 'light' 
+              ? `1px solid ${modelColor || '#ddd'}` 
+              : `1px solid ${modelColor || '#666'}`,
             margin: '20px 0',
             opacity: 0.5,
           },
           '& strong': {
             fontWeight: 'bold',
-            color: '#fff',
+            color: mode === 'light' ? '#333' : '#fff',
           },
           '& em': {
             fontStyle: 'italic',
-            color: '#ddd',
+            color: mode === 'light' ? '#666' : '#ddd',
           },
         }}
       >
@@ -421,11 +440,18 @@ export default function FormattedMessage({
             size="small"
             onClick={handleCopyMessage}
             sx={{
-              bgcolor: 'rgba(0, 0, 0, 0.7)',
-              color: messageCopied ? '#4caf50' : '#888',
+              bgcolor: mode === 'light' 
+                ? 'rgba(255, 255, 255, 0.9)' 
+                : 'rgba(0, 0, 0, 0.7)',
+              color: messageCopied ? '#4caf50' : (mode === 'light' ? '#666' : '#888'),
+              boxShadow: mode === 'light' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+              border: mode === 'light' ? '1px solid rgba(0,0,0,0.1)' : 'none',
               '&:hover': { 
-                color: 'white',
-                bgcolor: 'rgba(0, 0, 0, 0.9)',
+                color: messageCopied ? '#4caf50' : (mode === 'light' ? '#333' : 'white'),
+                bgcolor: mode === 'light' 
+                  ? 'rgba(255, 255, 255, 1)' 
+                  : 'rgba(0, 0, 0, 0.9)',
+                transform: 'scale(1.05)',
               },
               p: 0.5,
             }}
@@ -493,8 +519,16 @@ export default function FormattedMessage({
                           size="small"
                           onClick={() => handleCopyCode(codeContent, blockIndex)}
                           sx={{
-                            color: '#888',
-                            '&:hover': { color: 'white' },
+                            color: mode === 'light' ? '#666' : '#888',
+                            bgcolor: mode === 'light' 
+                              ? 'rgba(255, 255, 255, 0.8)' 
+                              : 'rgba(0, 0, 0, 0.5)',
+                            '&:hover': { 
+                              color: mode === 'light' ? '#333' : 'white',
+                              bgcolor: mode === 'light' 
+                                ? 'rgba(255, 255, 255, 1)' 
+                                : 'rgba(0, 0, 0, 0.8)',
+                            },
                             p: 0.5,
                           }}
                         >
