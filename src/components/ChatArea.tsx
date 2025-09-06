@@ -36,8 +36,15 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        bgcolor: mode === "light" ? "#ffffff" : "#1a1a1a",
+        background: mode === "light" 
+          ? "linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)"
+          : "linear-gradient(180deg, #121212 0%, #0a0a0a 100%)",
         flex: 1,
+        borderRadius: "12px",
+        overflow: "hidden",
+        boxShadow: mode === "light"
+          ? "0 4px 12px rgba(0, 0, 0, 0.05)"
+          : "0 4px 12px rgba(0, 0, 0, 0.3)",
       }}
     >
       {/* Messages Container */}
@@ -50,6 +57,23 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          "&::-webkit-scrollbar": {
+            width: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: mode === "light" 
+              ? "rgba(0, 0, 0, 0.2)" 
+              : "rgba(255, 255, 255, 0.2)",
+            borderRadius: "10px",
+            "&:hover": {
+              background: mode === "light" 
+                ? "rgba(0, 0, 0, 0.3)" 
+                : "rgba(255, 255, 255, 0.3)",
+            },
+          },
         }}
       >
         {messages.length === 0 ? (

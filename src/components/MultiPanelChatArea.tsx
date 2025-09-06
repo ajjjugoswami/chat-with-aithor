@@ -136,17 +136,23 @@ function ModelPanel({
       {/* Model Header */}
       <Box
         sx={{
-          p: isMobile ? 0.5 : 1,
-          borderBottom:
-            mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
-          display: "flex", // Always show header for both mobile and desktop
+          p: isMobile ? 0.75 : 1.5,
+          borderBottom: "none",
+          display: "flex",
           alignItems: "center",
           gap: isMobile ? 1 : 2,
-          bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
+          background: mode === "light" 
+            ? "linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)"
+            : "linear-gradient(135deg, #1e1e1e 0%, #1a1a1a 100%)",
           position: "sticky",
           top: 0,
-          zIndex: 1,
+          zIndex: 10,
           justifyContent: isCollapsed ? "center" : "space-between",
+          backdropFilter: "blur(10px)",
+          borderRadius: "12px 12px 0 0",
+          boxShadow: mode === "light"
+            ? "0 2px 8px rgba(0, 0, 0, 0.04)"
+            : "0 2px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
         {!isCollapsed && (
@@ -239,18 +245,23 @@ function ModelPanel({
               gap: isMobile ? 1 : 1.5,
               minHeight: isMobile ? "calc(100dvh - 150px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
+              backgroundColor: mode === "light" ? "#f8f9fa" : "#0a0a0a",
               "&::-webkit-scrollbar": {
-                width: isMobile ? "4px" : "6px", // Thinner scrollbar on mobile
+                width: isMobile ? "3px" : "6px",
               },
               "&::-webkit-scrollbar-track": {
-                background: mode === "light" ? "#f0f0f0" : "#1a1a1a",
+                background: "transparent",
               },
               "&::-webkit-scrollbar-thumb": {
-                background: mode === "light" ? "#ccc" : "#444",
-                borderRadius: "3px",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: mode === "light" ? "#bbb" : "#555",
+                background: mode === "light" 
+                  ? "rgba(0, 0, 0, 0.2)" 
+                  : "rgba(255, 255, 255, 0.2)",
+                borderRadius: "10px",
+                "&:hover": {
+                  background: mode === "light" 
+                    ? "rgba(0, 0, 0, 0.3)" 
+                    : "rgba(255, 255, 255, 0.3)",
+                },
               },
             }}
           >
@@ -746,7 +757,7 @@ export default function MultiPanelChatArea({
       {/* Input Area */}
       <Box
         sx={{
-          p: isMobile ? 0.5 : 3,
+          p: isMobile ? 0.5 : 2,
           borderTop:
             mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
         }}

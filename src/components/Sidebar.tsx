@@ -77,19 +77,20 @@ export default function Sidebar({
         p: isCollapsed ? 1 : 2,
         alignItems: isCollapsed ? "center" : "stretch",
         background: mode === "light" 
-          ? "linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)"
-          : "linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%)",
+          ? "linear-gradient(180deg, #fafbfc 0%, #ffffff 100%)"
+          : "linear-gradient(180deg, #1e1e1e 0%, #121212 100%)",
         borderRight: mode === "light" 
-          ? "1px solid rgba(0, 0, 0, 0.08)" 
-          : "1px solid rgba(255, 255, 255, 0.08)",
+          ? "1px solid rgba(0, 0, 0, 0.06)" 
+          : "1px solid rgba(255, 255, 255, 0.06)",
         position: "relative",
+        backdropFilter: "blur(10px)",
         "&::before": {
           content: '""',
           position: "absolute",
           top: 0,
           left: 0,
           right: 0,
-          height: "4px",
+          height: "3px",
           background: "linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%)",
           zIndex: 1,
         },

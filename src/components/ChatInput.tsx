@@ -235,10 +235,11 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
               ? 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%)'
               : 'linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 50%, #1a1a1a 100%)',
             borderRadius: 3.5,
-            p: 1.5,
+            p: 2, // Increased padding from 1.5 to 2
             gap: 1,
             position: 'relative',
             overflow: 'hidden',
+            minHeight: '70px', // Added minimum height
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -340,7 +341,8 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
             '& .MuiInputBase-root': {
               bgcolor: 'transparent',
               borderRadius: 2,
-              padding: isMobile ? '6px 8px' : '8px 12px',
+              padding: isMobile ? '10px 12px' : '12px 16px', // Increased padding
+              minHeight: '20px', // Added minimum height for input
               transition: 'all 0.3s ease',
               '&:hover': {
                 backgroundColor: mode === 'light' 
