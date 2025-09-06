@@ -1,6 +1,7 @@
 // Panel width storage utilities
 const PANEL_WIDTH_KEY = 'chat-panel-widths';
 const PANEL_COLLAPSED_KEY = 'chat-panel-collapsed';
+const PANEL_ENABLED_KEY = 'chat-panel-enabled';
 const SIDEBAR_WIDTH_KEY = 'sidebar-width';
 const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed';
 
@@ -9,6 +10,10 @@ interface PanelWidths {
 }
 
 interface PanelCollapsed {
+  [modelId: string]: boolean;
+}
+
+interface PanelEnabled {
   [modelId: string]: boolean;
 }
 
@@ -45,6 +50,25 @@ export function savePanelCollapsed(modelId: string, collapsed: boolean) {
     const collapsedStates = getPanelCollapsed();
     collapsedStates[modelId] = collapsed;
     localStorage.setItem(PANEL_COLLAPSED_KEY, JSON.stringify(collapsedStates));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+export function getPanelEnabled(): PanelEnabled {
+  try {
+    const stored = localStorage.getItem(PANEL_ENABLED_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function savePanelEnabled(modelId: string, enabled: boolean) {
+  try {
+    const enabledStates = getPanelEnabled();
+    enabledStates[modelId] = enabled;
+    localStorage.setItem(PANEL_ENABLED_KEY, JSON.stringify(enabledStates));
   } catch {
     // Ignore localStorage errors
   }

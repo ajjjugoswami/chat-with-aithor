@@ -12,6 +12,7 @@ import { saveChatsToStorage, loadChatsFromStorage } from "./utils/chatStorage";
 import {
   getSidebarCollapsed,
   saveSidebarCollapsed,
+  getPanelEnabled,
 } from "./utils/panelStorage";
 import {
   ChatGptIcon,
@@ -200,7 +201,14 @@ function App() {
     });
 
     // Send to each enabled model with API key
+    const panelEnabledStates = getPanelEnabled();
+    
     enabledModels.forEach(async (model, index) => {
+      // Skip if panel is disabled
+      if (panelEnabledStates[model.id] === false) {
+        return;
+      }
+      
       try {
         // Add loading message
         const loadingMessageId = `loading-${Date.now()}-${index}`;
