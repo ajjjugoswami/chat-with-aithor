@@ -424,6 +424,7 @@ export default function Sidebar({
                 onClick={toggleTheme}
                 sx={{
                   mb: 1,
+                  ml: 1,
                   width: 44,
                   height: 44,
                   background: mode === "light" 
@@ -528,6 +529,7 @@ export default function Sidebar({
                 onClick={onSettingsClick}
                 sx={{
                   mb: 2,
+                  ml: 1,
                   width: 44,
                   height: 44,
                   background: mode === "light" 

@@ -62,14 +62,14 @@ export default function FormattedMessage({
         sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          mb: isMobile ? 1.5 : 2,
+          mb: isMobile ? 1 : 1.5, // Reduced spacing
           alignItems: 'flex-start',
-          gap: isMobile ? 1 : 1.5,
+          gap: isMobile ? 0.75 : 1, // Reduced gap
         }}
       >
         <Box
           sx={{
-            maxWidth: '75%',
+            maxWidth: '80%', // Increased width
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
@@ -80,8 +80,8 @@ export default function FormattedMessage({
             variant="caption"
             sx={{
               color: mode === 'light' ? '#666' : '#888',
-              fontSize: isMobile ? '11px' : '12px',
-              mb: 0.5,
+              fontSize: isMobile ? '10px' : '11px', // Smaller label
+              mb: 0.25, // Reduced margin
               fontWeight: 500,
               display: 'flex',
               alignItems: 'center',
@@ -94,16 +94,22 @@ export default function FormattedMessage({
           {/* Message bubble */}
           <Box
             sx={{
-              p: isMobile ? 1.5 : 2,
-              borderRadius: '18px 18px 4px 18px',
-              bgcolor: mode === 'light' ? '#1976d2' : '#007aff',
-              color: 'white',
+              p: isMobile ? 1.25 : 1.5, // Reduced padding
+              borderRadius: '16px 16px 4px 16px', // Smaller radius
+              background: mode === 'light' 
+                ? '#1976d2' // Blue color for light mode
+                : '#007aff', // Blue color for dark mode
+              color: 'white', // White text on blue background
               wordBreak: 'break-word',
               fontSize: isMobile ? '13px' : '14px',
-              lineHeight: 1.5,
+              lineHeight: 1.4, // Tighter line spacing
               position: 'relative',
-              boxShadow: '0 2px 8px rgba(0, 122, 255, 0.2)',
-              border: '1px solid rgba(0, 122, 255, 0.3)',
+              boxShadow: mode === 'light'
+                ? '0 2px 8px rgba(25, 118, 210, 0.2)' // Blue shadow for light mode
+                : '0 2px 8px rgba(0, 122, 255, 0.3)', // Blue shadow for dark mode
+              border: mode === 'light' 
+                ? '1px solid rgba(25, 118, 210, 0.3)' 
+                : '1px solid rgba(0, 122, 255, 0.3)',
             }}
           >
             <Typography 
@@ -119,12 +125,12 @@ export default function FormattedMessage({
               <Typography
                 variant="caption"
                 sx={{
-                  fontSize: '11px',
-                  opacity: 0.8,
+                  fontSize: '10px',
+                  opacity: 0.6,
                   display: 'block',
                   textAlign: 'right',
-                  mt: 1,
-                  pt: 0.5,
+                  mt: 0.5,
+                  pt: 0.25,
                 }}
               >
                 {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -136,15 +142,16 @@ export default function FormattedMessage({
         {/* User avatar */}
         <Avatar
           sx={{
-            width: 36,
-            height: 36,
-            bgcolor: '#007aff',
+            width: isMobile ? 28 : 32, // Smaller avatar
+            height: isMobile ? 28 : 32,
+            bgcolor: mode === 'light' ? '#1976d2' : '#007aff', // Matching blue colors
             color: 'white',
-            fontSize: '18px',
-            mt: 0.5,
+            fontSize: isMobile ? '14px' : '16px',
+            mt: 0.25,
+            boxShadow: '0 2px 6px rgba(25, 118, 210, 0.3)', // Blue shadow
           }}
         >
-          <UserIcon sx={{ fontSize: 20 ,color:"#fff"}} />
+          <UserIcon sx={{ fontSize: isMobile ? 16 : 18 ,color:"#fff"}} />
         </Avatar>
       </Box>
     );
