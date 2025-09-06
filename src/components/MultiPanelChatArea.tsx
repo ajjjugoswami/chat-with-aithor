@@ -4,8 +4,6 @@ import {
   IconButton,
   Button,
   useMediaQuery,
-  Tabs,
-  Tab,
   Switch,
   FormControlLabel,
 } from "@mui/material";
@@ -141,7 +139,7 @@ function ModelPanel({
           p: isMobile ? 0.5 : 1,
           borderBottom:
             mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
-          display: isMobile ? "none" : "flex",
+          display: "flex", // Always show header for both mobile and desktop
           alignItems: "center",
           gap: isMobile ? 1 : 2,
           bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
@@ -175,60 +173,39 @@ function ModelPanel({
                 {/* Show selected variant if different from base model */}
               </Typography>
 
-              {/* Model Variant Selector - show on desktop, always visible but disabled without API key */}
-              {!isMobile && (
-                <ModelVariantSelector
-                  variants={getVariantsForModel(model.id)}
-                  selectedVariant={selectedVariant}
-                  onVariantSelect={onVariantChange}
-                  disabled={!hasApiKey || !isEnabled}
-                  size="small"
-                />
-              )}
-
-              {/* Show toggle switch on mobile */}
-              {isMobile && (
-                <Switch
-                  checked={isEnabled}
-                  onChange={onToggleEnabled}
-                  size="small"
-                  sx={{
-                    "& .MuiSwitch-thumb": {
-                      backgroundColor: isEnabled ? model.color : "#ccc",
-                    },
-                    "& .MuiSwitch-track": {
-                      backgroundColor: isEnabled
-                        ? `${model.color}40`
-                        : "#e0e0e0",
-                    },
-                  }}
-                />
-              )}
+              {/* Model Variant Selector - show on both mobile and desktop, disabled without API key */}
+              <ModelVariantSelector
+                variants={getVariantsForModel(model.id)}
+                selectedVariant={selectedVariant}
+                onVariantSelect={onVariantChange}
+                disabled={!hasApiKey || !isEnabled}
+                size="small"
+              />
             </Box>
-            {/* Only show controls on desktop */}
-            {!isMobile && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={isEnabled}
-                      onChange={onToggleEnabled}
-                      size="small"
-                      sx={{
-                        "& .MuiSwitch-thumb": {
-                          backgroundColor: isEnabled ? model.color : "#ccc",
-                        },
-                        "& .MuiSwitch-track": {
-                          backgroundColor: isEnabled
-                            ? `${model.color}40`
-                            : "#e0e0e0",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                  sx={{ m: 0 }}
-                />
+            {/* Controls for both mobile and desktop */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isEnabled}
+                    onChange={onToggleEnabled}
+                    size="small"
+                    sx={{
+                      "& .MuiSwitch-thumb": {
+                        backgroundColor: isEnabled ? model.color : "#ccc",
+                      },
+                      "& .MuiSwitch-track": {
+                        backgroundColor: isEnabled
+                          ? `${model.color}40`
+                          : "#e0e0e0",
+                      },
+                    }}
+                  />
+                }
+                label=""
+                sx={{ m: 0 }}
+              />
+              {!isMobile && (
                 <IconButton
                   size="small"
                   onClick={onToggleCollapse}
@@ -239,8 +216,8 @@ function ModelPanel({
                 >
                   <ExpandLess />
                 </IconButton>
-              </Box>
-            )}
+              )}
+            </Box>
           </>
         )}
 
@@ -267,7 +244,7 @@ function ModelPanel({
               minHeight: isMobile ? "calc(100dvh - 150px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
               "&::-webkit-scrollbar": {
-                width: "6px",
+                width: isMobile ? "4px" : "6px", // Thinner scrollbar on mobile
               },
               "&::-webkit-scrollbar-track": {
                 background: mode === "light" ? "#f0f0f0" : "#1a1a1a",
@@ -535,9 +512,6 @@ export default function MultiPanelChatArea({
     return initial;
   });
 
-  // Mobile panel selection state
-  const [selectedMobilePanel, setSelectedMobilePanel] = useState(0);
-
   // Update states when models change
   useEffect(() => {
     const storedWidths = getPanelWidths();
@@ -643,6 +617,7 @@ export default function MultiPanelChatArea({
         position: "relative",
       }}
     >
+      {/* Mobile Tabs - Disabled to show horizontal panels instead
       {isMobile && enabledModels.length > 0 && (
         <Box
           sx={{
@@ -684,28 +659,33 @@ export default function MultiPanelChatArea({
             ))}
           </Tabs>
         </Box>
-      )}
+      )} */}
       {/* Multi-Panel Messages Container */}
       <Box
         sx={{
           flex: 1,
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          overflowX: isMobile ? "hidden" : "auto", // Horizontal scroll for panels on desktop
-          overflowY: isMobile ? "auto" : "hidden", // Vertical scroll for panels on mobile
+          flexDirection: "row", // Always horizontal for both desktop and mobile
+          overflowX: "auto", // Horizontal scroll for both desktop and mobile
+          overflowY: "hidden", // Prevent vertical scroll on container
           "&::-webkit-scrollbar": {
-            height: isMobile ? "6px" : "8px",
-            width: isMobile ? "6px" : "8px",
+            height: isMobile ? "4px" : "6px", // Thinner scrollbar on mobile
+            width: isMobile ? "4px" : "6px",
           },
           "&::-webkit-scrollbar-track": {
-            background: mode === "light" ? "#f0f0f0" : "#1a1a1a",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: mode === "light" ? "#ccc" : "#444",
+            background: mode === "light" ? "#f8f9fa" : "#1a1a1a",
             borderRadius: "4px",
           },
+          "&::-webkit-scrollbar-thumb": {
+            background: mode === "light" ? "#ddd" : "#555",
+            borderRadius: "4px",
+            border: mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
+          },
           "&::-webkit-scrollbar-thumb:hover": {
-            background: mode === "light" ? "#bbb" : "#555",
+            background: mode === "light" ? "#bbb" : "#666",
+          },
+          "&::-webkit-scrollbar-corner": {
+            background: mode === "light" ? "#f8f9fa" : "#1a1a1a",
           },
         }}
       >
@@ -734,10 +714,7 @@ export default function MultiPanelChatArea({
           </Box>
         ) : (
           enabledModels.map((model, index) => {
-            // On mobile, only show the selected panel
-            if (isMobile && index !== selectedMobilePanel) {
-              return null;
-            }
+            // Show all panels on both mobile and desktop for comparison
 
             return (
               <ModelPanel
@@ -746,8 +723,8 @@ export default function MultiPanelChatArea({
                 messages={messages}
                 onToggle={onModelToggle}
                 width={
-                  isMobile ? window.innerWidth : panelWidths[model.id] || 380
-                } // Full width on mobile
+                  isMobile ? 400 : panelWidths[model.id] || 380 // 400px minimum width on mobile for horizontal scroll
+                }
                 isCollapsed={
                   isMobile ? false : panelCollapsed[model.id] || false
                 } // Never collapsed on mobile

@@ -113,14 +113,14 @@ export default function ResizablePanel({
       className={className}
       sx={{
         width: actualWidth,
-        minWidth: isMobile ? 'auto' : actualWidth,
+        minWidth: isMobile ? '320px' : actualWidth,
         maxWidth: isMobile ? 'none' : actualWidth,
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         transition: isDragging ? 'none' : 'width 0.3s ease',
         bgcolor: mode === 'light' ? '#ffffff' : '#1a1a1a',
-        borderRight: (showRightHandle && !isMobile) ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
+        borderRight: (showRightHandle || isMobile) ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
         borderLeft: (showLeftHandle && !isMobile) ? (mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333') : 'none',
       }}
     >
