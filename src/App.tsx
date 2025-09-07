@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import MultiPanelChatArea from "./components/MultiPanelChatArea";
 import ChatInput from "./components/ChatInput";
 import SettingsPage from "./components/SettingsPage";
+import WelcomeModal from "./components/WelcomeModal";
 import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/apiKeys";
 import { sendToAI, type ChatMessage } from "./services/aiServices";
@@ -25,6 +26,7 @@ import {
   ClaudeIcon,
 } from "./components/shared/Icons";
 import { useTheme } from "./hooks/useTheme";
+import { useWelcomeModal } from "./hooks/useWelcomeModal";
 import MobileHeader from "./components/MobileHeader";
 import { useMediaQuery } from "@mui/material";
 
@@ -50,6 +52,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() =>
     getSidebarCollapsed()
   );
+  const { shouldShow: showWelcome, hide: hideWelcome } = useWelcomeModal();
 
   const handleSidebarToggle = () => {
     const newCollapsed = !sidebarCollapsed;
@@ -409,6 +412,9 @@ function App() {
         )
       }
     />
+    
+    {/* Welcome Modal */}
+    <WelcomeModal open={showWelcome} onClose={hideWelcome} />
     </div>
   );
 }
