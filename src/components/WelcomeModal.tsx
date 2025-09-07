@@ -25,11 +25,10 @@ import {
   Youtube,
   BookOpen,
 } from "lucide-react";
-import Confetti from "react-confetti";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { WELCOME_MODAL_KEY } from "../hooks/useWelcomeModal";
-
+import Fireworks from "react-canvas-confetti/dist/presets/fireworks";
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -118,7 +117,7 @@ const CloseButton = styled(IconButton)(() => ({
   cursor: "pointer",
   top: "12px",
   right: "12px",
-  zIndex:"1000",
+  zIndex: "1000",
   color: "white",
   backgroundColor: "rgba(255, 255, 255, 0.1)",
   backdropFilter: "blur(10px)",
@@ -287,293 +286,291 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
 
   return (
     <>
-      {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          recycle={false}
-          numberOfPieces={200}
-          gravity={0.3}
-          colors={['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#f0fdf4']}
-        />
-      )}
+      {showConfetti && <Fireworks autorun={{ speed: 3, duration: 2000 }} />}
       <StyledDialog open={open} onClose={handleClose} maxWidth={false}>
         <DialogContent sx={{ p: 0 }}>
-        <Header>
-          <CloseButton onClick={handleClose}>
-            <X size={20} onClick={handleClose} />
-          </CloseButton>
-          <Box sx={{ position: "relative", zIndex: 1 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                fontWeight: "700",
-                mb: 1,
-                textShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              Welcome to Aithor{user?.name ? `, ${user.name}!` : "!"}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: { xs: "0.875rem", sm: "0.95rem" },
-                opacity: 0.95,
-                fontWeight: 400,
-                lineHeight: 1.5,
-              }}
-            >
-              🚀 Get started with multiple AI models using your own API keys
-            </Typography>
-          </Box>
-        </Header>
-
-        <Box sx={{ p: 3 }}>
-          <StyledTabs
-            value={activeTab}
-            onChange={(_, newValue) => setActiveTab(newValue)}
-            sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
-          >
-            <Tab
-              icon={<Youtube size={18} />}
-              iconPosition="start"
-              label="Video Guide"
-            />
-            <Tab
-              icon={<BookOpen size={18} />}
-              iconPosition="start"
-              label="API Info"
-            />
-          </StyledTabs>
-
-          {activeTab === 0 && (
-            <Box sx={{ animation: `${slideUp} 0.4s ease-out` }}>
+          <Header>
+            <CloseButton onClick={handleClose}>
+              <X size={20} onClick={handleClose} />
+            </CloseButton>
+            <Box sx={{ position: "relative", zIndex: 1 }}>
               <Typography
-                variant="h6"
+                variant="h4"
                 sx={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: mode === "dark" ? "#f3f4f6" : "#111827",
-                  mb: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.5,
+                  fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                  fontWeight: "700",
+                  mb: 1,
+                  textShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
               >
-                <Play size={18} style={{ color: "#059669" }} />
-                How to Get Your API Keys
+                Welcome to Aithor{user?.name ? `, ${user.name}!` : "!"}
               </Typography>
-
-              <VideoContainer sx={{ aspectRatio: "16/9", mb: 2 }}>
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube-nocookie.com/embed/OB99E7Y1cMA"
-                  title="How to Get API Keys for AI Models"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{
-                    borderRadius: "12px",
-                    width: "100%",
-                    height: "100%",
-                  }}
-                />
-              </VideoContainer>
-
               <Typography
+                variant="body1"
                 sx={{
-                  mb: 3,
-                  color: mode === "dark" ? "#9ca3af" : "#6b7280",
-                  fontSize: "0.875rem",
+                  fontSize: { xs: "0.875rem", sm: "0.95rem" },
+                  opacity: 0.95,
+                  fontWeight: 400,
                   lineHeight: 1.5,
-                  textAlign: "center",
                 }}
               >
-                📺 Quick guide to obtain API keys from different providers
+                🚀 Get started with multiple AI models using your own API keys
               </Typography>
             </Box>
-          )}
+          </Header>
 
-          {activeTab === 1 && (
-            <Box sx={{ animation: `${slideUp} 0.4s ease-out` }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: mode === "dark" ? "#f3f4f6" : "#111827",
-                  mb: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.5,
-                }}
-              >
-                <Star size={18} style={{ color: "#059669" }} />
-                Why Use Your Own API Keys?
-              </Typography>
+          <Box sx={{ p: 3 }}>
+            <StyledTabs
+              value={activeTab}
+              onChange={(_, newValue) => setActiveTab(newValue)}
+              sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
+            >
+              <Tab
+                icon={<Youtube size={18} />}
+                iconPosition="start"
+                label="Video Guide"
+              />
+              <Tab
+                icon={<BookOpen size={18} />}
+                iconPosition="start"
+                label="API Info"
+              />
+            </StyledTabs>
 
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "1fr",
-                    sm: "repeat(2, 1fr)",
-                  },
-                  gap: 2,
-                  mb: 3,
-                }}
-              >
-                {features.map((feature, index) => (
-                  <InfoCard
-                    key={index}
-                    sx={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CardContent sx={{ p: 2.5 }}>
-                      <FeatureIcon
-                        sx={{ width: "32px", height: "32px", mb: 1 }}
-                      >
-                        {React.cloneElement(feature.icon as React.ReactElement)}
-                      </FeatureIcon>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontSize: "0.95rem",
-                          fontWeight: 600,
-                          color: mode === "dark" ? "#f3f4f6" : "#111827",
-                          mb: 0.5,
-                        }}
-                      >
-                        {feature.title}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          color: mode === "dark" ? "#9ca3af" : "#6b7280",
-                          fontSize: "0.8rem",
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        {feature.description}
-                      </Typography>
-                    </CardContent>
-                  </InfoCard>
-                ))}
-              </Box>
+            {activeTab === 0 && (
+              <Box sx={{ animation: `${slideUp} 0.4s ease-out` }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    color: mode === "dark" ? "#f3f4f6" : "#111827",
+                    mb: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                  }}
+                >
+                  <Play size={18} style={{ color: "#059669" }} />
+                  How to Get Your API Keys
+                </Typography>
 
-              <Typography
-                variant="h6"
-                sx={{
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                  color: mode === "dark" ? "#f3f4f6" : "#111827",
-                  mb: 2,
-                }}
-              >
-                🔗 Quick Links to Get API Keys:
-              </Typography>
-
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-                {apiProviders.map((provider, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      p: 1.5,
-                      border:
-                        mode === "dark"
-                          ? "1px solid #374151"
-                          : "1px solid #e5e7eb",
-                      borderRadius: "8px",
-                      backgroundColor: mode === "dark" ? "#1f2937" : "#ffffff",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        borderColor: "#059669",
-                        backgroundColor:
-                          mode === "dark" ? "#065f46" : "#f0fdf4",
-                        transform: "translateX(4px)",
-                      },
+                <VideoContainer sx={{ aspectRatio: "16/9", mb: 2 }}>
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube-nocookie.com/embed/OB99E7Y1cMA"
+                    title="How to Get API Keys for AI Models"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{
+                      borderRadius: "12px",
+                      width: "100%",
+                      height: "100%",
                     }}
-                  >
-                    <Box
-                      sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                  />
+                </VideoContainer>
+
+                <Typography
+                  sx={{
+                    mb: 3,
+                    color: mode === "dark" ? "#9ca3af" : "#6b7280",
+                    fontSize: "0.875rem",
+                    lineHeight: 1.5,
+                    textAlign: "center",
+                  }}
+                >
+                  📺 Quick guide to obtain API keys from different providers
+                </Typography>
+              </Box>
+            )}
+
+            {activeTab === 1 && (
+              <Box sx={{ animation: `${slideUp} 0.4s ease-out` }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    color: mode === "dark" ? "#f3f4f6" : "#111827",
+                    mb: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                  }}
+                >
+                  <Star size={18} style={{ color: "#059669" }} />
+                  Why Use Your Own API Keys?
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                      xs: "1fr",
+                      sm: "repeat(2, 1fr)",
+                    },
+                    gap: 2,
+                    mb: 3,
+                  }}
+                >
+                  {features.map((feature, index) => (
+                    <InfoCard
+                      key={index}
+                      sx={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <Typography
-                        sx={{
-                          fontWeight: 500,
-                          color: mode === "dark" ? "#f3f4f6" : "#111827",
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {provider.name}
-                      </Typography>
-                      <Chip
-                        label={provider.difficulty}
-                        size="small"
-                        sx={{
-                          backgroundColor: provider.color,
-                          color: "white",
-                          fontSize: "0.7rem",
-                          fontWeight: 500,
-                          height: "20px",
-                        }}
-                      />
-                    </Box>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      endIcon={<ExternalLink size={14} />}
-                      onClick={() => window.open(provider.url, "_blank")}
+                      <CardContent sx={{ p: 2.5 }}>
+                        <FeatureIcon
+                          sx={{ width: "32px", height: "32px", mb: 1 }}
+                        >
+                          {React.cloneElement(
+                            feature.icon as React.ReactElement
+                          )}
+                        </FeatureIcon>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontSize: "0.95rem",
+                            fontWeight: 600,
+                            color: mode === "dark" ? "#f3f4f6" : "#111827",
+                            mb: 0.5,
+                          }}
+                        >
+                          {feature.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            color: mode === "dark" ? "#9ca3af" : "#6b7280",
+                            fontSize: "0.8rem",
+                            lineHeight: 1.4,
+                          }}
+                        >
+                          {feature.description}
+                        </Typography>
+                      </CardContent>
+                    </InfoCard>
+                  ))}
+                </Box>
+
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    color: mode === "dark" ? "#f3f4f6" : "#111827",
+                    mb: 2,
+                  }}
+                >
+                  🔗 Quick Links to Get API Keys:
+                </Typography>
+
+                <Box
+                  sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}
+                >
+                  {apiProviders.map((provider, index) => (
+                    <Box
+                      key={index}
                       sx={{
-                        borderColor: "#059669",
-                        color: "#059669",
-                        fontSize: "0.75rem",
-                        textTransform: "none",
-                        minWidth: "auto",
-                        py: 0.5,
-                        px: 1.5,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        p: 1.5,
+                        border:
+                          mode === "dark"
+                            ? "1px solid #374151"
+                            : "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        backgroundColor:
+                          mode === "dark" ? "#1f2937" : "#ffffff",
+                        transition: "all 0.3s ease",
                         "&:hover": {
-                          backgroundColor: "#ecfdf5",
-                          borderColor: "#047857",
+                          borderColor: "#059669",
+                          backgroundColor:
+                            mode === "dark" ? "#065f46" : "#f0fdf4",
+                          transform: "translateX(4px)",
                         },
                       }}
                     >
-                      Get Key
-                    </Button>
-                  </Box>
-                ))}
-              </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                      >
+                        <Typography
+                          sx={{
+                            fontWeight: 500,
+                            color: mode === "dark" ? "#f3f4f6" : "#111827",
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          {provider.name}
+                        </Typography>
+                        <Chip
+                          label={provider.difficulty}
+                          size="small"
+                          sx={{
+                            backgroundColor: provider.color,
+                            color: "white",
+                            fontSize: "0.7rem",
+                            fontWeight: 500,
+                            height: "20px",
+                          }}
+                        />
+                      </Box>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        endIcon={<ExternalLink size={14} />}
+                        onClick={() => window.open(provider.url, "_blank")}
+                        sx={{
+                          borderColor: "#059669",
+                          color: "#059669",
+                          fontSize: "0.75rem",
+                          textTransform: "none",
+                          minWidth: "auto",
+                          py: 0.5,
+                          px: 1.5,
+                          "&:hover": {
+                            backgroundColor: "#ecfdf5",
+                            borderColor: "#047857",
+                          },
+                        }}
+                      >
+                        Get Key
+                      </Button>
+                    </Box>
+                  ))}
+                </Box>
 
-              <Box
-                sx={{
-                  mt: 3,
-                  p: 2,
-                  backgroundColor: mode === "dark" ? "#065f46" : "#f0fdf4",
-                  borderRadius: "8px",
-                  border:
-                    mode === "dark" ? "1px solid #047857" : "1px solid #bbf7d0",
-                }}
-              >
-                <Typography
+                <Box
                   sx={{
-                    color: mode === "dark" ? "#bbf7d0" : "#059669",
-                    fontSize: "0.8rem",
-                    fontWeight: 500,
-                    lineHeight: 1.4,
+                    mt: 3,
+                    p: 2,
+                    backgroundColor: mode === "dark" ? "#065f46" : "#f0fdf4",
+                    borderRadius: "8px",
+                    border:
+                      mode === "dark"
+                        ? "1px solid #047857"
+                        : "1px solid #bbf7d0",
                   }}
                 >
-                  💡 <strong>Pro Tip:</strong> Start with OpenAI or Google
-                  Gemini as they're the easiest to set up. You can always add
-                  more API keys later in Settings!
-                </Typography>
+                  <Typography
+                    sx={{
+                      color: mode === "dark" ? "#bbf7d0" : "#059669",
+                      fontSize: "0.8rem",
+                      fontWeight: 500,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    💡 <strong>Pro Tip:</strong> Start with OpenAI or Google
+                    Gemini as they're the easiest to set up. You can always add
+                    more API keys later in Settings!
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          )}
-        </Box>
-      </DialogContent>
-    </StyledDialog>
+            )}
+          </Box>
+        </DialogContent>
+      </StyledDialog>
     </>
   );
 }
