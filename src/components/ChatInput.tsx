@@ -21,10 +21,13 @@ import {
   InsertDriveFile,
   PictureAsPdf,
   Description,
-  Code
+  Code,
+  Stop
 } from '@mui/icons-material';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { useTypewriterState } from '../hooks/useTypewriterState';
+import { stopAllTypewriters } from '../utils/typewriterState';
 
 declare global {
   interface Window {
@@ -67,6 +70,7 @@ interface ChatInputProps {
 export default function ChatInput({ onSendMessage, disabled = false, selectedModel }: ChatInputProps) {
   const { mode } = useTheme();
   const isMobile = useMediaQuery('(max-width: 640px)');
+  const isTypewriterActive = useTypewriterState();
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -246,6 +250,10 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
       setMessage('');
       setUploadedFiles([]);
     }
+  };
+
+  const handleStopTypewriter = () => {
+    stopAllTypewriters();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -549,17 +557,19 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
             </IconButton>
           </Tooltip>
           
-          <Tooltip title="Send Message">
+          <Tooltip title={isTypewriterActive ? "Stop Typing" : "Send Message"}>
             <IconButton
-              onClick={handleSend}
-              disabled={(!message.trim() && uploadedFiles.length === 0) || disabled}
+              onClick={isTypewriterActive ? handleStopTypewriter : handleSend}
+              disabled={isTypewriterActive ? false : ((!message.trim() && uploadedFiles.length === 0) || disabled)}
               size="medium"
               sx={{
-                background: (message.trim() || uploadedFiles.length > 0)
-                  ? 'linear-gradient(135deg, #00d4aa 0%, #00b894 50%, #00a085 100%)' 
-                  : mode === 'light' 
-                    ? 'rgba(0,0,0,0.1)' 
-                    : 'rgba(255,255,255,0.1)',
+                background: isTypewriterActive 
+                  ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 50%, #d63447 100%)' // Red gradient for stop
+                  : (message.trim() || uploadedFiles.length > 0)
+                    ? 'linear-gradient(135deg, #00d4aa 0%, #00b894 50%, #00a085 100%)' 
+                    : mode === 'light' 
+                      ? 'rgba(0,0,0,0.1)' 
+                      : 'rgba(255,255,255,0.1)',
                 color: 'white',
                 border: '1px solid rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
@@ -567,13 +577,17 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                 width: isMobile ? 36 : 40, // Consistent sizing
                 height: isMobile ? 36 : 40,
                 '&:hover': {
-                  background: (message.trim() || uploadedFiles.length > 0)
-                    ? 'linear-gradient(135deg, #00e6c0 0%, #00d4aa 50%, #00b894 100%)' 
-                    : 'rgba(255,255,255,0.15)',
+                  background: isTypewriterActive
+                    ? 'linear-gradient(135deg, #ff7979 0%, #ff6b6b 50%, #ee5a52 100%)' // Lighter red on hover
+                    : (message.trim() || uploadedFiles.length > 0)
+                      ? 'linear-gradient(135deg, #00e6c0 0%, #00d4aa 50%, #00b894 100%)' 
+                      : 'rgba(255,255,255,0.15)',
                   transform: 'translateY(-2px) scale(1.05)',
-                  boxShadow: (message.trim() || uploadedFiles.length > 0)
-                    ? '0 6px 20px rgba(0, 212, 170, 0.4)' 
-                    : '0 4px 12px rgba(255,255,255,0.2)',
+                  boxShadow: isTypewriterActive
+                    ? '0 6px 20px rgba(255, 107, 107, 0.4)' // Red shadow for stop
+                    : (message.trim() || uploadedFiles.length > 0)
+                      ? '0 6px 20px rgba(0, 212, 170, 0.4)' 
+                      : '0 4px 12px rgba(255,255,255,0.2)',
                 },
                 '&.Mui-disabled': {
                   background: 'rgba(255,255,255,0.05)',
@@ -582,7 +596,11 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
                 },
               }}
             >
-              <Send sx={{ fontSize: isMobile ? '1.1rem' : '1.25rem' }} />
+              {isTypewriterActive ? (
+                <Stop sx={{ fontSize: isMobile ? '1.1rem' : '1.25rem' }} />
+              ) : (
+                <Send sx={{ fontSize: isMobile ? '1.1rem' : '1.25rem' }} />
+              )}
             </IconButton>
           </Tooltip>
         </Box>

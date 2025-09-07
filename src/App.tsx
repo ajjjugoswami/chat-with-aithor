@@ -9,7 +9,7 @@ import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/apiKeys";
 import { sendToAI, type ChatMessage } from "./services/aiServices";
 import { saveChatsToStorage, loadChatsFromStorage } from "./utils/chatStorage";
-import { stopAllTypewriters } from "./utils/typewriterState";
+import { stopAllTypewriters, markMessageAsTyped } from "./utils/typewriterState";
 import {
   getSidebarCollapsed,
   saveSidebarCollapsed,
@@ -110,6 +110,18 @@ function App() {
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(
     undefined
   );
+
+  // Mark all existing AI messages as already typed on app load (one-time initialization)
+  useEffect(() => {
+    const initialChats = loadChatsFromStorage();
+    initialChats.forEach(chat => {
+      chat.messages.forEach(message => {
+        if (message.sender === 'ai' && message.content !== 'Thinking...') {
+          markMessageAsTyped(message.id);
+        }
+      });
+    });
+  }, []); // Only run once on mount
 
   // Save chats to localStorage whenever chats change
   useEffect(() => {

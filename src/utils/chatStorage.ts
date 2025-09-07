@@ -36,8 +36,13 @@ export const saveChatsToStorage = (chats: Chat[]): void => {
     const storedChats = chats.map(chat => ({
       ...chat,
       messages: chat.messages.map((msg) => ({
-        ...msg,
-        timestamp: msg.timestamp.toISOString()
+        id: msg.id,
+        content: msg.content,
+        sender: msg.sender,
+        timestamp: msg.timestamp.toISOString(),
+        modelId: msg.modelId,
+        enabledPanels: msg.enabledPanels
+        // Explicitly exclude isNewMessage - it's not part of StoredMessage interface
       }))
     }));
     localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(storedChats));
@@ -56,7 +61,8 @@ export const loadChatsFromStorage = (): Chat[] => {
       ...chat,
       messages: chat.messages.map(msg => ({
         ...msg,
-        timestamp: new Date(msg.timestamp)
+        timestamp: new Date(msg.timestamp),
+        isNewMessage: false // Ensure loaded messages are never treated as new
       }))
     }));
   } catch (error) {
