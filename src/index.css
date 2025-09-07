@@ -9,6 +9,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Prevent zoom and viewport jumping on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent input zoom on iOS Safari */
+input, textarea, select {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
 a {
   font-weight: 500;
   color: #646cff;

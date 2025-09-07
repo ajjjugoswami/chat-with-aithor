@@ -339,9 +339,21 @@ function App() {
   };
   const isMobile = useMediaQuery("(max-width: 640px)");
 
+  // Add body class for mobile keyboard handling
+  useEffect(() => {
+    document.body.classList.add('chat-active');
+    document.documentElement.classList.add('chat-active');
+    
+    return () => {
+      document.body.classList.remove('chat-active');
+      document.documentElement.classList.remove('chat-active');
+    };
+  }, []);
+
   return (
-    <ChatLayout
-      sidebarCollapsed={sidebarCollapsed}
+    <div className="chat-interface">
+      <ChatLayout
+        sidebarCollapsed={sidebarCollapsed}
       sidebar={
         <>
           {isMobile ? (
@@ -397,6 +409,7 @@ function App() {
         )
       }
     />
+    </div>
   );
 }
 
