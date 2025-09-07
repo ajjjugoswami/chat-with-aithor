@@ -38,6 +38,7 @@ export default function LandingPage() {
         "& .MuiAccordionSummary-root": { backgroundColor: "#fff" },
         "& .MuiAccordionDetails-root": { backgroundColor: "#fff" },
       }}
+      className="landing-page"
     >
       <Header />
       <HeroSection />

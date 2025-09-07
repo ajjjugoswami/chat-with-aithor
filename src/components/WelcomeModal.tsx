@@ -303,7 +303,7 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
                   textShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
               >
-                Welcome to Aithor{user?.name ? `, ${user.name}!` : "!"}
+                Welcome to Aithor {user?.name ? `, ${user.name}!` : "!"}
               </Typography>
               <Typography
                 variant="body1"
