@@ -10,6 +10,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
   .landing-page {
     scrollbar-width: thin;
     scrollbar-color: #10b981 #f0fdf4;

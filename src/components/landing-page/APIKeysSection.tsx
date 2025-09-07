@@ -303,7 +303,7 @@ const helpfulResources = [
 
 export default function APIKeysSection() {
   return (
-    <Box id="api-keys" sx={{ py: { xs: 6, sm: 8, lg: 10 }, backgroundColor: "#f9fafb" }}>
+    <Box id="api-keys" sx={{ py: { xs: 6, sm: 8, lg: 10 }, backgroundColor: "#f9fafb", scrollMarginTop: "80px" }}>
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ textAlign: "center", mb: { xs: 6, lg: 8 } }}>

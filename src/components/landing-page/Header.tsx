@@ -131,14 +131,6 @@ export default function Header() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  const handleNavClick = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-    setMobileMenuOpen(false);
-  };
-
   return (
     <StyledAppBar>
       <Container maxWidth="xl">
@@ -243,7 +235,9 @@ export default function Header() {
 
           <List sx={{ p: 0, gap: 1, display: "flex", flexDirection: "column" }}>
             <ListItem
-              onClick={() => handleNavClick("#models")}
+              component="a"
+              href="#models"
+              onClick={() => setMobileMenuOpen(false)}
               sx={{
                 cursor: "pointer",
                 borderRadius: "12px",
@@ -266,7 +260,9 @@ export default function Header() {
             </ListItem>
 
             <ListItem
-              onClick={() => handleNavClick("#features")}
+              component="a"
+              href="#features"
+              onClick={() => setMobileMenuOpen(false)}
               sx={{
                 cursor: "pointer",
                 borderRadius: "12px",
@@ -289,7 +285,9 @@ export default function Header() {
             </ListItem>
 
             <ListItem
-              onClick={() => handleNavClick("#api-keys")}
+              component="a"
+              href="#api-keys"
+              onClick={() => setMobileMenuOpen(false)}
               sx={{
                 cursor: "pointer",
                 borderRadius: "12px",

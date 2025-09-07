@@ -116,6 +116,7 @@ export default function AIModelsSection() {
         py: { xs: 8, sm: 12, lg: 16 },
         background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
         position: "relative",
+        scrollMarginTop: "80px",
         "&::before": {
           content: '""',
           position: "absolute",

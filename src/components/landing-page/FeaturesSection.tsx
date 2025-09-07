@@ -137,6 +137,7 @@ export default function FeaturesSection() {
         py: { xs: 8, sm: 12, lg: 16 }, 
         background: "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 50%, #f9fafb 100%)",
         position: "relative",
+        scrollMarginTop: "80px",
         "&::before": {
           content: '""',
           position: "absolute",
