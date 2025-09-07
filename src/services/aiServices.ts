@@ -26,7 +26,7 @@ export async function sendToChatGPT(
   try {
     // Map model IDs to actual OpenAI model names
     let actualModel = "gpt-4o-mini"; // Default to free tier
-    
+
     switch (modelId) {
       case "gpt-4o-mini":
         actualModel = "gpt-4o-mini";
@@ -113,7 +113,7 @@ export async function sendToGemini(
 
     // Map model IDs to actual Gemini model names
     let modelName = "gemini-1.5-flash"; // Default to free tier
-    
+
     switch (modelId) {
       case "gemini-2.5-lite":
         modelName = "gemini-1.5-flash"; // Map to available free model
@@ -219,7 +219,7 @@ export async function sendToClaude(
   try {
     // Map model IDs to actual Claude model names
     let actualModel = "claude-3-haiku-20240307"; // Default to free tier
-    
+
     switch (modelId) {
       case "claude-3-haiku":
         actualModel = "claude-3-haiku-20240307";
@@ -242,6 +242,7 @@ export async function sendToClaude(
         "Content-Type": "application/json",
         "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
       },
       body: JSON.stringify({
         model: actualModel,
@@ -291,7 +292,7 @@ export async function sendToDeepseek(
   try {
     // Map model IDs to actual DeepSeek model names
     let actualModel = "deepseek-chat"; // Default to free tier
-    
+
     switch (modelId) {
       case "deepseek-chat":
         actualModel = "deepseek-chat";
@@ -305,20 +306,23 @@ export async function sendToDeepseek(
         break;
     }
 
-    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: actualModel,
-        messages: messages,
-        max_tokens: 1000,
-        temperature: 0.7,
-        stream: false,
-      }),
-    });
+    const response = await fetch(
+      "https://api.deepseek.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: actualModel,
+          messages: messages,
+          max_tokens: 1000,
+          temperature: 0.7,
+          stream: false,
+        }),
+      }
+    );
 
     console.log("Deepseek API Request:", {
       model: actualModel,
@@ -370,15 +374,17 @@ export async function sendToPerplexity(
   try {
     // Format messages to ensure proper alternating pattern for Perplexity
     const formattedMessages: ChatMessage[] = [];
-    
+
     // Add system messages first (if any)
-    const systemMessages = messages.filter(msg => msg.role === "system");
+    const systemMessages = messages.filter((msg) => msg.role === "system");
     formattedMessages.push(...systemMessages);
-    
+
     // Process user and assistant messages to ensure alternating pattern
-    const conversationMessages = messages.filter(msg => msg.role !== "system");
+    const conversationMessages = messages.filter(
+      (msg) => msg.role !== "system"
+    );
     let lastRole: string | null = null;
-    
+
     for (const message of conversationMessages) {
       // Skip consecutive messages from the same role to maintain alternating pattern
       if (message.role !== lastRole) {
@@ -394,7 +400,7 @@ export async function sendToPerplexity(
         }
       }
     }
-    
+
     // Ensure the conversation ends with a user message
     const lastMessage = formattedMessages[formattedMessages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
@@ -404,7 +410,7 @@ export async function sendToPerplexity(
 
     // Map model IDs to actual Perplexity model names
     let actualModel = "sonar"; // Default to free tier
-    
+
     switch (modelId) {
       case "perplexity-sonar":
         actualModel = "sonar";
@@ -422,14 +428,14 @@ export async function sendToPerplexity(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: actualModel,
         messages: formattedMessages,
         max_tokens: 1000,
         temperature: 0.7,
-        stream: false
+        stream: false,
       }),
     });
 
