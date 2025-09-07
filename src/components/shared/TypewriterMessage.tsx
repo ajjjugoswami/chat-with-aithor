@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import { useTheme } from '../../hooks/useTheme';
+import { addActiveTypewriter, removeActiveTypewriter } from '../../utils/typewriterState';
 
 interface TypewriterMessageProps {
   content: string;
@@ -52,13 +53,34 @@ const TypewriterMessage = ({
       } else {
         setIsTyping(false);
         onComplete?.();
+        // Remove from active typewriters when complete
+        if (cleanupFunction) {
+          removeActiveTypewriter(cleanupFunction);
+        }
       }
     };
+
+    // Cleanup function to stop typing
+    const cleanupFunction = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      // Show complete content immediately when interrupted
+      setDisplayedContent(content);
+      setIsTyping(false);
+      onComplete?.();
+    };
+
+    // Register this typewriter as active
+    addActiveTypewriter(cleanupFunction);
 
     // Start typing after a small delay
     timeoutRef.current = setTimeout(typeNextCharacter, 100);
 
     return () => {
+      // Remove from active typewriters on unmount
+      removeActiveTypewriter(cleanupFunction);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

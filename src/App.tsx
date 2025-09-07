@@ -9,6 +9,7 @@ import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/apiKeys";
 import { sendToAI, type ChatMessage } from "./services/aiServices";
 import { saveChatsToStorage, loadChatsFromStorage } from "./utils/chatStorage";
+import { stopAllTypewriters } from "./utils/typewriterState";
 import {
   getSidebarCollapsed,
   saveSidebarCollapsed,
@@ -139,6 +140,24 @@ function App() {
     if (selectedChatId === chatId) {
       setSelectedChatId(undefined);
     }
+  };
+
+  const handleSettingsClick = () => {
+    // Stop any active typewriter animations when navigating to settings
+    stopAllTypewriters();
+    setCurrentView("settings");
+  };
+
+  const handleBackToChat = () => {
+    // Stop any active typewriter animations when navigating back to chat
+    stopAllTypewriters();
+    setCurrentView("chat");
+  };
+
+  const handleChatSelect = (chatId: string) => {
+    // Stop any active typewriter animations when switching chats
+    stopAllTypewriters();
+    setSelectedChatId(chatId);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -318,8 +337,8 @@ function App() {
               onNewChat={handleNewChat}
               chats={chats}
               selectedChatId={selectedChatId}
-              onChatSelect={setSelectedChatId}
-              onSettingsClick={() => setCurrentView("settings")}
+              onChatSelect={handleChatSelect}
+              onSettingsClick={handleSettingsClick}
               onDeleteChat={handleDeleteChat}
             />
           ) : (
@@ -327,8 +346,8 @@ function App() {
               onNewChat={handleNewChat}
               chats={chats}
               selectedChatId={selectedChatId}
-              onChatSelect={setSelectedChatId}
-              onSettingsClick={() => setCurrentView("settings")}
+              onChatSelect={handleChatSelect}
+              onSettingsClick={handleSettingsClick}
               onDeleteChat={handleDeleteChat}
               isCollapsed={sidebarCollapsed}
               onToggleCollapse={handleSidebarToggle}
@@ -341,7 +360,7 @@ function App() {
           <SettingsPage
             models={aiModels}
             onModelToggle={handleModelToggle}
-            onBack={() => setCurrentView("chat")}
+            onBack={handleBackToChat}
           />
         ) : (
           <MultiPanelChatArea
@@ -351,8 +370,8 @@ function App() {
             onNewChat={handleNewChat}
             chats={chats}
             selectedChatId={selectedChatId}
-            onChatSelect={setSelectedChatId}
-            onSettingsClick={() => setCurrentView("settings")}
+            onChatSelect={handleChatSelect}
+            onSettingsClick={handleSettingsClick}
             onDeleteChat={handleDeleteChat}
             chatInput={
               <ChatInput
