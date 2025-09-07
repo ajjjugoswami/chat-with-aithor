@@ -18,6 +18,8 @@ interface FormattedMessageProps {
   timestamp?: Date;
   isTyping?: boolean;
   enableTypewriter?: boolean;
+  isNewMessage?: boolean; // Add this prop to control animation
+  onTypewriterComplete?: () => void; // Callback when typewriter completes
 }
 
 export default function FormattedMessage({ 
@@ -26,7 +28,9 @@ export default function FormattedMessage({
   modelColor,
   timestamp,
   isTyping = false,
-  enableTypewriter = false
+  enableTypewriter = false,
+  isNewMessage = false,
+  onTypewriterComplete
 }: FormattedMessageProps) {
   const { mode } = useTheme();
   const isMobile = useMediaQuery('(max-width: 640px)');
@@ -480,6 +484,8 @@ export default function FormattedMessage({
               speed={25}
               isUser={false}
               modelColor={modelColor}
+              shouldAnimate={isNewMessage}
+              onComplete={onTypewriterComplete}
             />
           ) : (
             <ReactMarkdown

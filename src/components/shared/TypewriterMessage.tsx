@@ -12,6 +12,7 @@ interface TypewriterMessageProps {
   onComplete?: () => void;
   isUser?: boolean;
   modelColor?: string;
+  shouldAnimate?: boolean; // Add prop to control animation
 }
 
 const TypewriterMessage = ({
@@ -19,7 +20,8 @@ const TypewriterMessage = ({
   speed = 30,
   onComplete,
   isUser = false,
-  modelColor
+  modelColor,
+  shouldAnimate = true // Default to true for backward compatibility
 }: TypewriterMessageProps) => {
   const { mode } = useTheme();
   const [displayedContent, setDisplayedContent] = useState('');
@@ -28,8 +30,8 @@ const TypewriterMessage = ({
   const indexRef = useRef(0);
 
   useEffect(() => {
-    if (isUser) {
-      // For user messages, show immediately without typing effect
+    if (isUser || !shouldAnimate) {
+      // For user messages or when animation is disabled, show immediately without typing effect
       setDisplayedContent(content);
       setIsTyping(false);
       onComplete?.();
@@ -61,7 +63,7 @@ const TypewriterMessage = ({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [content, speed, onComplete, isUser]);
+  }, [content, speed, onComplete, isUser, shouldAnimate]);
 
   // If it's a user message or typing is complete, render normally
   if (isUser || !isTyping) {

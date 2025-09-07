@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import FormattedMessage from "./shared/FormattedMessage";
 import { useTheme } from "../hooks/useTheme";
+import { hasMessageBeenTyped, markMessageAsTyped } from "../utils/typewriterState";
 
 interface Message {
   id: string;
@@ -11,6 +12,7 @@ interface Message {
   timestamp: Date;
   modelId?: string;
   enabledPanels?: string[];
+  isNewMessage?: boolean; // Track if this is a newly received message (for typewriter effect)
 }
 
 interface ChatAreaProps {
@@ -115,13 +117,26 @@ function MessageBubble({ message }: { message: Message }) {
   const isThinking =
     message.content === "Thinking..." && message.sender === "ai";
 
+  // Check if this message should show typewriter effect
+  const shouldShowTypewriter = 
+    message.sender === "ai" && 
+    !isThinking && 
+    message.isNewMessage === true && 
+    !hasMessageBeenTyped(message.id);
+
+  const handleTypewriterComplete = () => {
+    markMessageAsTyped(message.id);
+  };
+
   return (
     <FormattedMessage
       content={message.content}
       isUser={message.sender === "user"}
       timestamp={message.timestamp}
       isTyping={isThinking}
-      enableTypewriter={message.sender === "ai" && !isThinking}
+      enableTypewriter={shouldShowTypewriter}
+      isNewMessage={shouldShowTypewriter}
+      onTypewriterComplete={handleTypewriterComplete}
     />
   );
 }

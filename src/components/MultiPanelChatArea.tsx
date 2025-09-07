@@ -37,6 +37,7 @@ import chatbotAnimation from "./shared/animation/chatbot.json";
 import perplexicityAniamtion from "./shared/animation/perplexcityAnimation.json";
 import GeminiRobo from "./shared/animation/geminiRobo.json";
 import { useTheme } from "../hooks/useTheme";
+import { hasMessageBeenTyped, markMessageAsTyped } from "../utils/typewriterState";
 
 interface Message {
   id: string;
@@ -45,6 +46,7 @@ interface Message {
   timestamp: Date;
   modelId?: string;
   enabledPanels?: string[]; // Track which panels were enabled when this message was sent
+  isNewMessage?: boolean; // Track if this is a newly received message (for typewriter effect)
 }
 
 interface ModelPanelProps {
@@ -410,6 +412,17 @@ function MessageBubble({
   const isThinking =
     message.content === "Thinking..." && message.sender === "ai";
 
+  // Check if this message should show typewriter effect
+  const shouldShowTypewriter = 
+    message.sender === "ai" && 
+    !isThinking && 
+    message.isNewMessage === true && 
+    !hasMessageBeenTyped(message.id);
+
+  const handleTypewriterComplete = () => {
+    markMessageAsTyped(message.id);
+  };
+
   return (
     <FormattedMessage
       content={message.content}
@@ -417,7 +430,9 @@ function MessageBubble({
       modelColor={modelColor}
       timestamp={message.timestamp}
       isTyping={isThinking}
-      enableTypewriter={message.sender === "ai" && !isThinking}
+      enableTypewriter={shouldShowTypewriter}
+      isNewMessage={shouldShowTypewriter}
+      onTypewriterComplete={handleTypewriterComplete}
     />
   );
 }

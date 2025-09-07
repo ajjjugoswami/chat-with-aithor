@@ -34,6 +34,7 @@ interface Message {
   timestamp: Date;
   modelId?: string;
   enabledPanels?: string[]; // Track which panels were enabled when this message was sent
+  isNewMessage?: boolean; // Track if this is a newly received message (for typewriter effect)
 }
 
 interface Chat {
@@ -228,6 +229,7 @@ function App() {
           sender: "ai",
           timestamp: new Date(),
           modelId: model.id,
+          isNewMessage: true, // This is a new message that should show thinking animation
         };
 
         setChats((prev) =>
@@ -255,6 +257,7 @@ function App() {
           sender: "ai",
           timestamp: new Date(),
           modelId: model.id,
+          isNewMessage: true, // This is a new message that should show typewriter effect
         };
 
         setChats((prev) =>
@@ -278,6 +281,7 @@ function App() {
           sender: "ai",
           timestamp: new Date(),
           modelId: model.id,
+          isNewMessage: true, // This is a new error message
         };
 
         setChats((prev) =>
