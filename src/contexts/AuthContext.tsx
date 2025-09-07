@@ -65,6 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     // Redirect to landing page
     navigate('/');
+    localStorage.removeItem('aithor_welcome_modal_shown');
   };
 
   const value = {
