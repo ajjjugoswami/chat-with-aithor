@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import type { ReactNode } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import FormattedMessage from "./shared/FormattedMessage";
 import { useTheme } from "../hooks/useTheme";
 import { hasMessageBeenTyped, markMessageAsTyped } from "../utils/typewriterState";
@@ -124,9 +124,9 @@ function MessageBubble({ message }: { message: Message }) {
     message.isNewMessage === true && 
     !hasMessageBeenTyped(message.id);
 
-  const handleTypewriterComplete = () => {
+  const handleTypewriterComplete = useCallback(() => {
     markMessageAsTyped(message.id);
-  };
+  }, [message.id]);
 
   return (
     <FormattedMessage

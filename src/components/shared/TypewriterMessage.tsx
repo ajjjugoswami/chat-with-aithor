@@ -29,13 +29,24 @@ const TypewriterMessage = ({
   const [isTyping, setIsTyping] = useState(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const indexRef = useRef(0);
+  const onCompleteRef = useRef(onComplete);
+  const hasCompletedRef = useRef(false);
+
+  // Update the ref when onComplete changes
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
+    // Reset completion flag for new content
+    hasCompletedRef.current = false;
+
     if (isUser || !shouldAnimate) {
       // For user messages or when animation is disabled, show immediately without typing effect
       setDisplayedContent(content);
       setIsTyping(false);
-      onComplete?.();
+      if (!hasCompletedRef.current) {
+        hasCompletedRef.current = true;
+        onCompleteRef.current?.();
+      }
       return;
     }
 
@@ -52,7 +63,10 @@ const TypewriterMessage = ({
         timeoutRef.current = setTimeout(typeNextCharacter, speed);
       } else {
         setIsTyping(false);
-        onComplete?.();
+        if (!hasCompletedRef.current) {
+          hasCompletedRef.current = true;
+          onCompleteRef.current?.();
+        }
         // Remove from active typewriters when complete
         if (cleanupFunction) {
           removeActiveTypewriter(cleanupFunction);
@@ -69,7 +83,10 @@ const TypewriterMessage = ({
       // Show complete content immediately when interrupted
       setDisplayedContent(content);
       setIsTyping(false);
-      onComplete?.();
+      if (!hasCompletedRef.current) {
+        hasCompletedRef.current = true;
+        onCompleteRef.current?.();
+      }
     };
 
     // Register this typewriter as active
@@ -85,7 +102,7 @@ const TypewriterMessage = ({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [content, speed, onComplete, isUser, shouldAnimate]);
+  }, [content, speed, isUser, shouldAnimate]);
 
   // If it's a user message or typing is complete, render normally
   if (isUser || !isTyping) {

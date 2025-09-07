@@ -18,6 +18,10 @@ export default function TypewriterText({
 }: TypewriterTextProps) {
   const elementRef = useRef<HTMLSpanElement>(null);
   const typedRef = useRef<Typed | null>(null);
+  const onCompleteRef = useRef(onComplete);
+
+  // Update the ref when onComplete changes
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     if (!elementRef.current) return;
@@ -33,7 +37,7 @@ export default function TypewriterText({
       typeSpeed: speed,
       showCursor: false,
       onComplete: () => {
-        onComplete?.();
+        onCompleteRef.current?.();
       },
     });
 
@@ -42,7 +46,7 @@ export default function TypewriterText({
         typedRef.current.destroy();
       }
     };
-  }, [text, speed, onComplete]);
+  }, [text, speed]);
 
   return (
     <span 

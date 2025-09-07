@@ -8,7 +8,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { ExpandLess, Key } from "@mui/icons-material";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
 import { hasAPIKey } from "../utils/apiKeys";
@@ -419,9 +419,9 @@ function MessageBubble({
     message.isNewMessage === true && 
     !hasMessageBeenTyped(message.id);
 
-  const handleTypewriterComplete = () => {
+  const handleTypewriterComplete = useCallback(() => {
     markMessageAsTyped(message.id);
-  };
+  }, [message.id]);
 
   return (
     <FormattedMessage
