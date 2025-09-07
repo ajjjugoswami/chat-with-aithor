@@ -146,7 +146,12 @@ const apiProviders = [
     name: "OpenAI",
     model: "ChatGPT",
     description: "Get API access for GPT-3.5 and GPT-4 models",
-    icon: <ChatGptIcon sx={{ fontSize: { xs: 28, sm: 32 },color:"#333" }} />,
+    icon: (
+      <ChatGptIcon
+        style={{ color: "#333" }}
+        sx={{ fontSize: { xs: 28, sm: 32 } }}
+      />
+    ),
     url: "https://platform.openai.com/api-keys",
     difficulty: "Easy",
     difficultyColor: "#10b981",
@@ -502,7 +507,7 @@ export default function APIKeysSection() {
             mt: { xs: 8, lg: 12 },
             background: "linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)",
             borderRadius: "32px",
-            p: { xs: 4, sm: 6, lg: 8 },
+            p: { xs: 3, sm: 4, lg: 6 },
             position: "relative",
             "&::before": {
               content: '""',
@@ -526,14 +531,14 @@ export default function APIKeysSection() {
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              mb: 4,
+              mb: { xs: 3, sm: 4 },
               textAlign: "center",
               letterSpacing: "-0.02em",
               position: "relative",
               zIndex: 1,
             }}
           >
-             Helpful Resources & Guides
+            Helpful Resources & Guides
           </Typography>
           <Box
             sx={{
@@ -543,43 +548,44 @@ export default function APIKeysSection() {
                 sm: "repeat(2, 1fr)",
                 lg: "repeat(3, 1fr)",
               },
-              gap: { xs: 3, sm: 4, lg: 6 },
-              mb: { xs: 6, lg: 8 },
+              gap: { xs: 2, sm: 3, lg: 4 },
               position: "relative",
               zIndex: 1,
             }}
           >
             {helpfulResources.map((resource, index) => (
-              <ResourceCard key={index} sx={{ animationDelay: `${index * 0.1}s` }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ display: "flex", alignItems: "flex-start", mb: 3 }}>
+              <ResourceCard key={index} sx={{ animationDelay: `${index * 0.1}s`, height: "100%" }}>
+                <CardContent sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column" }}>
+                  <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
                     <Box
                       sx={{
-                        width: "48px",
-                        height: "48px",
-                        borderRadius: "14px",
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "12px",
                         background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         color: "#059669",
-                        mr: 3,
-                        fontSize: 24,
+                        mr: 2,
+                        fontSize: 20,
                         boxShadow: "0 4px 12px rgba(5, 150, 105, 0.15)",
+                        flexShrink: 0,
                       }}
                     >
                       {resource.icon}
                     </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 2, gap: 1, flexWrap: "wrap" }}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", mb: 1.5, gap: 1, flexWrap: "wrap" }}>
                         <Chip
                           label={resource.category}
                           size="small"
                           sx={{
                             background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
                             color: "white",
-                            fontSize: "0.75rem",
+                            fontSize: "0.7rem",
                             fontWeight: 600,
+                            height: "20px",
                             boxShadow: "0 2px 8px rgba(5, 150, 105, 0.25)",
                           }}
                         />
@@ -589,60 +595,66 @@ export default function APIKeysSection() {
                           sx={{
                             backgroundColor: "#f3f4f6",
                             color: "#6b7280",
-                            fontSize: "0.75rem",
+                            fontSize: "0.7rem",
                             fontWeight: 500,
+                            height: "20px",
                             border: "1px solid #e5e7eb",
                           }}
                         />
                       </Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontSize: "1.125rem",
-                          fontWeight: 700,
-                          color: "#111827",
-                          mb: 2,
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {resource.title}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "1rem",
-                          color: "#6b7280",
-                          mb: 3,
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        {resource.description}
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        size="medium"
-                        endIcon={<ExternalLink sx={{ fontSize: 18 }} />}
-                        onClick={() => window.open(resource.url, '_blank')}
-                        sx={{
-                          background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
-                          color: "white",
-                          fontSize: "0.875rem",
-                          fontWeight: 600,
-                          textTransform: "none",
-                          borderRadius: "12px",
-                          px: 3,
-                          py: 1.5,
-                          boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)",
-                          "&:hover": {
-                            background: "linear-gradient(135deg, #047857 0%, #059669 100%)",
-                            transform: "translateY(-2px)",
-                            boxShadow: "0 6px 16px rgba(5, 150, 105, 0.4)",
-                          },
-                        }}
-                      >
-                        Read Guide
-                      </Button>
                     </Box>
                   </Box>
+                  
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: "1rem",
+                      fontWeight: 700,
+                      color: "#111827",
+                      mb: 1.5,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {resource.title}
+                  </Typography>
+                  
+                  <Typography
+                    sx={{
+                      fontSize: "0.875rem",
+                      color: "#6b7280",
+                      mb: 2.5,
+                      lineHeight: 1.5,
+                      flex: 1,
+                    }}
+                  >
+                    {resource.description}
+                  </Typography>
+                  
+                  <Button
+                    variant="contained"
+                    size="small"
+                    endIcon={<ExternalLink sx={{ fontSize: 16 }} />}
+                    onClick={() => window.open(resource.url, '_blank')}
+                    sx={{
+                      background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                      color: "white",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                      textTransform: "none",
+                      borderRadius: "10px",
+                      px: 2.5,
+                      py: 1,
+                      alignSelf: "flex-start",
+                      boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)",
+                      "&:hover": {
+                        background: "linear-gradient(135deg, #047857 0%, #059669 100%)",
+                        transform: "translateY(-1px)",
+                        boxShadow: "0 6px 16px rgba(5, 150, 105, 0.4)",
+                      },
+                    }}
+                  >
+                    Read Guide
+                  </Button>
                 </CardContent>
               </ResourceCard>
             ))}

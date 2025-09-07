@@ -1,8 +1,13 @@
 import { Box, Container, Typography, Card, CardContent } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ChatGptIcon, GeminiAi, ClaudeIcon, DeepseekIcon, PerplexicityIcon } from "../shared/Icons";
+import {
+  ChatGptIcon,
+  GeminiAi,
+  ClaudeIcon,
+  DeepseekIcon,
+  PerplexicityIcon,
+} from "../shared/Icons";
 
- 
 const ModelCard = styled(Card)(() => ({
   textAlign: "center",
   border: "none",
@@ -19,7 +24,8 @@ const ModelCard = styled(Card)(() => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: "linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%)",
+    background:
+      "linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%)",
     opacity: 0,
     transition: "opacity 0.4s ease",
   },
@@ -73,7 +79,12 @@ const models = [
   {
     name: "ChatGPT",
     description: "OpenAI's flagship conversational AI",
-    icon: <ChatGptIcon sx={{ fontSize: { xs: 32, sm: 40 } }} />,
+    icon: (
+      <ChatGptIcon
+        style={{ color: "#333" }}
+        sx={{ fontSize: { xs: 32, sm: 40 } }}
+      />
+    ),
   },
   {
     name: "Gemini",
@@ -99,9 +110,9 @@ const models = [
 
 export default function AIModelsSection() {
   return (
-    <Box 
-      id="models" 
-      sx={{ 
+    <Box
+      id="models"
+      sx={{
         py: { xs: 8, sm: 12, lg: 16 },
         background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
         position: "relative",
@@ -112,9 +123,10 @@ export default function AIModelsSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: "radial-gradient(circle at 80% 20%, rgba(5, 150, 105, 0.05) 0%, transparent 50%)",
+          background:
+            "radial-gradient(circle at 80% 20%, rgba(5, 150, 105, 0.05) 0%, transparent 50%)",
           pointerEvents: "none",
-        }
+        },
       }}
     >
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
@@ -165,15 +177,9 @@ export default function AIModelsSection() {
           {models.map((model, index) => (
             <ModelCard key={index}>
               <CardContent sx={{ p: 4 }}>
-                <ModelIcon>
-                  {model.icon}
-                </ModelIcon>
-                <ModelName>
-                  {model.name}
-                </ModelName>
-                <ModelDescription>
-                  {model.description}
-                </ModelDescription>
+                <ModelIcon>{model.icon}</ModelIcon>
+                <ModelName>{model.name}</ModelName>
+                <ModelDescription>{model.description}</ModelDescription>
               </CardContent>
             </ModelCard>
           ))}
