@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Card, CardContent, Button, Chip } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { styled, keyframes } from "@mui/material/styles";
 import { 
   ChatGptIcon, 
   GeminiAi, 
@@ -18,71 +18,127 @@ import {
   School as TutorialIcon
 } from "@mui/icons-material";
 
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const APICard = styled(Card)(() => ({
   height: "100%",
-  border: "1px solid #e5e7eb",
-  borderRadius: "16px",
-  boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    boxShadow: "0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-    transform: "translateY(-2px)",
-  },
-  backgroundColor: "#fff",
+  border: "none",
+  borderRadius: "24px",
+  background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+  position: "relative",
   overflow: "hidden",
+  animation: `${fadeInUp} 0.6s ease-out`,
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "6px",
+    background: "linear-gradient(90deg, #059669, #10b981, #047857)",
+    transform: "scaleX(0)",
+    transformOrigin: "left",
+    transition: "transform 0.4s ease",
+  },
+  "&:hover": {
+    transform: "translateY(-12px)",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+    "&::before": {
+      transform: "scaleX(1)",
+    },
+  },
 }));
 
-const ProviderIcon = styled(Box)(({ theme }) => ({
-  width: 56,
-  height: 56,
+const ProviderIcon = styled(Box)(() => ({
+  width: "72px",
+  height: "72px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  margin: "0 auto",
-  marginBottom: theme.spacing(2),
-  borderRadius: "50%",
-  background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
-  border: "2px solid #e2e8f0",
-  [theme.breakpoints.up("sm")]: {
-    width: 64,
-    height: 64,
+  margin: "0 auto 24px",
+  borderRadius: "20px",
+  background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
+  position: "relative",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: "3px",
+    borderRadius: "17px",
+    background: "linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)",
+    zIndex: 1,
+  },
+  "& > svg": {
+    position: "relative",
+    zIndex: 2,
   },
 }));
 
 const StepCard = styled(Card)(() => ({
-  border: "1px solid #e5e7eb",
-  borderRadius: "12px",
-  padding: "1.5rem",
-  background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
-  transition: "transform 0.2s ease",
+  border: "none",
+  borderRadius: "20px",
+  padding: "32px",
+  background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+  transition: "all 0.3s ease",
+  position: "relative",
   "&:hover": {
-    transform: "translateY(-1px)",
+    transform: "translateY(-4px)",
+    boxShadow: "0 12px 32px rgba(0, 0, 0, 0.12)",
   },
 }));
 
 const StepNumber = styled(Box)(() => ({
-  width: 32,
-  height: 32,
-  borderRadius: "50%",
-  background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+  width: "48px",
+  height: "48px",
+  borderRadius: "16px",
+  background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
   color: "white",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontWeight: "bold",
-  fontSize: "1rem",
-  marginBottom: "1rem",
+  fontWeight: "700",
+  fontSize: "1.25rem",
+  marginBottom: "24px",
+  boxShadow: "0 4px 16px rgba(5, 150, 105, 0.3)",
 }));
 
 const ResourceCard = styled(Card)(() => ({
-  border: "1px solid #e5e7eb",
-  borderRadius: "12px",
-  transition: "all 0.2s ease",
-  "&:hover": {
-    boxShadow: "0 4px 12px -2px rgba(0, 0, 0, 0.1)",
-    transform: "translateY(-1px)",
+  border: "none",
+  borderRadius: "20px",
+  background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+  transition: "all 0.3s ease",
+  position: "relative",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "4px",
+    background: "linear-gradient(90deg, #059669, #10b981)",
+    opacity: 0,
+    transition: "opacity 0.3s ease",
   },
-  backgroundColor: "#fff",
+  "&:hover": {
+    transform: "translateY(-8px)",
+    boxShadow: "0 16px 40px rgba(0, 0, 0, 0.12)",
+    "&::before": {
+      opacity: 1,
+    },
+  },
 }));
 
 const apiProviders = [
@@ -441,18 +497,43 @@ export default function APIKeysSection() {
         </Box>
 
         {/* Helpful Resources Section */}
-        <Box sx={{ mt: { xs: 6, lg: 8 } }}>
+        <Box 
+          sx={{ 
+            mt: { xs: 8, lg: 12 },
+            background: "linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)",
+            borderRadius: "32px",
+            p: { xs: 4, sm: 6, lg: 8 },
+            position: "relative",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.05) 0%, transparent 50%)",
+              borderRadius: "32px",
+              pointerEvents: "none",
+            }
+          }}
+        >
           <Typography
-            variant="h4"
+            variant="h3"
             sx={{
-              fontSize: { xs: "1.25rem", sm: "1.5rem" },
-              fontWeight: "bold",
-              color: "#111827",
+              fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+              fontWeight: "800",
+              background: "linear-gradient(135deg, #111827 0%, #374151 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
               mb: 4,
               textAlign: "center",
+              letterSpacing: "-0.02em",
+              position: "relative",
+              zIndex: 1,
             }}
           >
-            📚 Helpful Resources & Guides
+             Helpful Resources & Guides
           </Typography>
           <Box
             sx={{
@@ -462,55 +543,65 @@ export default function APIKeysSection() {
                 sm: "repeat(2, 1fr)",
                 lg: "repeat(3, 1fr)",
               },
-              gap: { xs: 2, sm: 3, lg: 4 },
+              gap: { xs: 3, sm: 4, lg: 6 },
               mb: { xs: 6, lg: 8 },
+              position: "relative",
+              zIndex: 1,
             }}
           >
             {helpfulResources.map((resource, index) => (
-              <ResourceCard key={index}>
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+              <ResourceCard key={index} sx={{ animationDelay: `${index * 0.1}s` }}>
+                <CardContent sx={{ p: 4 }}>
+                  <Box sx={{ display: "flex", alignItems: "flex-start", mb: 3 }}>
                     <Box
                       sx={{
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "14px",
+                        background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         color: "#059669",
-                        mr: 2,
-                        mt: 0.5,
-                        fontSize: 20,
+                        mr: 3,
+                        fontSize: 24,
+                        boxShadow: "0 4px 12px rgba(5, 150, 105, 0.15)",
                       }}
                     >
                       {resource.icon}
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", mb: 2, gap: 1, flexWrap: "wrap" }}>
                         <Chip
                           label={resource.category}
                           size="small"
                           sx={{
-                            backgroundColor: "#ecfdf5",
-                            color: "#059669",
+                            background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                            color: "white",
                             fontSize: "0.75rem",
-                            fontWeight: 500,
-                            mr: 1,
+                            fontWeight: 600,
+                            boxShadow: "0 2px 8px rgba(5, 150, 105, 0.25)",
                           }}
                         />
                         <Chip
                           label={resource.provider}
                           size="small"
-                          variant="outlined"
                           sx={{
-                            borderColor: "#d1d5db",
+                            backgroundColor: "#f3f4f6",
                             color: "#6b7280",
-                            fontSize: "0.7rem",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            border: "1px solid #e5e7eb",
                           }}
                         />
                       </Box>
                       <Typography
                         variant="h6"
                         sx={{
-                          fontSize: "1rem",
-                          fontWeight: 600,
+                          fontSize: "1.125rem",
+                          fontWeight: 700,
                           color: "#111827",
-                          mb: 1,
+                          mb: 2,
                           lineHeight: 1.3,
                         }}
                       >
@@ -518,31 +609,37 @@ export default function APIKeysSection() {
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "0.875rem",
+                          fontSize: "1rem",
                           color: "#6b7280",
-                          mb: 2,
-                          lineHeight: 1.4,
+                          mb: 3,
+                          lineHeight: 1.6,
                         }}
                       >
                         {resource.description}
                       </Typography>
                       <Button
-                        variant="outlined"
-                        size="small"
-                        endIcon={<ExternalLink sx={{ fontSize: 16 }} />}
+                        variant="contained"
+                        size="medium"
+                        endIcon={<ExternalLink sx={{ fontSize: 18 }} />}
                         onClick={() => window.open(resource.url, '_blank')}
                         sx={{
-                          borderColor: "#059669",
-                          color: "#059669",
-                          fontSize: "0.8rem",
+                          background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                          color: "white",
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
                           textTransform: "none",
+                          borderRadius: "12px",
+                          px: 3,
+                          py: 1.5,
+                          boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)",
                           "&:hover": {
-                            backgroundColor: "#ecfdf5",
-                            borderColor: "#047857",
+                            background: "linear-gradient(135deg, #047857 0%, #059669 100%)",
+                            transform: "translateY(-2px)",
+                            boxShadow: "0 6px 16px rgba(5, 150, 105, 0.4)",
                           },
                         }}
                       >
-                        Read More
+                        Read Guide
                       </Button>
                     </Box>
                   </Box>
