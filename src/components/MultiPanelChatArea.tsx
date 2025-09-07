@@ -632,7 +632,7 @@ export default function MultiPanelChatArea({
         display: "flex",
         flexDirection: "column",
         height: isMobile ? "auto" : "100%",
-        minHeight: isMobile ? "calc(100dvh - 48px)" : "100%", // Subtract smaller header height
+        minHeight: isMobile ? "calc(100dvh - 100px)" : "100%", // Subtract smaller header height
         backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
         flex: 1,
         overflow: isMobile ? "visible" : "hidden",
@@ -745,7 +745,7 @@ export default function MultiPanelChatArea({
                 messages={messages}
                 onToggle={onModelToggle}
                 width={
-                  isMobile ? 400 : panelWidths[model.id] || 380 // 400px minimum width on mobile for horizontal scroll
+                  isMobile ? 400 : panelWidths[model.id] || 400 // 400px minimum width on mobile for horizontal scroll
                 }
                 isCollapsed={
                   isMobile ? false : panelCollapsed[model.id] || false
