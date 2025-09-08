@@ -17,6 +17,7 @@ import {
   getPanelEnabled,
   getPanelVariant,
 } from "./utils/panelStorage";
+import { getModelEnabledStates, saveModelEnabledState } from "./utils/modelStorage";
 import { getDefaultVariantForModel } from "./types/modelVariants";
 import {
   ChatGptIcon,
@@ -61,53 +62,56 @@ function App() {
   };
   const { mode } = useTheme();
 
-  const [aiModels, setAiModels] = useState<AIModel[]>([
-    {
-      id: "gpt-4o-mini",
-      name: "gpt-4o-mini",
-      displayName: "ChatGPT",
-      enabled: true,
-      icon: (
-        <ChatGptIcon
-          sx={{ fontSize: 20, color: mode === "light" ? "#333" : "white" }}
-        />
-      ),
-      color: "#10a37f",
-    },
-    {
-      id: "gemini-2.5-lite",
-      name: "gemini-2.5-lite",
-      displayName: "Gemini",
-      enabled: true,
-      icon: <GeminiAi sx={{ fontSize: 20 }} />,
-      color: "#4285f4",
-    },
-     {
-      id: "perplexity-sonar",
-      name: "perplexity-sonar",
-      displayName: "Perplexity",
-      enabled: true,
-      icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
-      color: "#9c27b0",
-    },
-    {
-      id: "deepseek-chat",
-      name: "deepseek-chat",
-      displayName: "DeepSeek Chat",
-      enabled: true,
-      icon: <DeepseekIcon sx={{ fontSize: 20 }} />,
-      color: "#1976d2",
-    },
-    
-    {
-      id: "claude-3-haiku",
-      name: "claude-3-haiku",
-      displayName: "Claude",
-      enabled: true,
-      icon: <ClaudeIcon sx={{ fontSize: 20 }} />,
-      color: "#ff6b35",
-    },
-  ]);
+  const [aiModels, setAiModels] = useState<AIModel[]>(() => {
+    const savedStates = getModelEnabledStates();
+    return [
+      {
+        id: "gpt-4o-mini",
+        name: "gpt-4o-mini",
+        displayName: "ChatGPT",
+        enabled: savedStates["gpt-4o-mini"] ?? true,
+        icon: (
+          <ChatGptIcon
+            sx={{ fontSize: 20, color: mode === "light" ? "#333" : "white" }}
+          />
+        ),
+        color: "#10a37f",
+      },
+      {
+        id: "gemini-2.5-lite",
+        name: "gemini-2.5-lite",
+        displayName: "Gemini",
+        enabled: savedStates["gemini-2.5-lite"] ?? true,
+        icon: <GeminiAi sx={{ fontSize: 20 }} />,
+        color: "#4285f4",
+      },
+       {
+        id: "perplexity-sonar",
+        name: "perplexity-sonar",
+        displayName: "Perplexity",
+        enabled: savedStates["perplexity-sonar"] ?? true,
+        icon: <PerplexicityIcon sx={{ fontSize: 20 }} />,
+        color: "#9c27b0",
+      },
+      {
+        id: "deepseek-chat",
+        name: "deepseek-chat",
+        displayName: "DeepSeek Chat",
+        enabled: savedStates["deepseek-chat"] ?? true,
+        icon: <DeepseekIcon sx={{ fontSize: 20 }} />,
+        color: "#1976d2",
+      },
+      
+      {
+        id: "claude-3-haiku",
+        name: "claude-3-haiku",
+        displayName: "Claude",
+        enabled: savedStates["claude-3-haiku"] ?? true,
+        icon: <ClaudeIcon sx={{ fontSize: 20 }} />,
+        color: "#ff6b35",
+      },
+    ];
+  });
 
   const [chats, setChats] = useState<Chat[]>(() => loadChatsFromStorage());
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(
@@ -335,9 +339,14 @@ function App() {
 
   const handleModelToggle = (modelId: string) => {
     setAiModels((prev) =>
-      prev.map((model) =>
-        model.id === modelId ? { ...model, enabled: !model.enabled } : model
-      )
+      prev.map((model) => {
+        if (model.id === modelId) {
+          const newEnabled = !model.enabled;
+          saveModelEnabledState(modelId, newEnabled);
+          return { ...model, enabled: newEnabled };
+        }
+        return model;
+      })
     );
   };
   const isMobile = useMediaQuery("(max-width: 640px)");
