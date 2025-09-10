@@ -7,7 +7,7 @@ import ChatInput from "./components/ChatInput";
 import SettingsPage from "./components/SettingsPage";
 import WelcomeModal from "./components/WelcomeModal";
 import type { AIModel } from "./components/AIModelTabs";
-import { hasAPIKey } from "./utils/apiKeys";
+import { hasAPIKey } from "./utils/enhancedApiKeys";
 import { sendToAI, type ChatMessage } from "./services/aiServices";
 import { saveChatsToStorage, loadChatsFromStorage } from "./utils/chatStorage";
 import { stopAllTypewriters, markMessageAsTyped } from "./utils/typewriterState";

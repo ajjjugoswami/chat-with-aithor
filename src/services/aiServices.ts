@@ -1,5 +1,5 @@
 // AI API Service Integration
-import { getAPIKeyForModel } from "../utils/apiKeys";
+import { getAPIKeyForModel } from "../utils/enhancedApiKeys";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
