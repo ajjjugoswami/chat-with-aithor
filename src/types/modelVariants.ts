@@ -2,7 +2,7 @@ export interface ModelVariant {
   id: string;
   name: string;
   displayName: string;
-  tier: 'free' | 'premium';
+  tier: 'free' | 'premium' | 'image';
   icon?: string;
   color?: string;
   isDefault?: boolean;
@@ -43,37 +43,24 @@ export const MODEL_VARIANTS: ModelWithVariants[] = [
     ],
   },
   {
-    baseModelId: "gemini-2.5-pro",
+    baseModelId: "gemini-2.0-flash",
     variants: [
       {
-        id: "gemini-2.5-lite",
-        name: "gemini-2.5-lite",
-        displayName: "Gemini 2.5 Lite",
+        id: "gemini-2.0-flash",
+        name: "gemini-2.0-flash",
+        displayName: "Gemini 2.0 Flash",
         tier: "free",
         color: "#4285f4",
         isDefault: true,
       },
       {
-        id: "gemini-2.5-flash",
-        name: "gemini-2.5-flash",
-        displayName: "Gemini 2.5 Flash",
-        tier: "premium",
+        id: "gemini-2.0-flash-exp",
+        name: "gemini-2.0-flash-exp",
+        displayName: "Gemini 2.0 Flash Exp",
+        tier: "image",
         color: "#4285f4",
       },
-      {
-        id: "gemini-1.5-pro",
-        name: "gemini-1.5-pro",
-        displayName: "Gemini 1.5 Pro",
-        tier: "premium",
-        color: "#4285f4",
-      },
-      {
-        id: "gemini-2.5-pro",
-        name: "gemini-2.5-pro",
-        displayName: "Gemini 2.5 Pro",
-        tier: "premium",
-        color: "#4285f4",
-      },
+       
     ],
   },
   {

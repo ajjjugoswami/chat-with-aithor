@@ -80,10 +80,10 @@ function App() {
         color: "#10a37f",
       },
       {
-        id: "gemini-2.5-pro",
-        name: "gemini-2.5-pro",
+        id: "gemini-2.0-flash",
+        name: "gemini-2.0-flash",
         displayName: "Gemini",
-        enabled: savedStates["gemini-2.5-pro"] ?? true,
+        enabled: savedStates["gemini-2.0-flash"] ?? true,
         icon: <GeminiAi sx={{ fontSize: 20 }} />,
         color: "#4285f4",
       },

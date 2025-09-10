@@ -113,82 +113,108 @@ export async function sendToGemini(
     const latestMessage = messages[messages.length - 1];
 
     // Map model IDs to actual Gemini model names
-    let modelName = "gemini-1.5-flash"; // Default to free tier
+    // Support only gemini-2.0-flash and gemini-2.5-flash
+    let modelName = "gemini-2.0-flash"; // Default
 
     switch (modelId) {
-      case "gemini-2.5-lite":
-        modelName = "gemini-1.5-flash"; // Map to available free model
+      case "gemini-2.0-flash":
+        modelName = "gemini-2.0-flash";
         break;
-      case "gemini-2.5-flash":
+      case "gemini-2.0-flash-exp":
         modelName = "gemini-2.0-flash-exp";
         break;
-      case "gemini-1.5-pro":
-        modelName = "gemini-1.5-pro";
-        break;
-      case "gemini-2.5-pro":
-        modelName = "gemini-2.5-pro";
-        break;
       default:
-        // Fallback for backward compatibility
-        modelName = "gemini-1.5-flash";
+        modelName = "gemini-2.0-flash";
         break;
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
+    // Decide initial response modalities: only request images for models known to support them
+    const initialModalities =
+      modelName === "gemini-2.0-flash-exp" ? ["text", "image"] : ["text"];
+
+    const safetySettings = [
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: "BLOCK_MEDIUM_AND_ABOVE",
+      },
+    ];
+
+    const makePayload = (modalities: string[]) => ({
+      contents: [
+        {
+          parts: [
+            {
+              text: latestMessage.content,
+            },
+          ],
         },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: latestMessage.content,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-            responseModalities: ["text", "image"],
-          },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE",
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE",
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE",
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE",
-            },
-          ],
-        }),
-      }
-    );
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+        responseModalities: modalities,
+      },
+      safetySettings,
+    });
+
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+    // Try initial request
+    let response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(makePayload(initialModalities)),
+    });
 
     console.log("Gemini API Response Status:", response.status);
 
+    // If model rejects modalities (e.g., doesn't support image), retry with text-only
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API Error:", errorText);
-      return {
-        success: false,
-        error: `HTTP ${response.status}: ${errorText}`,
-      };
+
+      const modalityErrorPattern =
+        /does not support the requested response modalities|only supports text|requested response modalities/i;
+      if (
+        initialModalities.includes("image") &&
+        modalityErrorPattern.test(errorText)
+      ) {
+        console.log("Gemini rejected image modality, retrying with text-only");
+        response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(makePayload(["text"])),
+        });
+
+        console.log("Gemini retry Response Status:", response.status);
+        if (!response.ok) {
+          const retryError = await response.text();
+          console.error("Gemini retry error:", retryError);
+          return {
+            success: false,
+            error: `HTTP ${response.status}: ${retryError}`,
+          };
+        }
+      } else {
+        return {
+          success: false,
+          error: `HTTP ${response.status}: ${errorText}`,
+        };
+      }
     }
 
     const data = await response.json();
@@ -205,10 +231,13 @@ export async function sendToGemini(
     for (const part of candidate.content.parts) {
       if (part.text) {
         assistantMessage += part.text;
-      } else if (part.inlineData && part.inlineData.mimeType?.startsWith("image/")) {
+      } else if (
+        part.inlineData &&
+        part.inlineData.mimeType?.startsWith("image/")
+      ) {
         images.push({
           mimeType: part.inlineData.mimeType,
-          data: part.inlineData.data
+          data: part.inlineData.data,
         });
       }
     }
@@ -218,13 +247,11 @@ export async function sendToGemini(
     }
 
     // Return both text and images
-    return { 
-      success: true, 
-      message: assistantMessage || "[Image generated]", 
-      images: images.length > 0 ? images : undefined 
+    return {
+      success: true,
+      message: assistantMessage || "[Image generated]",
+      images: images.length > 0 ? images : undefined,
     };
-
-    return { success: true, message: assistantMessage };
   } catch (error) {
     console.error("Gemini API Error:", error);
     return {
