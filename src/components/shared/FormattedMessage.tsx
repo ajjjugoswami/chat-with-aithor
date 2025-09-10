@@ -1,5 +1,5 @@
 import { Box, Typography, IconButton, Avatar, useMediaQuery } from '@mui/material';
-import { ContentCopy, Check } from '@mui/icons-material';
+import { ContentCopy, Check, Download } from '@mui/icons-material';
 import { UserIcon } from './Icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -20,6 +20,8 @@ interface FormattedMessageProps {
   enableTypewriter?: boolean;
   isNewMessage?: boolean; // Add this prop to control animation
   onTypewriterComplete?: () => void; // Callback when typewriter completes
+  images?: Array<{ mimeType: string; data: string }>; // Base64 encoded images
+  imageLinks?: string[]; // Store image URLs/links for generated images
 }
 
 export default function FormattedMessage({ 
@@ -30,12 +32,42 @@ export default function FormattedMessage({
   isTyping = false,
   enableTypewriter = false,
   isNewMessage = false,
-  onTypewriterComplete
+  onTypewriterComplete,
+  images,
+  imageLinks
 }: FormattedMessageProps) {
   const { mode } = useTheme();
   const isMobile = useMediaQuery('(max-width: 640px)');
   const [copiedBlocks, setCopiedBlocks] = useState<Set<number>>(new Set());
   const [messageCopied, setMessageCopied] = useState(false);
+  const handleDownloadImage = (imageData: string, mimeType: string, index: number) => {
+    // Create a blob from the base64 data
+    const byteCharacters = atob(imageData);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+    
+    // Create download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Generate filename based on timestamp and index
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const extension = mimeType.split('/')[1] || 'png';
+    link.download = `generated-image-${timestamp}-${index + 1}.${extension}`;
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up
+    URL.revokeObjectURL(url);
+  };
 
   const handleCopyCode = async (code: string, blockIndex: number) => {
     try {
@@ -575,6 +607,95 @@ export default function FormattedMessage({
               {content}
             </ReactMarkdown>
           )}
+          
+          {/* Render images if present */}
+          {((images && images.length > 0) || (imageLinks && imageLinks.length > 0)) && (
+            <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {/* Render base64 images (for new messages) */}
+              {images && images.map((image, index) => (
+                <Box key={`base64-${index}`} sx={{ maxWidth: '100%', borderRadius: 1, overflow: 'hidden', position: 'relative' }}>
+                  <img
+                    src={`data:${image.mimeType};base64,${image.data}`}
+                    alt={`Generated image ${index + 1}`}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                  {/* Download button overlay */}
+                  <IconButton
+                    onClick={() => handleDownloadImage(image.data, image.mimeType, index)}
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      },
+                      width: 32,
+                      height: 32,
+                    }}
+                    size="small"
+                  >
+                    <Download fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
+              
+              {/* Render image links (for loaded messages) - only if no base64 images */}
+              {!images && imageLinks && imageLinks.map((imageUrl, index) => (
+                <Box key={`link-${index}`} sx={{ maxWidth: '100%', borderRadius: 1, overflow: 'hidden', position: 'relative' }}>
+                  <img
+                    src={imageUrl}
+                    alt={`Generated image ${index + 1}`}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                    onError={(e) => {
+                      // Handle broken image links
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div style="padding: 16px; background: #f5f5f5; border-radius: 8px; color: #666;">Image not available</div>';
+                      }
+                    }}
+                  />
+                  {/* Download link button overlay */}
+                  <IconButton
+                    component="a"
+                    href={imageUrl}
+                    download={`generated-image-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}-${index + 1}.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      },
+                      width: 32,
+                      height: 32,
+                    }}
+                    size="small"
+                  >
+                    <Download fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          )}
+          
           {timestamp && (
             <Typography
               variant="caption"

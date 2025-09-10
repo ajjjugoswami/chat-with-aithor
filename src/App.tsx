@@ -39,6 +39,8 @@ interface Message {
   modelId?: string;
   enabledPanels?: string[]; // Track which panels were enabled when this message was sent
   isNewMessage?: boolean; // Track if this is a newly received message (for typewriter effect)
+  images?: Array<{ mimeType: string; data: string }>; // Base64 encoded images
+  imageLinks?: string[]; // Store image URLs/links for generated images
 }
 
 interface Chat {
@@ -296,6 +298,10 @@ function App() {
           timestamp: new Date(),
           modelId: model.id,
           isNewMessage: true, // This is a new message that should show typewriter effect
+          images: response.success ? response.images : undefined,
+          imageLinks: response.success && response.images 
+            ? response.images.map(img => `data:${img.mimeType};base64,${img.data}`)
+            : undefined,
         };
 
         setChats((prev) =>

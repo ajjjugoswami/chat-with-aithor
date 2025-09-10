@@ -6,6 +6,7 @@ export interface StoredMessage {
   timestamp: string; // Store as string for JSON serialization
   modelId?: string;
   enabledPanels?: string[]; // Track which panels were enabled when this message was sent
+  imageLinks?: string[]; // Store image URLs/links for generated images
 }
 
 export interface StoredChat {
@@ -26,6 +27,7 @@ export interface Chat {
     timestamp: Date;
     modelId?: string;
     enabledPanels?: string[]; // Track which panels were enabled when this message was sent
+    imageLinks?: string[]; // Store image URLs/links for generated images
   }[];
 }
 
@@ -41,7 +43,8 @@ export const saveChatsToStorage = (chats: Chat[]): void => {
         sender: msg.sender,
         timestamp: msg.timestamp.toISOString(),
         modelId: msg.modelId,
-        enabledPanels: msg.enabledPanels
+        enabledPanels: msg.enabledPanels,
+        imageLinks: msg.imageLinks
         // Explicitly exclude isNewMessage - it's not part of StoredMessage interface
       }))
     }));
@@ -62,6 +65,7 @@ export const loadChatsFromStorage = (): Chat[] => {
       messages: chat.messages.map(msg => ({
         ...msg,
         timestamp: new Date(msg.timestamp),
+        imageLinks: msg.imageLinks,
         isNewMessage: false // Ensure loaded messages are never treated as new
       }))
     }));

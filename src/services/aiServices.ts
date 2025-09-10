@@ -10,6 +10,7 @@ export interface AIResponse {
   success: boolean;
   message?: string;
   error?: string;
+  images?: Array<{ mimeType: string; data: string }>;
 }
 
 // OpenAI/ChatGPT API Integration
@@ -119,7 +120,7 @@ export async function sendToGemini(
         modelName = "gemini-1.5-flash"; // Map to available free model
         break;
       case "gemini-2.5-flash":
-        modelName = "gemini-2.5-flash";
+        modelName = "gemini-2.0-flash-exp";
         break;
       case "gemini-1.5-pro":
         modelName = "gemini-1.5-pro";
@@ -155,6 +156,7 @@ export async function sendToGemini(
             topK: 40,
             topP: 0.95,
             maxOutputTokens: 1024,
+            responseModalities: ["text", "image"],
           },
           safetySettings: [
             {
@@ -192,11 +194,35 @@ export async function sendToGemini(
     const data = await response.json();
     console.log("Gemini API Response:", data);
 
-    const assistantMessage = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!assistantMessage) {
+    const candidate = data.candidates?.[0];
+    if (!candidate || !candidate.content || !candidate.content.parts) {
       return { success: false, error: "No response from Gemini" };
     }
+
+    let assistantMessage = "";
+    const images: Array<{ mimeType: string; data: string }> = [];
+
+    for (const part of candidate.content.parts) {
+      if (part.text) {
+        assistantMessage += part.text;
+      } else if (part.inlineData && part.inlineData.mimeType?.startsWith("image/")) {
+        images.push({
+          mimeType: part.inlineData.mimeType,
+          data: part.inlineData.data
+        });
+      }
+    }
+
+    if (!assistantMessage && images.length === 0) {
+      return { success: false, error: "No valid response content from Gemini" };
+    }
+
+    // Return both text and images
+    return { 
+      success: true, 
+      message: assistantMessage || "[Image generated]", 
+      images: images.length > 0 ? images : undefined 
+    };
 
     return { success: true, message: assistantMessage };
   } catch (error) {

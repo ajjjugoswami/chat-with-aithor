@@ -13,6 +13,8 @@ interface Message {
   modelId?: string;
   enabledPanels?: string[];
   isNewMessage?: boolean; // Track if this is a newly received message (for typewriter effect)
+  images?: Array<{ mimeType: string; data: string }>; // Base64 encoded images
+  imageLinks?: string[]; // Store image URLs/links for generated images
 }
 
 interface ChatAreaProps {
@@ -137,6 +139,8 @@ function MessageBubble({ message }: { message: Message }) {
       enableTypewriter={shouldShowTypewriter}
       isNewMessage={shouldShowTypewriter}
       onTypewriterComplete={handleTypewriterComplete}
+      images={message.images}
+      imageLinks={message.imageLinks}
     />
   );
 }

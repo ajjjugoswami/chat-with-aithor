@@ -48,6 +48,8 @@ interface Message {
   modelId?: string;
   enabledPanels?: string[]; // Track which panels were enabled when this message was sent
   isNewMessage?: boolean; // Track if this is a newly received message (for typewriter effect)
+  images?: Array<{ mimeType: string; data: string }>; // Base64 encoded images
+  imageLinks?: string[]; // Store image URLs/links for generated images
 }
 
 interface ModelPanelProps {
@@ -434,6 +436,8 @@ function MessageBubble({
       enableTypewriter={shouldShowTypewriter}
       isNewMessage={shouldShowTypewriter}
       onTypewriterComplete={handleTypewriterComplete}
+      images={message.images}
+      imageLinks={message.imageLinks}
     />
   );
 }
