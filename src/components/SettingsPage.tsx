@@ -7,16 +7,14 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import { ArrowLeft, Zap, Key, Edit, Trash2, Wifi } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ArrowLeft, Zap, Key, Edit, Wifi } from "lucide-react";
+import { useState } from "react";
 import type { AIModel } from "./AIModelTabs";
 import {
-  getAllAPIKeys,
-  removeAPIKey,
-  saveAPIKey,
-  getAPIKeyForModel,
-} from "../utils/apiKeys";
-import APIKeyDialog from "./APIKeyDialog";
+  getActiveAPIKey,
+  getAllAPIKeysForModel,
+} from "../utils/enhancedApiKeys";
+import EnhancedAPIKeyDialog from "./EnhancedAPIKeyDialog";
 import { useTheme } from "../hooks/useTheme";
 
 interface SettingsPageProps {
@@ -33,33 +31,18 @@ export default function SettingsPage({
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
-  const [apiKeys, setApiKeys] = useState(getAllAPIKeys());
-
-  // Refresh API keys when component mounts and when dialog closes
-  useEffect(() => {
-    setApiKeys(getAllAPIKeys());
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleEditAPIKey = (model: AIModel) => {
     setSelectedModel(model);
     setApiKeyDialogOpen(true);
   };
 
-  const handleSaveAPIKey = (modelId: string, apiKey: string) => {
-    const model = models.find((m) => m.id === modelId);
-    if (model) {
-      saveAPIKey(modelId, apiKey, model.displayName);
-    }
-    // Force refresh by getting fresh data from localStorage
-    setApiKeys(getAllAPIKeys());
+  const handleDialogClose = () => {
+    // Trigger a re-render to refresh API key data
+    setRefreshKey(prev => prev + 1);
     setApiKeyDialogOpen(false);
     setSelectedModel(null);
-  };
-
-  const handleRemoveAPIKey = (modelId: string) => {
-    removeAPIKey(modelId);
-    // Force refresh by getting fresh data from localStorage
-    setApiKeys(getAllAPIKeys());
   };
   return (
     <Box
@@ -325,7 +308,9 @@ export default function SettingsPage({
           }}
         >
           {models.map((model) => {
-            const modelApiKey = apiKeys.find((key) => key.modelId === model.id);
+            // Use refreshKey to force re-evaluation of API keys
+            const activeKey = refreshKey >= 0 ? getActiveAPIKey(model.id) : null;
+            const allKeys = getAllAPIKeysForModel(model.id);
             return (
               <Box
                 key={model.id}
@@ -348,7 +333,7 @@ export default function SettingsPage({
                     borderRadius: 3,
                     position: "relative",
                     overflow: "visible",
-                    minHeight: 100,
+                    minHeight: 120,
                     boxShadow:
                       mode === "light"
                         ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
@@ -403,9 +388,9 @@ export default function SettingsPage({
                             >
                               {model.displayName}
                             </Typography>
-                            {modelApiKey && (
+                            {activeKey && (
                               <Chip
-                                label="Configured"
+                                label={`${allKeys.length} key${allKeys.length !== 1 ? 's' : ''}`}
                                 size="small"
                                 sx={{
                                   bgcolor:
@@ -423,20 +408,29 @@ export default function SettingsPage({
                               />
                             )}
                           </Box>
-                          {modelApiKey ? (
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: mode === "light" ? "#6b7280" : "#9ca3af",
-                                fontSize: "0.8rem",
-                                lineHeight: 1.2,
-                              }}
-                            >
-                              Added on{" "}
-                              {new Date(
-                                modelApiKey.addedAt
-                              ).toLocaleDateString()}
-                            </Typography>
+                          {activeKey ? (
+                            <Box>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  color: mode === "light" ? "#6b7280" : "#9ca3af",
+                                  fontSize: "0.8rem",
+                                  lineHeight: 1.2,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Active: {activeKey.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: mode === "light" ? "#888" : "#999",
+                                  display: "block",
+                                }}
+                              >
+                                Used {activeKey.usageCount || 0} times
+                              </Typography>
+                            </Box>
                           ) : (
                             <Typography
                               variant="body2"
@@ -473,23 +467,6 @@ export default function SettingsPage({
                         >
                           <Edit size={14} />
                         </IconButton>
-                        {modelApiKey && (
-                          <IconButton
-                            onClick={() => handleRemoveAPIKey(model.id)}
-                            sx={{
-                              color: mode === "light" ? "#6b7280" : "#6b7280",
-                              "&:hover": {
-                                bgcolor: "rgba(239, 68, 68, 0.1)",
-                                color: "#ef4444",
-                              },
-                              width: 32,
-                              height: 32,
-                              p: 0.5,
-                            }}
-                          >
-                            <Trash2 size={14} />
-                          </IconButton>
-                        )}
                       </Box>
                     </Box>
                   </CardContent>
@@ -500,14 +477,13 @@ export default function SettingsPage({
         </Box>
       </Box>
 
-      {/* API Key Dialog */}
+      {/* Enhanced API Key Dialog */}
       {selectedModel && (
-        <APIKeyDialog
+        <EnhancedAPIKeyDialog
           open={apiKeyDialogOpen}
-          onClose={() => setApiKeyDialogOpen(false)}
+          onClose={handleDialogClose}
           model={selectedModel}
-          onSave={handleSaveAPIKey}
-          existingKey={getAPIKeyForModel(selectedModel.id) || ""}
+          onSave={handleDialogClose}
         />
       )}
     </Box>

@@ -12,9 +12,8 @@ import { ChevronUp } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
-import { hasAPIKey } from "../utils/apiKeys";
-import APIKeyDialog from "./APIKeyDialog";
-import { saveAPIKey } from "../utils/apiKeys";
+import { hasAPIKey } from "../utils/enhancedApiKeys";
+import EnhancedAPIKeyDialog from "./EnhancedAPIKeyDialog";
 import ResizablePanel from "./ResizablePanel";
 import FormattedMessage from "./shared/FormattedMessage";
 import ModelVariantSelector from "./ModelVariantSelector";
@@ -87,6 +86,11 @@ function ModelPanel({
   const [hasApiKey, setHasApiKey] = useState(hasAPIKey(model.id));
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Check for API key changes when dialog state changes
+  useEffect(() => {
+    setHasApiKey(hasAPIKey(model.id));
+  }, [model.id, apiKeyDialogOpen]);
+
   // Filter messages and handle panel enabled state
   const filteredMessages = useMemo(() => {
     // Don't show any messages if panel is disabled
@@ -130,9 +134,9 @@ function ModelPanel({
     }
   }, [filteredMessages]); // Trigger when filtered messages array changes
 
-  const handleSaveAPIKey = (modelId: string, apiKey: string) => {
-    saveAPIKey(modelId, apiKey, model.displayName);
-    setHasApiKey(true); // Update local state
+  const handleSaveAPIKey = () => {
+    // Refresh API key status
+    setHasApiKey(hasAPIKey(model.id));
     setApiKeyDialogOpen(false);
   };
 
@@ -391,9 +395,12 @@ function ModelPanel({
       )}
 
       {/* API Key Dialog */}
-      <APIKeyDialog
+      <EnhancedAPIKeyDialog
         open={apiKeyDialogOpen}
-        onClose={() => setApiKeyDialogOpen(false)}
+        onClose={() => {
+          setApiKeyDialogOpen(false);
+          setHasApiKey(hasAPIKey(model.id)); // Refresh API key status
+        }}
         model={model}
         onSave={handleSaveAPIKey}
       />
