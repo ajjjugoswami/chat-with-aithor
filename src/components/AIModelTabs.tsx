@@ -52,14 +52,30 @@ export default function AIModelTabs({
           height: '6px',
         },
         '&::-webkit-scrollbar-track': {
-          background: mode === 'light' ? '#f0f0f0' : '#1a1a1a',
+          background: mode === 'light' 
+            ? 'linear-gradient(90deg, #f0f0f0 0%, #e9ecef 100%)' 
+            : 'linear-gradient(90deg, #1a1a1a 0%, #0a0a0a 100%)',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: mode === 'light' ? '#ccc' : '#444',
-          borderRadius: '3px',
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          background: mode === 'light' ? '#bbb' : '#555',
+          background: mode === 'light' 
+            ? 'linear-gradient(90deg, #6c757d 0%, #495057 100%)' 
+            : 'linear-gradient(90deg, #6c757d 0%, #adb5bd 100%)',
+          borderRadius: '10px',
+          border: mode === 'light' 
+            ? '1px solid #e9ecef' 
+            : '1px solid #0a0a0a',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: mode === 'light' 
+              ? 'linear-gradient(90deg, #495057 0%, #343a40 100%)' 
+              : 'linear-gradient(90deg, #adb5bd 0%, #f8f9fa 100%)',
+            transform: 'scaleY(1.2)',
+          },
+          '&:active': {
+            background: mode === 'light' 
+              ? 'linear-gradient(90deg, #343a40 0%, #212529 100%)' 
+              : 'linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%)',
+          },
         },
       }}
     >

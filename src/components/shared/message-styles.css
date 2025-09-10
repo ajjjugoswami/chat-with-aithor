@@ -18,16 +18,23 @@
 }
 
 .hljs::-webkit-scrollbar-track {
-  background: #2a2a2a;
+  background: linear-gradient(90deg, #2a2a2a 0%, #1a1a1a 100%);
 }
 
 .hljs::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 4px;
+  background: linear-gradient(90deg, #6c757d 0%, #adb5bd 100%);
+  border-radius: 10px;
+  border: 1px solid #1a1a1a;
+  transition: all 0.3s ease;
 }
 
 .hljs::-webkit-scrollbar-thumb:hover {
-  background: #666;
+  background: linear-gradient(90deg, #adb5bd 0%, #f8f9fa 100%);
+  transform: scaleY(1.2);
+}
+
+.hljs::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
 }
 
 /* Syntax highlighting colors for dark theme */

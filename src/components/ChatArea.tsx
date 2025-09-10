@@ -62,21 +62,42 @@ export default function ChatArea({ messages, chatInput }: ChatAreaProps) {
           flexDirection: "column",
           gap: 2,
           "&::-webkit-scrollbar": {
-            width: "6px",
+            width: "8px",
           },
           "&::-webkit-scrollbar-track": {
-            background: "transparent",
+            background: mode === "light"
+              ? "rgba(0, 0, 0, 0.05)"
+              : "rgba(255, 255, 255, 0.05)",
+            borderRadius: "10px",
+            margin: "2px",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: mode === "light" 
-              ? "rgba(0, 0, 0, 0.2)" 
-              : "rgba(255, 255, 255, 0.2)",
+            background: mode === "light"
+              ? "linear-gradient(180deg, #8b5cf6 0%, #a855f7 50%, #8b5cf6 100%)"
+              : "linear-gradient(180deg, #6366f1 0%, #8b5cf6 50%, #6366f1 100%)",
             borderRadius: "10px",
+            border: `2px solid ${mode === "light" ? "#ffffff" : "#121212"}`,
+            boxShadow: mode === "light"
+              ? "0 2px 4px rgba(139, 92, 246, 0.3)"
+              : "0 2px 4px rgba(99, 102, 241, 0.3)",
+            transition: "all 0.3s ease",
             "&:hover": {
-              background: mode === "light" 
-                ? "rgba(0, 0, 0, 0.3)" 
-                : "rgba(255, 255, 255, 0.3)",
+              background: mode === "light"
+                ? "linear-gradient(180deg, #7c3aed 0%, #9333ea 50%, #7c3aed 100%)"
+                : "linear-gradient(180deg, #4f46e5 0%, #7c3aed 50%, #4f46e5 100%)",
+              boxShadow: mode === "light"
+                ? "0 4px 8px rgba(139, 92, 246, 0.5)"
+                : "0 4px 8px rgba(99, 102, 241, 0.5)",
+              transform: "scaleX(1.2)",
             },
+            "&:active": {
+              background: mode === "light"
+                ? "linear-gradient(180deg, #6d28d9 0%, #7c2d12 50%, #6d28d9 100%)"
+                : "linear-gradient(180deg, #3730a3 0%, #581c87 50%, #3730a3 100%)",
+            },
+          },
+          "&::-webkit-scrollbar-corner": {
+            background: "transparent",
           },
         }}
       >

@@ -74,20 +74,29 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
       width: "6px",
     },
     "&::-webkit-scrollbar-track": {
-      background: theme.palette.mode === "dark" ? "#374151" : "#f1f5f9",
-      borderRadius: "3px",
+      background: theme.palette.mode === "dark" 
+        ? "linear-gradient(180deg, #374151 0%, #1f2937 100%)" 
+        : "linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)",
     },
     "&::-webkit-scrollbar-thumb": {
-      background:
-        theme.palette.mode === "dark"
-          ? "linear-gradient(135deg, #059669, #10b981)"
-          : "linear-gradient(135deg, #059669, #10b981)",
-      borderRadius: "3px",
+      background: theme.palette.mode === "dark"
+        ? "linear-gradient(180deg, #059669 0%, #10b981 100%)"
+        : "linear-gradient(180deg, #059669 0%, #10b981 100%)",
+      borderRadius: "10px",
+      border: theme.palette.mode === "dark" 
+        ? "1px solid #1f2937" 
+        : "1px solid #e2e8f0",
+      transition: "all 0.3s ease",
       "&:hover": {
-        background:
-          theme.palette.mode === "dark"
-            ? "linear-gradient(135deg, #047857, #059669)"
-            : "linear-gradient(135deg, #047857, #059669)",
+        background: theme.palette.mode === "dark"
+          ? "linear-gradient(180deg, #047857 0%, #059669 100%)"
+          : "linear-gradient(180deg, #047857 0%, #059669 100%)",
+        transform: "scaleX(1.2)",
+      },
+      "&:active": {
+        background: theme.palette.mode === "dark"
+          ? "linear-gradient(180deg, #065f46 0%, #047857 100%)"
+          : "linear-gradient(180deg, #065f46 0%, #047857 100%)",
       },
     },
   },

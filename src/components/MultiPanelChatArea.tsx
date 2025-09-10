@@ -254,17 +254,29 @@ function ModelPanel({
                 width: isMobile ? "3px" : "6px",
               },
               "&::-webkit-scrollbar-track": {
-                background: "transparent",
+                background: mode === "light" 
+                  ? "linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%)" 
+                  : "linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%)",
               },
               "&::-webkit-scrollbar-thumb": {
                 background: mode === "light" 
-                  ? "rgba(0, 0, 0, 0.2)" 
-                  : "rgba(255, 255, 255, 0.2)",
+                  ? "linear-gradient(180deg, #6c757d 0%, #495057 100%)" 
+                  : "linear-gradient(180deg, #6c757d 0%, #adb5bd 100%)",
                 borderRadius: "10px",
+                border: mode === "light" 
+                  ? "1px solid #e9ecef" 
+                  : "1px solid #1a1a1a",
+                transition: "all 0.3s ease",
                 "&:hover": {
                   background: mode === "light" 
-                    ? "rgba(0, 0, 0, 0.3)" 
-                    : "rgba(255, 255, 255, 0.3)",
+                    ? "linear-gradient(180deg, #495057 0%, #343a40 100%)" 
+                    : "linear-gradient(180deg, #adb5bd 0%, #f8f9fa 100%)",
+                  transform: "scaleX(1.2)",
+                },
+                "&:active": {
+                  background: mode === "light" 
+                    ? "linear-gradient(180deg, #343a40 0%, #212529 100%)" 
+                    : "linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)",
                 },
               },
             }}
@@ -700,19 +712,35 @@ export default function MultiPanelChatArea({
             width: isMobile ? "4px" : "6px",
           },
           "&::-webkit-scrollbar-track": {
-            background: mode === "light" ? "#f8f9fa" : "#1a1a1a",
-            borderRadius: "4px",
+            background: mode === "light" 
+              ? "linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%)" 
+              : "linear-gradient(90deg, #1a1a1a 0%, #0a0a0a 100%)",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: mode === "light" ? "#ddd" : "#555",
-            borderRadius: "4px",
-            border: mode === "light" ? "1px solid #e0e0e0" : "1px solid #333",
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: mode === "light" ? "#bbb" : "#666",
+            background: mode === "light" 
+              ? "linear-gradient(90deg, #6c757d 0%, #495057 100%)" 
+              : "linear-gradient(90deg, #6c757d 0%, #adb5bd 100%)",
+            borderRadius: "10px",
+            border: mode === "light" 
+              ? "1px solid #e9ecef" 
+              : "1px solid #0a0a0a",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              background: mode === "light" 
+                ? "linear-gradient(90deg, #495057 0%, #343a40 100%)" 
+                : "linear-gradient(90deg, #adb5bd 0%, #f8f9fa 100%)",
+              transform: "scaleY(1.2)",
+            },
+            "&:active": {
+              background: mode === "light" 
+                ? "linear-gradient(90deg, #343a40 0%, #212529 100%)" 
+                : "linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%)",
+            },
           },
           "&::-webkit-scrollbar-corner": {
-            background: mode === "light" ? "#f8f9fa" : "#1a1a1a",
+            background: mode === "light" 
+              ? "linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%)" 
+              : "linear-gradient(45deg, #1a1a1a 0%, #0a0a0a 100%)",
           },
         }}
       >

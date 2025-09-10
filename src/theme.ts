@@ -191,15 +191,30 @@ export const getTheme = (mode: "light" | "dark") =>
               width: "8px",
             },
             "&::-webkit-scrollbar-track": {
-              backgroundColor: mode === "light" ? "#f1f1f1" : "#404040",
-              borderRadius: "8px",
+              background: mode === "light" 
+                ? "linear-gradient(180deg, #f1f1f1 0%, #e9ecef 100%)" 
+                : "linear-gradient(180deg, #404040 0%, #2a2a2a 100%)",
             },
             "&::-webkit-scrollbar-thumb": {
-              backgroundColor: mode === "light" ? "#888" : "#666",
-              borderRadius: "8px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              backgroundColor: mode === "light" ? "#555" : "#888",
+              background: mode === "light" 
+                ? "linear-gradient(180deg, #6c757d 0%, #495057 100%)" 
+                : "linear-gradient(180deg, #6c757d 0%, #adb5bd 100%)",
+              borderRadius: "10px",
+              border: mode === "light" 
+                ? "1px solid #e9ecef" 
+                : "1px solid #2a2a2a",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                background: mode === "light" 
+                  ? "linear-gradient(180deg, #495057 0%, #343a40 100%)" 
+                  : "linear-gradient(180deg, #adb5bd 0%, #f8f9fa 100%)",
+                transform: "scaleX(1.2)",
+              },
+              "&:active": {
+                background: mode === "light" 
+                  ? "linear-gradient(180deg, #343a40 0%, #212529 100%)" 
+                  : "linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)",
+              },
             },
             scrollbarWidth: "thin",
             scrollbarColor: mode === "light" ? "#888 #f1f1f1" : "#666 #404040",
