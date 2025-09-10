@@ -104,7 +104,7 @@ export default function EnhancedAPIKeyDialog({
     } catch {
       setError("Failed to add API key");
     }
-    }
+  };
 
   const handleUpdateKey = () => {
     if (!editingKey) return;
@@ -180,7 +180,10 @@ export default function EnhancedAPIKeyDialog({
     onClose();
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, key: APIKeyEntry) => {
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    key: APIKeyEntry
+  ) => {
     setMenuAnchor(event.currentTarget);
     setSelectedKey(key);
   };
@@ -197,22 +200,24 @@ export default function EnhancedAPIKeyDialog({
       maxWidth="md"
       fullWidth
       TransitionComponent={Slide}
-      slotProps={{ 
-        transition: { direction: "up" } 
+      slotProps={{
+        transition: { direction: "up" },
       }}
       PaperProps={{
         sx: {
-          bgcolor: mode === 'light' ? "#ffffff" : "#1a1a1a",
-          color: mode === 'light' ? "#000000" : "white",
+          bgcolor: mode === "light" ? "#ffffff" : "#1a1a1a",
+          color: mode === "light" ? "#000000" : "white",
           borderRadius: "20px",
           border: "none",
-          boxShadow: mode === 'light' 
-            ? "0 25px 50px -12px rgba(0, 0, 0, 0.25)" 
-            : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+          boxShadow:
+            mode === "light"
+              ? "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+              : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
           overflow: "hidden",
-          background: mode === 'light' 
-            ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
-            : "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+          background:
+            mode === "light"
+              ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
+              : "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
           minHeight: "600px",
         },
       }}
@@ -220,7 +225,7 @@ export default function EnhancedAPIKeyDialog({
       {/* Header */}
       <Box
         sx={{
-          background: model?.color 
+          background: model?.color
             ? `linear-gradient(135deg, ${model.color}15 0%, ${model.color}25 100%)`
             : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           p: 3,
@@ -229,7 +234,14 @@ export default function EnhancedAPIKeyDialog({
         }}
       >
         <Box sx={{ position: "relative", zIndex: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 1,
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Box
                 sx={{
@@ -247,29 +259,35 @@ export default function EnhancedAPIKeyDialog({
                 {model?.icon || <Key />}
               </Box>
               <Box>
-                <Typography variant="h5" sx={{ 
-                  fontWeight: 700,
-                  color: mode === 'light' ? "#1a1a1a" : "white",
-                  mb: 0.5
-                }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 700,
+                    color: mode === "light" ? "#1a1a1a" : "white",
+                    mb: 0.5,
+                  }}
+                >
                   Manage API Keys
                 </Typography>
-                <Typography variant="body1" sx={{ 
-                  color: mode === 'light' ? "#666" : "#ccc",
-                  fontWeight: 500
-                }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: mode === "light" ? "#666" : "#ccc",
+                    fontWeight: 500,
+                  }}
+                >
                   {model ? getProviderDisplayName(model.id) : ""}
                 </Typography>
               </Box>
             </Box>
-            <IconButton 
+            <IconButton
               onClick={handleClose}
-              sx={{ 
+              sx={{
                 bgcolor: "rgba(255, 255, 255, 0.1)",
-                "&:hover": { bgcolor: "rgba(255, 255, 255, 0.2)" }
+                "&:hover": { bgcolor: "rgba(255, 255, 255, 0.2)" },
               }}
             >
-              <Close sx={{ color: mode === 'light' ? "#666" : "white" }} />
+              <Close sx={{ color: mode === "light" ? "#666" : "white" }} />
             </IconButton>
           </Box>
         </Box>
@@ -279,11 +297,21 @@ export default function EnhancedAPIKeyDialog({
         {/* Existing Keys List */}
         {apiKeys.length > 0 && (
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-              <Typography variant="h6" sx={{ 
-                color: mode === 'light' ? "#1a1a1a" : "white",
-                fontWeight: 600
-              }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  color: mode === "light" ? "#1a1a1a" : "white",
+                  fontWeight: 600,
+                }}
+              >
                 Saved API Keys ({apiKeys.length})
               </Typography>
               {!showAddForm && (
@@ -297,7 +325,7 @@ export default function EnhancedAPIKeyDialog({
                     "&:hover": {
                       borderColor: model?.color || "#667eea",
                       bgcolor: `${model?.color || "#667eea"}10`,
-                    }
+                    },
                   }}
                 >
                   Add Key
@@ -305,17 +333,27 @@ export default function EnhancedAPIKeyDialog({
               )}
             </Box>
 
-            <List sx={{ bgcolor: mode === 'light' ? "#f8f9fa" : "#2a2a2a", borderRadius: 2 }}>
+            <List
+              sx={{
+                bgcolor: mode === "light" ? "#f8f9fa" : "#2a2a2a",
+                borderRadius: 2,
+              }}
+            >
               {apiKeys.map((key, index) => (
                 <Box key={key.id}>
                   <ListItem sx={{ py: 2 }}>
                     <ListItemText
                       primary={
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Typography variant="subtitle1" sx={{ 
-                            color: mode === 'light' ? "#1a1a1a" : "white",
-                            fontWeight: 600
-                          }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              color: mode === "light" ? "#1a1a1a" : "white",
+                              fontWeight: 600,
+                            }}
+                          >
                             {key.name}
                           </Typography>
                           {key.isDefault && (
@@ -334,41 +372,68 @@ export default function EnhancedAPIKeyDialog({
                       }
                       secondary={
                         <Box>
-                          <Typography variant="body2" sx={{ 
-                            color: mode === 'light' ? "#666" : "#ccc",
-                            fontFamily: "monospace",
-                            fontSize: "0.9rem"
-                          }}>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: mode === "light" ? "#666" : "#ccc",
+                              fontFamily: "monospace",
+                              fontSize: "0.9rem",
+                            }}
+                          >
                             {key.key.substring(0, 20)}...
                           </Typography>
-                          <Typography variant="caption" sx={{ 
-                            color: mode === 'light' ? "#888" : "#999",
-                            display: "block",
-                            mt: 0.5
-                          }}>
-                            Added {new Date(key.addedAt).toLocaleDateString()} • 
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: mode === "light" ? "#888" : "#999",
+                              display: "block",
+                              mt: 0.5,
+                            }}
+                          >
+                            Added {new Date(key.addedAt).toLocaleDateString()} •
                             Used {key.usageCount || 0} times
-                            {key.lastUsed && ` • Last used ${new Date(key.lastUsed).toLocaleDateString()}`}
+                            {key.lastUsed &&
+                              ` • Last used ${new Date(
+                                key.lastUsed
+                              ).toLocaleDateString()}`}
                           </Typography>
                         </Box>
                       }
                     />
                     <ListItemSecondaryAction>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
                         <IconButton
                           edge="end"
                           onClick={() => handleSetActive(key.id)}
                           disabled={key.isDefault}
-                          sx={{ 
-                            color: key.isDefault ? (model?.color || "#667eea") : (mode === 'light' ? "#666" : "#ccc")
+                          sx={{
+                            color: key.isDefault
+                              ? model?.color || "#667eea"
+                              : mode === "light"
+                              ? "#666"
+                              : "#ccc",
                           }}
                         >
-                          {key.isDefault ? <CheckCircle /> : <RadioButtonUnchecked />}
+                          {key.isDefault ? (
+                            <CheckCircle
+                              sx={{
+                                color: key.isDefault
+                                  ? model?.color || "#667eea"
+                                  : mode === "light"
+                                  ? "#666"
+                                  : "#ccc",
+                              }}
+                            />
+                          ) : (
+                            <RadioButtonUnchecked />
+                          )}
                         </IconButton>
                         <IconButton
                           edge="end"
                           onClick={(e) => handleMenuOpen(e, key)}
-                          sx={{ color: mode === 'light' ? "#666" : "#ccc" }}
+                          sx={{ color: mode === "light" ? "#666" : "#ccc" }}
                         >
                           <MoreVert />
                         </IconButton>
@@ -384,17 +449,22 @@ export default function EnhancedAPIKeyDialog({
 
         {/* Add/Edit Form */}
         {showAddForm && (
-          <Box sx={{ 
-            bgcolor: mode === 'light' ? "#f8f9fa" : "#2a2a2a",
-            borderRadius: 2,
-            p: 3,
-            border: `2px solid ${model?.color || "#667eea"}30`
-          }}>
-            <Typography variant="h6" sx={{ 
-              color: mode === 'light' ? "#1a1a1a" : "white",
-              fontWeight: 600,
-              mb: 2
-            }}>
+          <Box
+            sx={{
+              bgcolor: mode === "light" ? "#f8f9fa" : "#2a2a2a",
+              borderRadius: 2,
+              p: 3,
+              border: `2px solid ${model?.color || "#667eea"}30`,
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                color: mode === "light" ? "#1a1a1a" : "white",
+                fontWeight: 600,
+                mb: 2,
+              }}
+            >
               {editingKey ? "Edit API Key" : "Add New API Key"}
             </Typography>
 
@@ -407,11 +477,11 @@ export default function EnhancedAPIKeyDialog({
                 setError("");
               }}
               placeholder="e.g., My Primary OpenAI Key, Work Account, Personal Key"
-              sx={{ 
+              sx={{
                 mb: 2,
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
-                    borderColor: mode === 'light' ? "#e0e0e0" : "#404040",
+                    borderColor: mode === "light" ? "#e0e0e0" : "#404040",
                   },
                   "&:hover fieldset": {
                     borderColor: model?.color || "#667eea",
@@ -439,12 +509,17 @@ export default function EnhancedAPIKeyDialog({
                 setError("");
               }}
               error={!!error}
-              helperText={error || `Enter your ${model ? getProviderDisplayName(model.id) : ""} API key`}
-              sx={{ 
+              helperText={
+                error ||
+                `Enter your ${
+                  model ? getProviderDisplayName(model.id) : ""
+                } API key`
+              }
+              sx={{
                 mb: 3,
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
-                    borderColor: mode === 'light' ? "#e0e0e0" : "#404040",
+                    borderColor: mode === "light" ? "#e0e0e0" : "#404040",
                   },
                   "&:hover fieldset": {
                     borderColor: model?.color || "#667eea",
@@ -465,7 +540,7 @@ export default function EnhancedAPIKeyDialog({
                   <IconButton
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
-                    sx={{ color: mode === 'light' ? "#666" : "#ccc" }}
+                    sx={{ color: mode === "light" ? "#666" : "#ccc" }}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
@@ -478,7 +553,7 @@ export default function EnhancedAPIKeyDialog({
                 variant="contained"
                 onClick={editingKey ? handleUpdateKey : handleAddKey}
                 sx={{
-                  background: model?.color 
+                  background: model?.color
                     ? `linear-gradient(135deg, ${model.color} 0%, ${model.color}dd 100%)`
                     : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   color: "white",
@@ -498,8 +573,8 @@ export default function EnhancedAPIKeyDialog({
                     setError("");
                   }}
                   sx={{
-                    borderColor: mode === 'light' ? "#ccc" : "#666",
-                    color: mode === 'light' ? "#666" : "#ccc",
+                    borderColor: mode === "light" ? "#ccc" : "#666",
+                    color: mode === "light" ? "#666" : "#ccc",
                   }}
                 >
                   Cancel
@@ -511,33 +586,46 @@ export default function EnhancedAPIKeyDialog({
 
         {/* Security Info */}
         <Fade in={true} timeout={800}>
-          <Box sx={{ 
-            mt: 3, 
-            p: 3, 
-            bgcolor: mode === 'light' ? "#f0f8ff" : "#1a2332", 
-            borderRadius: "16px",
-            border: mode === 'light' ? "1px solid #e3f2fd" : "1px solid #2a3441",
-          }}>
+          <Box
+            sx={{
+              mt: 3,
+              p: 3,
+              bgcolor: mode === "light" ? "#f0f8ff" : "#1a2332",
+              borderRadius: "16px",
+              border:
+                mode === "light" ? "1px solid #e3f2fd" : "1px solid #2a3441",
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-              <Security sx={{ 
-                color: model?.color || "#667eea",
-                fontSize: "20px"
-              }} />
-              <Typography variant="subtitle2" sx={{ 
-                color: mode === 'light' ? "#1565c0" : "#90caf9",
-                fontWeight: 600
-              }}>
+              <Security
+                sx={{
+                  color: model?.color || "#667eea",
+                  fontSize: "20px",
+                }}
+              />
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: mode === "light" ? "#1565c0" : "#90caf9",
+                  fontWeight: 600,
+                }}
+              >
                 Security & Key Management
               </Typography>
             </Box>
-            <Typography variant="body2" sx={{ 
-              color: mode === 'light' ? "#1976d2" : "#bbdefb",
-              lineHeight: 1.6
-            }}>
-              • API keys are stored securely in your browser's local storage<br/>
-              • You can have multiple keys per model for redundancy<br/>
-              • Switch between keys when one reaches quota limits<br/>
-              • Usage statistics help you track key performance
+            <Typography
+              variant="body2"
+              sx={{
+                color: mode === "light" ? "#1976d2" : "#bbdefb",
+                lineHeight: 1.6,
+              }}
+            >
+              • API keys are stored securely in your browser's local storage
+              <br />
+              • You can have multiple keys per model for redundancy
+              <br />
+              • Switch between keys when one reaches quota limits
+              <br />• Usage statistics help you track key performance
             </Typography>
           </Box>
         </Fade>
@@ -550,16 +638,16 @@ export default function EnhancedAPIKeyDialog({
         onClose={handleMenuClose}
         PaperProps={{
           sx: {
-            bgcolor: mode === 'light' ? "#ffffff" : "#2a2a2a",
-            color: mode === 'light' ? "#000000" : "white",
-          }
+            bgcolor: mode === "light" ? "#ffffff" : "#2a2a2a",
+            color: mode === "light" ? "#000000" : "white",
+          },
         }}
       >
         <MenuItem onClick={() => selectedKey && handleEditKey(selectedKey)}>
           <Edit sx={{ mr: 1, fontSize: "18px" }} />
           Edit Key
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => selectedKey && handleDeleteKey(selectedKey.id)}
           sx={{ color: "#f44336" }}
         >
