@@ -43,7 +43,7 @@ export const MODEL_VARIANTS: ModelWithVariants[] = [
     ],
   },
   {
-    baseModelId: "gemini-2.5-lite",
+    baseModelId: "gemini-2.5-pro",
     variants: [
       {
         id: "gemini-2.5-lite",
@@ -64,6 +64,13 @@ export const MODEL_VARIANTS: ModelWithVariants[] = [
         id: "gemini-1.5-pro",
         name: "gemini-1.5-pro",
         displayName: "Gemini 1.5 Pro",
+        tier: "premium",
+        color: "#4285f4",
+      },
+      {
+        id: "gemini-2.5-pro",
+        name: "gemini-2.5-pro",
+        displayName: "Gemini 2.5 Pro",
         tier: "premium",
         color: "#4285f4",
       },

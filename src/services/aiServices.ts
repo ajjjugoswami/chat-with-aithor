@@ -124,6 +124,9 @@ export async function sendToGemini(
       case "gemini-1.5-pro":
         modelName = "gemini-1.5-pro";
         break;
+      case "gemini-2.5-pro":
+        modelName = "gemini-2.5-pro";
+        break;
       default:
         // Fallback for backward compatibility
         modelName = "gemini-1.5-flash";
