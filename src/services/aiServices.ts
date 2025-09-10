@@ -119,7 +119,7 @@ export async function sendToGemini(
         modelName = "gemini-1.5-flash"; // Map to available free model
         break;
       case "gemini-2.5-flash":
-        modelName = "gemini-1.5-flash";
+        modelName = "gemini-2.5-flash";
         break;
       case "gemini-1.5-pro":
         modelName = "gemini-1.5-pro";
