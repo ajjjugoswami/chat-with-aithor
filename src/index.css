@@ -24,7 +24,7 @@ html {
     height: 8px;
   }
 
-  *::-webkit-scrollbar-track {
+  .landing-page::-webkit-scrollbar-track {
     background: #f0fdf4;
     border-radius: 0px;
   }
