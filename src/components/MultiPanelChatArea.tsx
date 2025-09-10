@@ -7,7 +7,8 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-import { ExpandLess, Key } from "@mui/icons-material";
+import { Key } from "@mui/icons-material";
+import { ChevronUp } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { ReactNode } from "react";
 import type { AIModel } from "./AIModelTabs";
@@ -217,7 +218,7 @@ function ModelPanel({
                     "&:hover": { color: mode === "light" ? "#333" : "white" },
                   }}
                 >
-                  <ExpandLess />
+                  <ChevronUp size={20} />
                 </IconButton>
               )}
             </Box>
