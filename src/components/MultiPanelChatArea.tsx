@@ -670,7 +670,7 @@ export default function MultiPanelChatArea({
             borderBottom:
               mode === "light" ? "1px solid #e0e0e0" : "1px solid #404040",
             bgcolor: mode === "light" ? "#f8f9fa" : "#202020",
-          }}
+          }}aa
         >
           <Tabs
             value={selectedMobilePanel}
