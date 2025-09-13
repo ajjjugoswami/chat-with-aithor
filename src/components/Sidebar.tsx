@@ -28,6 +28,7 @@ import {
 } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
+import { useNavigate } from "react-router-dom";
 
 interface Chat {
   id: string;
@@ -58,6 +59,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const { signOut, user } = useAuth();
   const { mode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   console.log(user, "ajay");
   const groupedChats = chats?.reduce((acc, chat) => {
     if (!acc[chat.date]) {
@@ -205,7 +207,9 @@ export default function Sidebar({
       {isCollapsed ? (
         <Tooltip title="New Chat" placement="right">
           <IconButton
-            onClick={onNewChat}
+            onClick={() => {
+              onNewChat();
+            }}
             sx={{
               mb: 2,
               mt: 5,
@@ -229,7 +233,9 @@ export default function Sidebar({
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={onNewChat}
+          onClick={() => {
+            onNewChat();
+          }}
           sx={{
             mb: 2,
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -357,7 +363,10 @@ export default function Sidebar({
                           }}
                         >
                           <ListItemText
-                            onClick={() => onChatSelect(chat.id)}
+                            onClick={() => {
+                              onChatSelect(chat.id);
+                              navigate(`/chat/c/${chat.id}`);
+                            }}
                             primary={chat.title}
                             primaryTypographyProps={{
                               variant: "body2",
@@ -526,7 +535,10 @@ export default function Sidebar({
           {isCollapsed ? (
             <Tooltip title="Settings" placement="right">
               <IconButton
-                onClick={onSettingsClick}
+                onClick={() => {
+                  onSettingsClick();
+                  navigate("/settings");
+                }}
                 sx={{
                   mb: 2,
                   ml: 1,
@@ -557,7 +569,10 @@ export default function Sidebar({
           ) : (
             <Button
               startIcon={<Settings />}
-              onClick={onSettingsClick}
+              onClick={() => {
+                onSettingsClick();
+                navigate("/settings");
+              }}
               sx={{
                 color: mode === "light" ? "#333" : "#fff",
                 textTransform: "none",

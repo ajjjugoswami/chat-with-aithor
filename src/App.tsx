@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import ChatLayout from "./components/ChatLayout";
 import Sidebar from "./components/Sidebar";
@@ -51,7 +53,12 @@ interface Chat {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<"chat" | "settings">("chat");
+  const { id: chatIdParam } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const currentView = location.pathname === "/settings" ? "settings" : "chat";
+  
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() =>
     getSidebarCollapsed()
   );
@@ -117,8 +124,13 @@ function App() {
 
   const [chats, setChats] = useState<Chat[]>(() => loadChatsFromStorage());
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(
-    undefined
+    chatIdParam || undefined
   );
+
+  // Sync selectedChatId with route parameter
+  useEffect(() => {
+    setSelectedChatId(chatIdParam || undefined);
+  }, [chatIdParam]);
 
   // Mark all existing AI messages as already typed on app load (one-time initialization)
   useEffect(() => {
@@ -140,7 +152,7 @@ function App() {
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
 
   const handleNewChat = () => {
-    const newChatId = Date.now().toString();
+    const newChatId = uuidv4();
     const newChat: Chat = {
       id: newChatId,
       title: "New Chat",
@@ -152,33 +164,33 @@ function App() {
       messages: [],
     };
     setChats((prev) => [newChat, ...prev]);
-    setSelectedChatId(newChatId);
+    navigate(`/chat/c/${newChatId}`);
   };
 
   const handleDeleteChat = (chatId: string) => {
     setChats((prev) => prev.filter((chat) => chat.id !== chatId));
-    // If the deleted chat was selected, clear selection
+    // If the deleted chat was selected, navigate to main chat
     if (selectedChatId === chatId) {
-      setSelectedChatId(undefined);
+      navigate("/chat");
     }
   };
 
   const handleSettingsClick = () => {
     // Stop any active typewriter animations when navigating to settings
     stopAllTypewriters();
-    setCurrentView("settings");
+    navigate("/settings");
   };
 
   const handleBackToChat = () => {
     // Stop any active typewriter animations when navigating back to chat
     stopAllTypewriters();
-    setCurrentView("chat");
+    navigate("/chat");
   };
 
   const handleChatSelect = (chatId: string) => {
     // Stop any active typewriter animations when switching chats
     stopAllTypewriters();
-    setSelectedChatId(chatId);
+    navigate(`/chat/c/${chatId}`);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -186,7 +198,7 @@ function App() {
 
     // If no chat is selected, create a new one
     if (!currentChatId) {
-      const newChatId = Date.now().toString();
+      const newChatId = uuidv4();
       const newChat: Chat = {
         id: newChatId,
         title: content.slice(0, 30) + (content.length > 30 ? "..." : ""),
@@ -201,6 +213,7 @@ function App() {
 
       setChats((prev) => [newChat, ...prev]);
       setSelectedChatId(newChatId);
+      navigate(`/chat/c/${newChatId}`);
       currentChatId = newChatId;
     }
 

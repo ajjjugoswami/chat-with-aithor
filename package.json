@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.2",
     "@types/prismjs": "^1.26.5",
     "@types/typed.js": "^2.0.0",
+    "@types/uuid": "^10.0.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.542.0",
     "pdfjs-dist": "^5.4.149",
@@ -29,7 +30,8 @@
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
-    "typed.js": "^2.1.0"
+    "typed.js": "^2.1.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

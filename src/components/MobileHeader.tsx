@@ -15,6 +15,7 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useTheme } from "../hooks/useTheme";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
 interface Chat {
@@ -41,6 +42,7 @@ export default function MobileHeader({
   onDeleteChat,
 }: MobileHeaderProps) {
   const { mode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width: 640px)');
 
@@ -188,7 +190,10 @@ export default function MobileHeader({
 
             {/* Settings */}
             <IconButton
-              onClick={onSettingsClick}
+              onClick={() => {
+                onSettingsClick();
+                navigate("/settings");
+              }}
               sx={{
                 color: mode === "light" ? "#666" : "#bbb",
                 background: mode === "light" 
@@ -253,6 +258,7 @@ export default function MobileHeader({
             onChatSelect={handleChatSelect}
             onSettingsClick={() => {
               onSettingsClick();
+              navigate("/settings");
               setDrawerOpen(false);
             }}
             onDeleteChat={onDeleteChat}

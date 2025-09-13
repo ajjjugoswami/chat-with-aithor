@@ -28,6 +28,22 @@ export default function ThemedApp() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/chat/c/:id" 
+              element={
+                <ProtectedRoute>
+                  <App />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <App />
+                </ProtectedRoute>
+              } 
+            />
             {/* Redirect any unknown routes to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
