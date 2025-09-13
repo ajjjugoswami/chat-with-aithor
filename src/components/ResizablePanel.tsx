@@ -168,14 +168,14 @@ export default function ResizablePanel({
           <IconButton
             onClick={handleToggleCollapse}
             sx={{
-              color: '#666',
-              bgcolor: '#2a2a2a',
-              border: '1px solid #444',
+              color: mode === 'light' ? '#666666' : '#cccccc',
+              bgcolor: mode === 'light' ? '#ffffff' : '#2a2a2a',
+              border: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #444444',
               width: 32,
               height: 32,
               '&:hover': {
-                color: 'white',
-                bgcolor: '#333',
+                color: mode === 'light' ? '#333333' : 'white',
+                bgcolor: mode === 'light' ? '#f5f5f5' : '#333333',
               },
             }}
           >
