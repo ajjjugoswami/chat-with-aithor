@@ -1,10 +1,14 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import {
   Box,
   Container,
   Typography,
   Card,
   Paper,
+  TextField,
+  Button,
+  Alert,
+  Divider,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -98,6 +102,71 @@ export default function SignUpPage() {
   const { signIn, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const googleButtonRef = useRef<HTMLDivElement>(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Handle form submission
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://aithor-be.vercel.app/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token and user data
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        // Trigger auth context update by reloading
+        window.location.reload();
+      } else {
+        setError(data.error || 'Signup failed');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+      console.log(error)
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle Google credential response
   const handleCredentialResponse = useCallback((response: { credential: string }) => {
@@ -198,6 +267,71 @@ export default function SignUpPage() {
           <GoogleSignInWrapper>
             <Box ref={googleButtonRef} sx={{ width: "100%" }} />
           </GoogleSignInWrapper>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
+            <Divider sx={{ flex: 1 }} />
+            <Typography variant="body2" sx={{ mx: 2, color: '#9ca3af' }}>
+              or
+            </Typography>
+            <Divider sx={{ flex: 1 }} />
+          </Box>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleFormSubmit} sx={{ mb: 3 }}>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              sx={{ mb: 2 ,color: 'black'}}
+              variant="outlined"
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+              sx={{ mb: 2 ,color: 'black'}}
+              variant="outlined"
+            />
+            <TextField
+              fullWidth
+              label="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              required
+              sx={{ mb: 2 ,color: 'black'}}
+              variant="outlined"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+              sx={{
+                py: 1.5,
+                backgroundColor: '#059669',
+                '&:hover': {
+                  backgroundColor: '#047857',
+                },
+              }}
+            >
+              {loading ? 'Creating Account...' : 'Sign Up with Email'}
+            </Button>
+          </Box>
 
           <Box
             sx={{
@@ -323,6 +457,26 @@ export default function SignUpPage() {
             <Typography
               variant="body2"
               sx={{ color: "#6b7280", fontSize: "0.875rem" }}
+            >
+              Already have an account?{" "}
+              <Typography
+                component="span"
+                onClick={() => navigate('/signin')}
+                sx={{
+                  color: "#059669",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  "&:hover": {
+                    color: "#047857",
+                  },
+                }}
+              >
+                Sign In
+              </Typography>
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "#6b7280", fontSize: "0.875rem", mt: 1 }}
             >
               Want to learn more?{" "}
               <Typography

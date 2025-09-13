@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useCallback } from 'react';
-import { Box, Paper, Typography, Container } from '@mui/material';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { Box, Paper, Typography, Container, TextField, Button, Alert, Divider } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,9 +7,40 @@ import { useNavigate } from 'react-router-dom';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const SignInPage: React.FC = () => {
-  const { signIn, isAuthenticated } = useAuth();
+  const { signIn, signInWithForm, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const googleButtonRef = useRef<HTMLDivElement>(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Handle form submission
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      await signInWithForm(formData.email, formData.password);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCredentialResponse = useCallback((response: { credential: string }) => {
     signIn(response.credential);
@@ -328,6 +359,105 @@ const SignInPage: React.FC = () => {
             >
               <div ref={googleButtonRef}></div>
             </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', my: 4, width: '100%' }}>
+              <Divider sx={{ flex: 1, borderColor: 'rgba(100, 116, 139, 0.3)' }} />
+              <Typography variant="body2" sx={{ mx: 2, color: 'rgba(100, 116, 139, 0.7)' }}>
+                or
+              </Typography>
+              <Divider sx={{ flex: 1, borderColor: 'rgba(100, 116, 139, 0.3)' }} />
+            </Box>
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
+                {error}
+              </Alert>
+            )}
+
+            <Box component="form" onSubmit={handleFormSubmit} sx={{ width: '100%' }}>
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                sx={{ mb: 2 }}
+                variant="outlined"
+                InputProps={{
+                  sx: {
+                    borderRadius: 2,
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  }
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                sx={{ mb: 3 }}
+                variant="outlined"
+                InputProps={{
+                  sx: {
+                    borderRadius: 2,
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  }
+                }}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  py: 1.5,
+                  backgroundColor: '#059669',
+                  borderRadius: 2,
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: '#047857',
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'rgba(5, 150, 105, 0.5)',
+                  }
+                }}
+              >
+                {loading ? 'Signing In...' : 'Sign In with Email'}
+              </Button>
+            </Box>
+
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'rgba(100, 116, 139, 0.7)', 
+                textAlign: 'center', 
+                mt: 3,
+                fontSize: '14px'
+              }}
+            >
+              Don't have an account?{' '}
+              <Typography
+                component="span"
+                onClick={() => navigate('/signup')}
+                sx={{
+                  color: '#059669',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  fontWeight: 600,
+                  '&:hover': {
+                    color: '#047857',
+                  },
+                }}
+              >
+                Sign Up
+              </Typography>
+            </Typography>
 
             {!GOOGLE_CLIENT_ID && (
               <Box

@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
-  name: string;
+  name?: string;
   email: string;
-  picture: string;
+  picture?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signIn: (credential: string) => void;
+  signIn: (credential: string) => Promise<void>;
+  signInWithForm: (email: string, password: string) => Promise<void>;
   signOut: () => void;
   loading: boolean;
 }
@@ -24,6 +25,8 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+const API_BASE_URL = 'https://aithor-be.vercel.app/api';
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,33 +34,99 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
+    const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+
+    if (token && savedUser) {
+      // Verify token with backend
+      verifyToken(token);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  const signIn = (credential: string) => {
+  const verifyToken = async (token: string) => {
     try {
-      // Decode JWT token to get user info
-      const payload = JSON.parse(atob(credential.split('.')[1]));
-      const userData: User = {
-        id: payload.sub,
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
-      };
-      
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.valid) {
+          setUser(JSON.parse(localStorage.getItem('user') || '{}'));
+        } else {
+          // Token invalid, clear storage
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
     } catch (error) {
-      console.error('Error decoding credential:', error);
+      console.error('Token verification failed:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signIn = async (credential: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/google-auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ credential }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
+        navigate('/');
+      } else {
+        throw new Error(data.error || 'Google authentication failed');
+      }
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      throw error;
+    }
+  };
+
+  const signInWithForm = async (email: string, password: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
+        navigate('/');
+      } else {
+        throw new Error(data.error || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Form sign in error:', error);
+      throw error;
     }
   };
 
   const signOut = () => {
     setUser(null);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     // Sign out from Google
     if (window.google) {
@@ -72,6 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     isAuthenticated: !!user,
     signIn,
+    signInWithForm,
     signOut,
     loading,
   };
