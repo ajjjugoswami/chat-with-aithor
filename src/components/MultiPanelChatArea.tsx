@@ -500,7 +500,7 @@ export default function MultiPanelChatArea({
       const stored = getPanelWidths();
       const initial: { [modelId: string]: number } = {};
       enabledModels.forEach((model) => {
-        initial[model.id] = stored[model.id] || 380; // Default width
+        initial[model.id] = stored[model.id] || 430; // Default width
       });
       return initial;
     }
@@ -571,7 +571,7 @@ export default function MultiPanelChatArea({
     const newVariants: { [modelId: string]: ModelVariant } = {};
 
     enabledModels.forEach((model) => {
-      newWidths[model.id] = storedWidths[model.id] || 380;
+      newWidths[model.id] = storedWidths[model.id] || 430;
       newCollapsed[model.id] = storedCollapsed[model.id] || false;
       newEnabled[model.id] = storedEnabled[model.id] !== false; // Default enabled
 
@@ -785,7 +785,7 @@ export default function MultiPanelChatArea({
                 messages={messages}
                 onToggle={onModelToggle}
                 width={
-                  isMobile ? 400 : panelWidths[model.id] || 400 // 400px minimum width on mobile for horizontal scroll
+                  isMobile ? 450 : panelWidths[model.id] || 430 // 450px minimum width on mobile for horizontal scroll
                 }
                 isCollapsed={
                   isMobile ? false : panelCollapsed[model.id] || false
