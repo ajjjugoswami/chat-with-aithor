@@ -40,6 +40,14 @@ export default function FormattedMessage({
   const isMobile = useMediaQuery('(max-width: 640px)');
   const [copiedBlocks, setCopiedBlocks] = useState<Set<number>>(new Set());
   const [messageCopied, setMessageCopied] = useState(false);
+
+  // Clean up malformed footnote/citation references
+  const cleanContent = (text: string) => {
+    // Remove patterns like [2][3], [1][2][3], etc.
+    return text.replace(/\[\d+\](?:\s*\[\d+\])*/g, '').trim();
+  };
+
+  const processedContent = cleanContent(content);
   const handleDownloadImage = (imageData: string, mimeType: string, index: number) => {
     // Create a blob from the base64 data
     const byteCharacters = atob(imageData);
@@ -89,7 +97,7 @@ export default function FormattedMessage({
 
   const handleCopyMessage = async () => {
     try {
-      await navigator.clipboard.writeText(content);
+      await navigator.clipboard.writeText(processedContent);
       setMessageCopied(true);
       setTimeout(() => setMessageCopied(false), 2000);
     } catch (err) {
@@ -160,7 +168,7 @@ export default function FormattedMessage({
                 fontWeight: 400,
               }}
             >
-              {content}
+              {processedContent}
             </Typography>
             {timestamp && (
               <Typography
@@ -518,7 +526,7 @@ export default function FormattedMessage({
         <Box className="markdown-content">
           {enableTypewriter ? (
             <TypewriterMessage
-              content={content}
+              content={processedContent}
               speed={25}
               isUser={false}
               modelColor={modelColor}
@@ -616,7 +624,7 @@ export default function FormattedMessage({
                 },
               }}
             >
-              {content}
+              {processedContent}
             </ReactMarkdown>
           )}
           
