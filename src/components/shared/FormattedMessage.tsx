@@ -71,7 +71,9 @@ export default function FormattedMessage({
 
   const handleCopyCode = async (code: string, blockIndex: number) => {
     try {
-      await navigator.clipboard.writeText(code);
+      // Ensure we copy the exact text as displayed
+      const textToCopy = code.trim();
+      await navigator.clipboard.writeText(textToCopy);
       setCopiedBlocks(prev => new Set(prev).add(blockIndex));
       setTimeout(() => {
         setCopiedBlocks(prev => {
@@ -325,7 +327,8 @@ export default function FormattedMessage({
             borderRadius: '8px',
             backgroundColor: mode === 'light' ? '#f8f9fa !important' : '#1e1e1e !important',
             border: mode === 'light' ? '1px solid #e9ecef' : '1px solid #333',
-            overflow: 'hidden',
+            overflowX: 'auto', // Enable horizontal scrolling for wide code
+            overflowY: 'hidden', // Prevent vertical scrolling
             '& code': {
               fontSize: isMobile ? '12px' : '13px',
               lineHeight: 1.4,
@@ -333,6 +336,9 @@ export default function FormattedMessage({
               padding: isMobile ? '8px' : '12px',
               background: 'transparent !important',
               color: mode === 'light' ? '#495057' : '#f8f8f2',
+              whiteSpace: 'pre', // Preserve whitespace and line breaks
+              minWidth: 'fit-content', // Ensure code doesn't shrink below content width
+              
             },
           },
           '& code': {
@@ -535,8 +541,21 @@ export default function FormattedMessage({
                 },
                 code: ({ children, className, ...props }) => {
                   const isInline = !className;
-                  const language = className?.replace('language-', '') || '';
-                  const codeContent = typeof children === 'string' ? children : String(children);
+
+                  // Extract raw code content properly from ReactMarkdown children
+                  let codeContent = '';
+                  if (typeof children === 'string') {
+                    codeContent = children;
+                  } else if (Array.isArray(children)) {
+                    codeContent = children.map(child =>
+                      typeof child === 'string' ? child :
+                      (child && typeof child === 'object' && 'props' in child && child.props.children) ?
+                        String(child.props.children) : String(child)
+                    ).join('');
+                  } else {
+                    codeContent = String(children);
+                  }
+
                   const blockIndex = Math.random();
 
                   if (isInline) {
@@ -545,60 +564,53 @@ export default function FormattedMessage({
 
                   return (
                     <Box sx={{ position: 'relative' }}>
-                      {language && (
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                            p: 1,
-                            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                            borderBottomLeftRadius: '4px',
-                            zIndex: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: '#888',
-                              fontSize: '11px',
-                              textTransform: 'uppercase',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            {language}
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleCopyCode(codeContent, blockIndex)}
-                            sx={{
-                              color: mode === 'light' ? '#666' : '#888',
-                              bgcolor: mode === 'light' 
-                                ? 'rgba(255, 255, 255, 0.8)' 
-                                : 'rgba(0, 0, 0, 0.5)',
-                              '&:hover': { 
-                                color: mode === 'light' ? '#333' : 'white',
-                                bgcolor: mode === 'light' 
-                                  ? 'rgba(255, 255, 255, 1)' 
-                                  : 'rgba(0, 0, 0, 0.8)',
-                              },
-                              p: 0.5,
-                            }}
-                          >
-                            {copiedBlocks.has(blockIndex) ? (
-                              <Check sx={{ fontSize: '14px' }} />
-                            ) : (
-                              <ContentCopy sx={{ fontSize: '14px' }} />
-                            )}
-                          </IconButton>
-                        </Box>
-                      )}
-                      <code {...props} style={{ paddingTop: language ? '32px' : '12px' }}>
-                        {children}
-                      </code>
+                      {/* Copy button positioned outside scrolling area */}
+                      <IconButton
+                        size="small"
+                        onClick={() => handleCopyCode(codeContent, blockIndex)}
+                        sx={{
+                          position: 'absolute',
+                          top: 8,
+                          right: 8,
+                          color: mode === 'light' ? '#666' : '#888',
+                          bgcolor: mode === 'light' 
+                            ? 'rgba(255, 255, 255, 0.9)' 
+                            : 'rgba(0, 0, 0, 0.6)',
+                          '&:hover': { 
+                            color: mode === 'light' ? '#333' : 'white',
+                            bgcolor: mode === 'light' 
+                              ? 'rgba(255, 255, 255, 1)' 
+                              : 'rgba(0, 0, 0, 0.8)',
+                          },
+                          p: 0.5,
+                          zIndex: 2,
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                        }}
+                      >
+                        {copiedBlocks.has(blockIndex) ? (
+                          <Check sx={{ fontSize: '14px' }} />
+                        ) : (
+                          <ContentCopy sx={{ fontSize: '14px' }} />
+                        )}
+                      </IconButton>
+                      {/* Code content in scrollable container */}
+                      <Box sx={{ 
+                        overflowX: 'auto',
+                        '& pre': {
+                          margin: 0,
+                          padding: '12px',
+                          backgroundColor: 'transparent',
+                        },
+                        '& code': {
+                          display: 'block',
+                          whiteSpace: 'pre',
+                          minWidth: 'fit-content',
+                        }
+                      }}>
+                        <code {...props}>
+                          {children}
+                        </code>
+                      </Box>
                     </Box>
                   );
                 },

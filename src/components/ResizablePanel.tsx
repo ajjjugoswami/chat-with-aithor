@@ -113,7 +113,7 @@ export default function ResizablePanel({
       className={className}
       sx={{
         width: actualWidth,
-        minWidth: isMobile ? '320px' : actualWidth,
+        minWidth: isMobile ? '380px' : actualWidth,
         maxWidth: isMobile ? 'none' : actualWidth,
         position: 'relative',
         display: 'flex',
