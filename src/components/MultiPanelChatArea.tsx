@@ -251,11 +251,11 @@ function ModelPanel({
               display: "flex",
               flexDirection: "column",
               gap: isMobile ? 1 : 1.5,
-              minHeight: isMobile ? "calc(100dvh - 150px)" : "auto", // Reduced for smaller header
+              minHeight: isMobile ? "calc(100dvh - 260px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
               backgroundColor: mode === "light" ? "#f8f9fa" : "#0a0a0a",
               "&::-webkit-scrollbar": {
-                width: isMobile ? "3px" : "6px",
+                display:"none"
               },
               "&::-webkit-scrollbar-track": {
                 background: mode === "light" 
