@@ -29,6 +29,7 @@ export default function HelpPage({ onBack }: HelpPageProps) {
           pb: "24px",
           pr: "24px",
           pl: "24px",
+          "&::-webkit-scrollbar": { display: "none" },
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", mb: 0 }}>

@@ -52,6 +52,7 @@ export default function SettingsPage({
         color: mode === "light" ? "#1a1a1a" : "white",
         overflow: "auto",
         p: 3,
+        "&::-webkit-scrollbar": { display: "none" },
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
