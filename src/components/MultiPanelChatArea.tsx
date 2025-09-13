@@ -785,7 +785,7 @@ export default function MultiPanelChatArea({
                 messages={messages}
                 onToggle={onModelToggle}
                 width={
-                  isMobile ? 450 : panelWidths[model.id] || 430 // 450px minimum width on mobile for horizontal scroll
+                  isMobile ? 500 : panelWidths[model.id] || 430 // 500px minimum width on mobile for horizontal scroll
                 }
                 isCollapsed={
                   isMobile ? false : panelCollapsed[model.id] || false
