@@ -40,7 +40,7 @@ export default function SettingsPage({
 
   const handleDialogClose = () => {
     // Trigger a re-render to refresh API key data
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
     setApiKeyDialogOpen(false);
     setSelectedModel(null);
   };
@@ -309,7 +309,8 @@ export default function SettingsPage({
         >
           {models.map((model) => {
             // Use refreshKey to force re-evaluation of API keys
-            const activeKey = refreshKey >= 0 ? getActiveAPIKey(model.id) : null;
+            const activeKey =
+              refreshKey >= 0 ? getActiveAPIKey(model.id) : null;
             const allKeys = getAllAPIKeysForModel(model.id);
             return (
               <Box
@@ -390,7 +391,9 @@ export default function SettingsPage({
                             </Typography>
                             {activeKey && (
                               <Chip
-                                label={`${allKeys.length} key${allKeys.length !== 1 ? 's' : ''}`}
+                                label={`${allKeys.length} key${
+                                  allKeys.length !== 1 ? "s" : ""
+                                }`}
                                 size="small"
                                 sx={{
                                   bgcolor:
@@ -413,7 +416,8 @@ export default function SettingsPage({
                               <Typography
                                 variant="body2"
                                 sx={{
-                                  color: mode === "light" ? "#6b7280" : "#9ca3af",
+                                  color:
+                                    mode === "light" ? "#6b7280" : "#9ca3af",
                                   fontSize: "0.8rem",
                                   lineHeight: 1.2,
                                   fontWeight: 600,

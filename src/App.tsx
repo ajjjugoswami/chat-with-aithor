@@ -7,6 +7,7 @@ import Sidebar from "./components/Sidebar";
 import MultiPanelChatArea from "./components/MultiPanelChatArea";
 import ChatInput from "./components/ChatInput";
 import SettingsPage from "./components/SettingsPage";
+import HelpPage from "./components/HelpPage";
 import WelcomeModal from "./components/WelcomeModal";
 import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/enhancedApiKeys";
@@ -57,7 +58,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const currentView = location.pathname === "/settings" ? "settings" : "chat";
+  const currentView = location.pathname === "/settings" ? "settings" : location.pathname === "/help" ? "help" : "chat";
   
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() =>
     getSidebarCollapsed()
@@ -181,6 +182,12 @@ function App() {
     navigate("/settings");
   };
 
+  const handleHelpClick = () => {
+    // Stop any active typewriter animations when navigating to help
+    stopAllTypewriters();
+    navigate("/help");
+  };
+
   const handleBackToChat = () => {
     // Stop any active typewriter animations when navigating back to chat
     stopAllTypewriters();
@@ -196,7 +203,7 @@ function App() {
   const handleSendMessage = async (content: string) => {
     let currentChatId = selectedChatId;
 
-    // If no chat is selected, create a new one
+    // If no chat is seleFcted, create a new one
     if (!currentChatId) {
       const newChatId = uuidv4();
       const newChat: Chat = {
@@ -394,6 +401,7 @@ function App() {
               selectedChatId={selectedChatId}
               onChatSelect={handleChatSelect}
               onSettingsClick={handleSettingsClick}
+              onHelpClick={handleHelpClick}
               onDeleteChat={handleDeleteChat}
             />
           ) : (
@@ -403,6 +411,7 @@ function App() {
               selectedChatId={selectedChatId}
               onChatSelect={handleChatSelect}
               onSettingsClick={handleSettingsClick}
+              onHelpClick={handleHelpClick}
               onDeleteChat={handleDeleteChat}
               isCollapsed={sidebarCollapsed}
               onToggleCollapse={handleSidebarToggle}
@@ -417,6 +426,8 @@ function App() {
             onModelToggle={handleModelToggle}
             onBack={handleBackToChat}
           />
+        ) : currentView === "help" ? (
+          <HelpPage onBack={handleBackToChat} />
         ) : (
           <MultiPanelChatArea
             models={aiModels}

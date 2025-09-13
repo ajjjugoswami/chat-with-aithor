@@ -30,6 +30,7 @@ interface MobileHeaderProps {
   selectedChatId?: string;
   onChatSelect: (chatId: string) => void;
   onSettingsClick: () => void;
+  onHelpClick: () => void;
   onDeleteChat?: (chatId: string) => void;
 }
 
@@ -39,6 +40,7 @@ export default function MobileHeader({
   selectedChatId,
   onChatSelect,
   onSettingsClick,
+  onHelpClick,
   onDeleteChat,
 }: MobileHeaderProps) {
   const { mode, toggleTheme } = useTheme();
@@ -259,6 +261,11 @@ export default function MobileHeader({
             onSettingsClick={() => {
               onSettingsClick();
               navigate("/settings");
+              setDrawerOpen(false);
+            }}
+            onHelpClick={() => {
+              onHelpClick();
+              navigate("/help");
               setDrawerOpen(false);
             }}
             onDeleteChat={onDeleteChat}
