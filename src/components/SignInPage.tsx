@@ -389,6 +389,7 @@ const SignInPage: React.FC = () => {
                   sx: {
                     borderRadius: 2,
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    color: 'black'
                   }
                 }}
               />
@@ -406,6 +407,7 @@ const SignInPage: React.FC = () => {
                   sx: {
                     borderRadius: 2,
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    color: 'black'
                   }
                 }}
               />

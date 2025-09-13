@@ -109,6 +109,28 @@ const SignUpButton = styled(Button)(() => ({
   },
 }));
 
+const SignInButton = styled(Button)(() => ({
+  background: "transparent",
+  color: "#4b5563",
+  padding: "12px 24px",
+  borderRadius: "14px",
+  fontSize: "1rem",
+  fontWeight: 600,
+  textTransform: "none",
+  border: "2px solid rgba(5, 150, 105, 0.2)",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    background: "rgba(5, 150, 105, 0.05)",
+    color: "#059669",
+    borderColor: "#059669",
+    transform: "translateY(-2px)",
+    boxShadow: "0 4px 16px rgba(5, 150, 105, 0.2)",
+  },
+  "&:active": {
+    transform: "translateY(0px)",
+  },
+}));
+
 const BurgerButton = styled(IconButton)(() => ({
   color: "#4b5563",
   width: "48px",
@@ -162,9 +184,14 @@ export default function Header() {
                 <NavLink href="#features">Features</NavLink>
                 <NavLink href="#api-keys">API Keys</NavLink>
               </Box>
-              <SignUpButton onClick={() => navigate("/sign-up")}>
-                Sign Up
-              </SignUpButton>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <SignInButton onClick={() => navigate("/signin")}>
+                  Sign In
+                </SignInButton>
+                <SignUpButton onClick={() => navigate("/sign-up")}>
+                  Sign Up
+                </SignUpButton>
+              </Box>
             </Box>
           )}
 
@@ -312,18 +339,32 @@ export default function Header() {
 
           <Divider sx={{ my: 3, borderColor: "rgba(5, 150, 105, 0.1)" }} />
 
-          <SignUpButton
-            fullWidth
-            onClick={() => {
-              navigate("/sign-up");
-              setMobileMenuOpen(false);
-            }}
-            sx={{
-              py: 2,
-            }}
-          >
-            Sign Up
-          </SignUpButton>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <SignInButton
+              fullWidth
+              onClick={() => {
+                navigate("/signin");
+                setMobileMenuOpen(false);
+              }}
+              sx={{
+                py: 2,
+              }}
+            >
+              Sign In
+            </SignInButton>
+            <SignUpButton
+              fullWidth
+              onClick={() => {
+                navigate("/sign-up");
+                setMobileMenuOpen(false);
+              }}
+              sx={{
+                py: 2,
+              }}
+            >
+              Sign Up
+            </SignUpButton>
+          </Box>
         </Box>
       </Drawer>
     </StyledAppBar>

@@ -7,6 +7,7 @@ import { getTheme } from '../theme';
 import { useTheme } from '../hooks/useTheme';
 import LandingPage from './LandingPage';
 import SignUpPage from './SignUpPage';
+import SignInPage from './SignInPage';
 
 export default function ThemedApp() {
   const { mode } = useTheme();
@@ -19,6 +20,7 @@ export default function ThemedApp() {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={<SignInPage />} />
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route 
               path="/chat" 

@@ -291,8 +291,11 @@ export default function SignUpPage() {
               value={formData.email}
               onChange={handleInputChange}
               required
-              sx={{ mb: 2 ,color: 'black'}}
+              sx={{ mb: 2 }}
               variant="outlined"
+              InputProps={{
+                sx: { color: 'black' }
+              }}
             />
             <TextField
               fullWidth
@@ -302,8 +305,11 @@ export default function SignUpPage() {
               value={formData.password}
               onChange={handleInputChange}
               required
-              sx={{ mb: 2 ,color: 'black'}}
+              sx={{ mb: 2 }}
               variant="outlined"
+              InputProps={{
+                sx: { color: 'black' }
+              }}
             />
             <TextField
               fullWidth
@@ -313,8 +319,11 @@ export default function SignUpPage() {
               value={formData.confirmPassword}
               onChange={handleInputChange}
               required
-              sx={{ mb: 2 ,color: 'black'}}
+              sx={{ mb: 3 }}
               variant="outlined"
+              InputProps={{
+                sx: { color: 'black' }
+              }}
             />
             <Button
               type="submit"
