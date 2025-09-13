@@ -302,7 +302,12 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
             <CloseButton onClick={handleClose}>
               <X size={20} onClick={handleClose} />
             </CloseButton>
-            <Box sx={{ position: "relative", zIndex: 1 }}>
+            <Box sx={{
+              position: "relative",
+              zIndex: 1,
+              pr: { xs: 5, sm: 6 }, // Add right padding to prevent overlap with close button
+              overflow: "hidden"
+            }}>
               <Typography
                 variant="h4"
                 sx={{
@@ -310,9 +315,14 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
                   fontWeight: "700",
                   mb: 1,
                   textShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "100%",
                 }}
+                title={`Welcome to Aithor${user?.name ? `, ${user.name}` : ""}!`} // Full title for tooltip
               >
-                Welcome to Aithor {user?.name ? `, ${user.name}!` : "!"}
+                Welcome to Aithor{user?.name ? `, ${user.name}!` : "!"}
               </Typography>
               <Typography
                 variant="body1"
@@ -321,6 +331,10 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
                   opacity: 0.95,
                   fontWeight: 400,
                   lineHeight: 1.5,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "100%",
                 }}
               >
                 🚀 Get started with multiple AI models using your own API keys
