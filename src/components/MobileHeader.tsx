@@ -12,6 +12,7 @@ import {
   Settings,
   LightMode,
   DarkMode,
+  HelpOutline,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useTheme } from "../hooks/useTheme";
@@ -188,6 +189,37 @@ export default function MobileHeader({
               size="small"
             >
               {mode === "light" ? <LightMode sx={{ fontSize: '1.1rem' }} /> : <DarkMode sx={{ fontSize: '1.1rem' }} />}
+            </IconButton>
+
+            {/* Help */}
+            <IconButton
+              onClick={() => {
+                onHelpClick();
+                navigate("/help");
+              }}
+              sx={{
+                color: mode === "light" ? "#666" : "#bbb",
+                background: mode === "light" 
+                  ? 'rgba(0, 0, 0, 0.03)' 
+                  : 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(10px)',
+                border: mode === "light" 
+                  ? '1px solid rgba(0, 0, 0, 0.08)' 
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+                width: 36,
+                height: 36,
+                "&:hover": {
+                  background: mode === "light" 
+                    ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))'
+                    : 'linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2))',
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.2)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+              size="small"
+            >
+              <HelpOutline sx={{ fontSize: '1.1rem' }} />
             </IconButton>
 
             {/* Settings */}
