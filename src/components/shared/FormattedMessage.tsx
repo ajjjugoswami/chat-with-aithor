@@ -66,7 +66,7 @@ export default function FormattedMessage({
     // Generate filename based on timestamp and index
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     const extension = mimeType.split('/')[1] || 'png';
-    link.download = `generated-image-${timestamp}-${index + 1}.${extension}`;
+    link.download = `Aithor-generated-image-${timestamp}-${index + 1}.${extension}`;
     
     // Trigger download
     document.body.appendChild(link);
@@ -692,7 +692,7 @@ export default function FormattedMessage({
                   <IconButton
                     component="a"
                     href={imageUrl}
-                    download={`generated-image-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}-${index + 1}.png`}
+                    download={`Aithor-generated-image-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}-${index + 1}.png`}
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
