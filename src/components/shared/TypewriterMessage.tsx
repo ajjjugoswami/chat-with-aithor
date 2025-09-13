@@ -205,23 +205,6 @@ const TypewriterMessage = ({
       >
         {displayedContent}
       </ReactMarkdown>
-      {isTyping && (
-        <Box
-          component="span"
-          sx={{
-            display: 'inline-block',
-            width: '2px',
-            height: '1.2em',
-            backgroundColor: modelColor || '#1976d2',
-            marginLeft: '2px',
-            animation: 'blink 1s infinite',
-            '@keyframes blink': {
-              '0%, 50%': { opacity: 1 },
-              '51%, 100%': { opacity: 0 },
-            },
-          }}
-        />
-      )}
     </Box>
   );
 };
