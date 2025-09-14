@@ -9,8 +9,12 @@ import {
   Box,
   Typography,
   MenuItem,
+  InputAdornment,
+  Snackbar,
+  Alert,
 } from '@mui/material';
-import { Close, Save } from '@mui/icons-material';
+import { Close, Save, ContentCopy } from '@mui/icons-material';
+import { useState } from 'react';
 import type { AdminDialogProps } from './types';
 
 export default function AdminDialog({
@@ -27,10 +31,30 @@ export default function AdminDialog({
   onSave,
   availableProviders,
 }: AdminDialogProps) {
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleCopyKey = async () => {
+    if (newKeyValue.trim()) {
+      try {
+        await navigator.clipboard.writeText(newKeyValue.trim());
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy API key:', err);
+      }
+    }
+  };
+
   const handleSave = () => {
-    if (!newKeyName.trim() || !newKeyValue.trim() || !selectedProvider) {
+    if (!newKeyName.trim() || !selectedProvider) {
       return;
     }
+
+    // For editing, API key is not required if user wants to keep current
+    if (!editingKey && !newKeyValue.trim()) {
+      return;
+    }
+
     onSave();
   };
 
@@ -161,12 +185,31 @@ export default function AdminDialog({
             label="API Key"
             value={newKeyValue}
             onChange={(e) => setNewKeyValue(e.target.value)}
-            placeholder="Enter the API key"
+            placeholder={editingKey ? "Enter new API key value (leave empty to keep current)" : "Enter the API key"}
             fullWidth
-            required
+            required={!editingKey}
             type="password"
             multiline
             rows={3}
+            InputProps={{
+              endAdornment: newKeyValue.trim() ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleCopyKey}
+                    edge="end"
+                    sx={{
+                      color: 'text.secondary',
+                      '&:hover': {
+                        color: 'primary.main',
+                      },
+                    }}
+                    title="Copy API Key"
+                  >
+                    <ContentCopy />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
@@ -178,6 +221,20 @@ export default function AdminDialog({
               },
             }}
           />
+
+          {editingKey && (
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontStyle: 'italic',
+                mt: 1,
+                display: 'block'
+              }}
+            >
+              ⚠️ For security, the existing API key is not displayed. Enter a new key only if you want to update it.
+            </Typography>
+          )}
         </Box>
       </DialogContent>
 
@@ -219,6 +276,21 @@ export default function AdminDialog({
           {editingKey ? 'Update Key' : 'Save Key'}
         </Button>
       </DialogActions>
+
+      <Snackbar
+        open={copySuccess}
+        autoHideDuration={2000}
+        onClose={() => setCopySuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setCopySuccess(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          API Key copied to clipboard!
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 }

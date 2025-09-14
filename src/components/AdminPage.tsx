@@ -99,10 +99,15 @@ export default function AdminPage() {
     if (
       !selectedUser ||
       !newKeyName.trim() ||
-      !newKeyValue.trim() ||
       !selectedProvider
     ) {
-      setError("All fields are required");
+      setError("Provider, name are required");
+      return;
+    }
+
+    // For editing, API key is not required if user wants to keep current
+    if (!editingKey && !newKeyValue.trim()) {
+      setError("API key is required for new keys");
       return;
     }
 
@@ -113,12 +118,21 @@ export default function AdminPage() {
         return;
       }
 
-      const keyData = {
+      const keyData: {
+        provider: string;
+        name: string;
+        isDefault: boolean;
+        key?: string;
+      } = {
         provider: selectedProvider,
-        key: newKeyValue.trim(),
         name: newKeyName.trim(),
         isDefault: false,
       };
+
+      // Only include key if it's provided (for editing, empty means keep current)
+      if (newKeyValue.trim()) {
+        keyData.key = newKeyValue.trim();
+      }
 
       const url = editingKey
         ? `https://aithor-be.vercel.app/api/api-keys/admin/${selectedUser._id}/${editingKey._id}`
@@ -223,7 +237,7 @@ export default function AdminPage() {
     setSelectedUser(user);
     setEditingKey(key);
     setNewKeyName(key.name);
-    setNewKeyValue("");
+    setNewKeyValue(""); // Keep empty for security - user can re-enter if needed
     setSelectedProvider(key.provider);
     setDialogOpen(true);
     handleCloseMenu();
@@ -308,7 +322,7 @@ export default function AdminPage() {
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
                   gap: 3,
                 }}
               >
@@ -325,6 +339,7 @@ export default function AdminPage() {
                       display: "flex",
                       flexDirection: "column",
                       gap: 2,
+                      minHeight: 220,
                       transition: "all 0.2s ease-in-out",
                       "&:hover": {
                         boxShadow: (theme) => theme.shadows[6],
@@ -332,16 +347,16 @@ export default function AdminPage() {
                       },
                     }}
                   >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
                       <Avatar
                         src={u.picture}
                         alt={u.name || u.email}
-                        sx={{ width: 56, height: 56 }}
+                        sx={{ width: 56, height: 56, flexShrink: 0 }}
                       >
                         {(u.name || u.email || "").charAt(0).toUpperCase()}
                       </Avatar>
 
-                      <Box sx={{ minWidth: 0 }}>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
                         <Typography
                           variant="h6"
                           sx={{
@@ -349,13 +364,21 @@ export default function AdminPage() {
                             fontSize: "1rem",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            mb: 0.5,
                           }}
                         >
                           {u.name || u.email}
                         </Typography>
                         <Typography
                           variant="body2"
-                          sx={{ color: "text.secondary", fontSize: "0.85rem" }}
+                          sx={{
+                            color: "text.secondary",
+                            fontSize: "0.85rem",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
                         >
                           {u.email}
                         </Typography>
@@ -363,7 +386,13 @@ export default function AdminPage() {
                     </Box>
 
                     <Box
-                      sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        flexWrap: "wrap",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
                     >
                       {u.apiKeys.slice(0, 3).map((k) => (
                         <Box
@@ -376,6 +405,8 @@ export default function AdminPage() {
                             borderRadius: 2,
                             fontSize: "0.8rem",
                             fontWeight: 500,
+                            whiteSpace: "nowrap",
+                            flexShrink: 0,
                           }}
                         >
                           {k.provider}
@@ -391,6 +422,8 @@ export default function AdminPage() {
                             fontSize: "0.8rem",
                             color: "text.secondary",
                             fontWeight: 500,
+                            whiteSpace: "nowrap",
+                            flexShrink: 0,
                           }}
                         >
                           +{u.apiKeys.length - 3} more
@@ -402,8 +435,10 @@ export default function AdminPage() {
                       sx={{
                         display: "flex",
                         gap: 1,
-                        justifyContent: "flex-end",
-                        mt: 1,
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        mt: "auto",
+                        pt: 1,
                       }}
                     >
                       <Button
@@ -524,6 +559,7 @@ export default function AdminPage() {
                     }}
                   >
                     <Avatar
+                      src={u.picture}
                       sx={{
                         width: 40,
                         height: 40,
@@ -561,35 +597,43 @@ export default function AdminPage() {
             </Box>
 
             <Box sx={{ flex: 1 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  {selectedUser
-                    ? selectedUser.name || selectedUser.email
-                    : "Select a user"}
-                </Typography>
-                {selectedUser && (
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<Add />}
-                      onClick={() => handleOpenAddDialog(selectedUser)}
-                      sx={{ textTransform: "none", borderRadius: 2 }}
-                    >
-                      Add Key
-                    </Button>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    {selectedUser && (
+                      <Avatar
+                        src={selectedUser.picture}
+                        sx={{ width: 48, height: 48 }}
+                      >
+                        {(selectedUser.name || selectedUser.email || "").charAt(0).toUpperCase()}
+                      </Avatar>
+                    )}
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      {selectedUser
+                        ? selectedUser.name || selectedUser.email
+                        : "Select a user"}
+                    </Typography>
                   </Box>
-                )}
-              </Box>
-
-              {!selectedUser ? (
+                  {selectedUser && (
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Add />}
+                        onClick={() => handleOpenAddDialog(selectedUser)}
+                        sx={{ textTransform: "none", borderRadius: 2 }}
+                      >
+                        Add Key
+                      </Button>
+                    </Box>
+                  )}
+                </Box>              {!selectedUser ? (
                 <Box
                   sx={{
                     p: 6,
@@ -609,7 +653,7 @@ export default function AdminPage() {
                 <Box
                   sx={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
                     gap: 3,
                   }}
                 >
