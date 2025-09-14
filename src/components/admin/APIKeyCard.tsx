@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
@@ -11,11 +11,11 @@ import {
   Tooltip,
   Snackbar,
   Alert,
-} from '@mui/material';
-import { MoreVert, Edit, Key, Delete, ContentCopy } from '@mui/icons-material';
-import { useState } from 'react';
-import type { ServerAPIKey } from './types';
-import { getProviderDisplayName } from '../../utils/enhancedApiKeys';
+} from "@mui/material";
+import { MoreVert, Edit, Key, Delete, ContentCopy } from "@mui/icons-material";
+import { useState } from "react";
+import type { ServerAPIKey } from "./types";
+import { getProviderDisplayName } from "../../utils/enhancedApiKeys";
 
 interface APIKeyCardProps {
   keyData: ServerAPIKey;
@@ -46,7 +46,7 @@ export default function APIKeyCard({
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy Key ID:', err);
+      console.error("Failed to copy Key ID:", err);
     }
   };
   return (
@@ -54,79 +54,156 @@ export default function APIKeyCard({
       <Card
         sx={{
           mb: 2,
-          borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'divider',
-          minHeight: 180,
-          display: 'flex',
-          flexDirection: 'column',
-          transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            boxShadow: (theme) => theme.shadows[3],
-            borderColor: 'primary.main',
-            transform: 'translateY(-1px)',
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          minHeight: 200,
+          display: "flex",
+          flexDirection: "column",
+          transition: "all 0.3s ease-in-out",
+          background: (theme) =>
+            `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.primary.main}08 100%)`,
+          "&:hover": {
+            boxShadow: (theme) => theme.shadows[8],
+            borderColor: "primary.main",
+            // transform: "translateY(-2px)",
+            background: (theme) =>
+              `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.primary.main}08 100%)`,
           },
         }}
       >
-        <CardContent sx={{ p: 3, pb: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flex: 1 }}>
+        <CardContent
+          sx={{
+            p: 3,
+            pb: 2,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              mb: 2,
+              flex: 1,
+            }}
+          >
             <Box sx={{ flex: 1, minWidth: 0, mr: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  mb: 1.5,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: "50%",
+                    bgcolor: keyData.isActive ? "success.main" : "warning.main",
+                    flexShrink: 0,
+                    boxShadow: "0 0 8px rgba(0,0,0,0.1)",
+                  }}
+                />
                 <Typography
                   variant="h6"
                   sx={{
                     fontWeight: 600,
-                    fontSize: '1rem',
-                    color: 'text.primary',
+                    fontSize: "1rem",
+                    color: "text.primary",
                     flex: 1,
                     minWidth: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {keyData.name}
                 </Typography>
                 {keyData.isDefault && (
                   <Chip
-                    label="Active"
+                    label="Default"
                     size="small"
                     color="primary"
                     variant="filled"
                     sx={{
-                      fontSize: '0.7rem',
-                      fontWeight: 500,
-                      height: 22,
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      height: 24,
+                      borderRadius: 2,
                       flexShrink: 0,
                     }}
                   />
                 )}
               </Box>
 
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 2 }}>
-                <Typography
-                  variant="body2"
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.5,
+                  mb: 2,
+                }}
+              >
+                <Box
                   sx={{
-                    color: 'text.secondary',
-                    fontFamily: 'monospace',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    p: 1.5,
+                    bgcolor: "background.default",
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "divider",
                   }}
                 >
-                  Provider: {getProviderDisplayName(keyData.provider)}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                   <Typography
                     variant="body2"
                     sx={{
-                      color: 'text.secondary',
-                      fontSize: '0.8rem',
-                      fontFamily: 'monospace',
+                      color: "text.secondary",
+                      fontFamily: "monospace",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      minWidth: "fit-content",
+                    }}
+                  >
+                    Provider:
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "primary.main",
+                      fontWeight: 600,
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {getProviderDisplayName(keyData.provider)}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      fontSize: "0.8rem",
+                      fontFamily: "monospace",
                       flex: 1,
                       minWidth: 0,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     Key ID: {keyData._id.substring(0, 16)}...
@@ -136,68 +213,126 @@ export default function APIKeyCard({
                       onClick={handleCopyKeyId}
                       size="small"
                       sx={{
-                        color: 'text.secondary',
-                        '&:hover': {
-                          color: 'primary.main',
+                        color: "text.secondary",
+                        "&:hover": {
+                          color: "primary.main",
                         },
-                        padding: '2px',
+                        padding: "2px",
                         flexShrink: 0,
                       }}
                     >
-                      <ContentCopy sx={{ fontSize: '0.9rem' }} />
+                      <ContentCopy sx={{ fontSize: "0.9rem" }} />
                     </IconButton>
                   </Tooltip>
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 'auto' }}>
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: 'text.secondary',
-                      fontSize: '0.75rem',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    Created: {new Date(keyData.createdAt).toLocaleDateString()}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: 'text.secondary',
-                      fontSize: '0.75rem',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    Used: {keyData.usageCount} times
-                  </Typography>
-                  {keyData.lastUsed && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                  mt: "auto",
+                  pt: 2,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 3,
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography
                       variant="caption"
                       sx={{
-                        color: 'text.secondary',
-                        fontSize: '0.75rem',
-                        whiteSpace: 'nowrap',
+                        color: "text.secondary",
+                        fontSize: "0.75rem",
+                        fontWeight: 500,
                       }}
                     >
-                      Last: {new Date(keyData.lastUsed).toLocaleDateString()}
+                      Created:
                     </Typography>
-                  )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.primary",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {new Date(keyData.createdAt).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        fontSize: "0.75rem",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Used:
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "primary.main",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {keyData.usageCount} times
+                    </Typography>
+                  </Box>
                 </Box>
+                {keyData.lastUsed && (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        fontSize: "0.75rem",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Last used:
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "success.main",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {new Date(keyData.lastUsed).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                )}
               </Box>
             </Box>
 
             <IconButton
               onClick={(e) => onMenuOpen(e, keyData)}
               sx={{
-                color: 'text.secondary',
-                '&:hover': {
-                  color: 'primary.main',
-                  bgcolor: 'action.hover',
+                color: "text.secondary",
+                "&:hover": {
+                  color: "primary.main",
+                  bgcolor: "primary.light",
+                  transform: "scale(1.1)",
                 },
+                transition: "all 0.2s ease-in-out",
                 flexShrink: 0,
-                alignSelf: 'flex-start',
+                alignSelf: "flex-start",
+                borderRadius: 2,
+                p: 1,
               }}
             >
               <MoreVert />
@@ -212,9 +347,12 @@ export default function APIKeyCard({
         onClose={onMenuClose}
         PaperProps={{
           sx: {
-            borderRadius: 2,
-            minWidth: 140,
-            boxShadow: (theme) => theme.shadows[8],
+            borderRadius: 3,
+            minWidth: 160,
+            boxShadow: (theme) => theme.shadows[12],
+            border: "1px solid",
+            borderColor: "divider",
+            mt: 1,
           },
         }}
       >
@@ -225,12 +363,19 @@ export default function APIKeyCard({
           }}
           sx={{
             py: 1.5,
-            '&:hover': {
-              bgcolor: 'action.hover',
+            px: 2,
+            borderRadius: 1,
+            mx: 0.5,
+            mb: 0.5,
+            "&:hover": {
+              bgcolor: "primary.light",
+              color: "primary.main",
+              borderRadius: 2,
             },
+            transition: "all 0.2s ease-in-out",
           }}
         >
-          <Edit sx={{ mr: 1.5, fontSize: '1.1rem' }} />
+          <Edit sx={{ mr: 1.5, fontSize: "1.1rem" }} />
           Edit
         </MenuItem>
         <MenuItem
@@ -240,12 +385,19 @@ export default function APIKeyCard({
           }}
           sx={{
             py: 1.5,
-            '&:hover': {
-              bgcolor: 'action.hover',
+            px: 2,
+            borderRadius: 1,
+            mx: 0.5,
+            mb: 0.5,
+            "&:hover": {
+              bgcolor: "success.light",
+              color: "success.main",
+              borderRadius: 2,
             },
+            transition: "all 0.2s ease-in-out",
           }}
         >
-          <Key sx={{ mr: 1.5, fontSize: '1.1rem' }} />
+          <Key sx={{ mr: 1.5, fontSize: "1.1rem" }} />
           Set as Active
         </MenuItem>
         <MenuItem
@@ -255,14 +407,19 @@ export default function APIKeyCard({
           }}
           sx={{
             py: 1.5,
-            color: 'error.main',
-            '&:hover': {
-              bgcolor: 'error.light',
-              color: 'error.dark',
+            px: 2,
+            borderRadius: 1,
+            mx: 0.5,
+            color: "error.main",
+            "&:hover": {
+              bgcolor: "error.light",
+              color: "error.dark",
+              borderRadius: 2,
             },
+            transition: "all 0.2s ease-in-out",
           }}
         >
-          <Delete sx={{ mr: 1.5, fontSize: '1.1rem' }} />
+          <Delete sx={{ mr: 1.5, fontSize: "1.1rem" }} />
           Delete
         </MenuItem>
       </Menu>
@@ -271,12 +428,12 @@ export default function APIKeyCard({
         open={copySuccess}
         autoHideDuration={2000}
         onClose={() => setCopySuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={() => setCopySuccess(false)}
           severity="success"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           Key ID copied to clipboard!
         </Alert>
