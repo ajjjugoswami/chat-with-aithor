@@ -31,6 +31,13 @@ const StyledAppBar = styled(AppBar)(() => ({
   color: "#1f2937",
   borderBottom: "1px solid rgba(5, 150, 105, 0.1)",
   position: "sticky",
+
+  "@media (max-width: 600px)": {
+    "& .MuiToolbar-root": {
+      paddingLeft: "0px",
+      paddingRight: "0px",
+    },
+  },
 }));
 
 const LogoContainer = styled(Box)(() => ({
