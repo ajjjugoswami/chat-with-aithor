@@ -569,7 +569,7 @@ export default function Sidebar({
               </Tooltip>
 
               {/* Admin - Collapsed - Only visible to admin */}
-              {user?.email === 'goswamiajay526@gmail.com' && (
+              {user?.isAdmin && (
                 <Tooltip title="Admin Panel" placement="right">
                   <IconButton
                     onClick={() => navigate("/admin")}
@@ -703,7 +703,7 @@ export default function Sidebar({
               </Tooltip>
 
               {/* Admin - Only visible to admin */}
-              {user?.email === 'goswamiajay526@gmail.com' && (
+              {user?.isAdmin && (
                 <Tooltip title="Admin Panel">
                   <IconButton
                     onClick={() => navigate("/admin")}
