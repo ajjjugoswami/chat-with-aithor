@@ -45,11 +45,13 @@ export default function AdminHeader({
             borderColor: 'primary.main',
             color: 'primary.main',
             fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
-            minWidth: 'auto',
-            alignSelf: isSmallScreen ? 'flex-start' : 'auto',
+            '&:hover': {
+              bgcolor: 'primary.light',
+              borderColor: 'primary.dark',
+            },
           }}
         >
-          {!isMobile && 'Back to Chat'}
+          {!isMobile && 'Admin Dashboard'}
         </Button>
         <AdminPanelSettings
           sx={{

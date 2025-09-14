@@ -7,7 +7,14 @@ import {
   Avatar,
   useMediaQuery,
 } from "@mui/material";
-import { Person, Add, VpnKey, AdminPanelSettings } from "@mui/icons-material";
+import {
+  Person,
+  Add,
+  VpnKey,
+  AdminPanelSettings,
+  PersonAdd,
+  PersonRemove,
+} from "@mui/icons-material";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -335,10 +342,17 @@ export default function AdminPage() {
         minHeight: "100vh",
         bgcolor: mode === "light" ? "#f5f5f5" : "#121212",
         color: mode === "light" ? "#000" : "#fff",
-        p: isSmallScreen ? 1 : isMobile ? 2 : 4,
+        p: isSmallScreen ? 2 : isMobile ? 2 : 4,
+        "& .webkit-scrollbar": { display: "none" },
       }}
     >
-      <Box sx={{ maxWidth: "100%", mx: "auto" }}>
+      <Box
+        sx={{
+          maxWidth: "100%",
+          mx: "auto",
+          "& .webkit-scrollbar": { display: "none" },
+        }}
+      >
         {/* Header */}
         <AdminHeader
           onRefresh={fetchAllUsersAndKeys}
@@ -827,68 +841,99 @@ export default function AdminPage() {
                 this admin panel and manage API keys for all users.
               </Typography>
 
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>     
                 {usersWithKeys.map((u) => (
                   <Box
                     key={u._id}
                     sx={{
                       display: "flex",
-                      alignItems: isSmallScreen ? "stretch" : "center",
-                      justifyContent: isSmallScreen
-                        ? "flex-start"
-                        : "space-between",
-                      p: isSmallScreen ? 1.5 : 2,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      p: isSmallScreen ? 2 : 3,
                       borderRadius: 2,
                       border: "1px solid",
-                      borderColor: u.isAdmin
-                        ? "primary.main"
-                        : "background.default",
-
+                      borderColor: "divider",
+                      bgcolor: "background.paper",
                       transition: "all 0.2s ease",
-
+                      "&:hover": {
+                        boxShadow: (theme) => theme.shadows[2],
+                        borderColor: "primary.light",
+                      },
                       flexDirection: isSmallScreen ? "column" : "row",
-                      gap: isSmallScreen ? 1 : 0,
+                      gap: isSmallScreen ? 2 : 0,
+                      minHeight: isSmallScreen ? "auto" : 80,
                     }}
                   >
                     <Box
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: isSmallScreen ? 1.5 : 2,
+                        gap: isSmallScreen ? 2 : 3,
+                        flex: 1,
+                        minWidth: 0,
                       }}
                     >
                       <Avatar
                         src={u.picture}
                         sx={{
-                          width: isSmallScreen ? 32 : 40,
-                          height: isSmallScreen ? 32 : 40,
+                          width: isSmallScreen ? 48 : 56,
+                          height: isSmallScreen ? 48 : 56,
+                          bgcolor: u.isAdmin ? "primary.main" : "grey.400",
+                          fontSize: isSmallScreen ? "1.2rem" : "1.5rem",
+                          fontWeight: 700,
                         }}
                       >
                         {(u.name || u.email || "").charAt(0).toUpperCase()}
                       </Avatar>
                       <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: isSmallScreen ? "1rem" : "1.1rem",
+                              color: "text.primary",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {u.name || u.email}
+                          </Typography>
+                          {u.isAdmin && (
+                            <Box
+                              sx={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                                px: 1,
+                                py: 0.25,
+                                bgcolor: "success.main",
+                                color: "success.contrastText",
+                                borderRadius: 1,
+                                fontSize: "0.7rem",
+                                fontWeight: 600,
+                              }}
+                            >
+                              <AdminPanelSettings sx={{ fontSize: "0.8rem" }} />
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontWeight: 600,
+                                  fontSize: "0.65rem",
+                                  lineHeight: 1,
+                                }}
+                              >
+                                ADMIN
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
                         <Typography
-                          variant="body1"
+                          variant="body2"
                           sx={{
-                            fontWeight: 600,
-                            fontSize: isSmallScreen ? "0.9rem" : "1rem",
-                            color: u.isAdmin
-                              ? "primary.contrastText"
-                              : "text.primary",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {u.name || u.email}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontSize: isSmallScreen ? "0.7rem" : "0.75rem",
-                            color: u.isAdmin
-                              ? "primary.contrastText"
-                              : "text.secondary",
+                            color: "text.secondary",
+                            fontSize: isSmallScreen ? "0.8rem" : "0.85rem",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -899,65 +944,62 @@ export default function AdminPage() {
                       </Box>
                     </Box>
 
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      {u.isAdmin && (
-                        <Typography
-                          variant="caption"
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        flexShrink: 0,
+                        width: isSmallScreen ? "100%" : "auto",
+                        justifyContent: isSmallScreen ? "center" : "flex-end",
+                      }}
+                    >
+                      {u.isAdmin ? (
+                        <Button
+                          variant="outlined"
+                          size={isSmallScreen ? "small" : "medium"}
+                          startIcon={<PersonRemove />}
+                          onClick={() => handleToggleAdminAccess(u)}
                           sx={{
-                            color: "primary.contrastText",
-                            fontWeight: 600,
-                            px: isSmallScreen ? 0.5 : 1,
-                            py: 0.5,
-                            bgcolor: "rgba(255, 255, 255, 0.2)",
-                            borderRadius: 1,
-                            fontSize: isSmallScreen ? "0.7rem" : "0.75rem",
+                            textTransform: "none",
+                            borderRadius: 2,
+                            fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                            px: isSmallScreen ? 2 : 3,
+                            py: isSmallScreen ? 0.75 : 1,
+                            borderColor: "error.main",
+                            color: "error.main",
+                            minWidth: isSmallScreen ? 120 : 140,
+                            "&:hover": {
+                              borderColor: "error.dark",
+                              bgcolor: "error.light",
+                              color: "error.dark",
+                            },
                           }}
                         >
-                          ACTIVE
-                        </Typography>
+                          {isSmallScreen ? "Remove Admin" : "Remove as Admin"}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          size={isSmallScreen ? "small" : "medium"}
+                          startIcon={<PersonAdd />}
+                          onClick={() => handleToggleAdminAccess(u)}
+                          sx={{
+                            textTransform: "none",
+                            borderRadius: 2,
+                            fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                            px: isSmallScreen ? 2 : 3,
+                            py: isSmallScreen ? 0.75 : 1,
+                            bgcolor: "success.main",
+                            minWidth: isSmallScreen ? 120 : 140,
+                            "&:hover": {
+                              bgcolor: "success.dark",
+                            },
+                          }}
+                        >
+                          {isSmallScreen ? "Grant Admin" : "Grant Access"}
+                        </Button>
                       )}
-                      <Button
-                        variant={u.isAdmin ? "outlined" : "contained"}
-                        size={isSmallScreen ? "small" : "small"}
-                        onClick={() => handleToggleAdminAccess(u)}
-                        disabled={u.isAdmin}
-                        sx={{
-                          textTransform: "none",
-                          borderRadius: 2,
-                          minWidth: isSmallScreen ? 70 : 100,
-                          fontSize: isSmallScreen ? "0.7rem" : "0.875rem",
-                          px: isSmallScreen ? 1 : 1.5,
-                          py: isSmallScreen ? 0.25 : 0.5,
-                          color: u.isAdmin ? "primary.contrastText" : undefined,
-                          borderColor: u.isAdmin
-                            ? "rgba(255, 255, 255, 0.3)"
-                            : undefined,
-                          "&:hover": {
-                            bgcolor: u.isAdmin
-                              ? "rgba(255, 255, 255, 0.1)"
-                              : undefined,
-                            borderColor: u.isAdmin
-                              ? "rgba(255, 255, 255, 0.5)"
-                              : undefined,
-                          },
-                          "&.Mui-disabled": {
-                            color: u.isAdmin
-                              ? "rgba(255, 255, 255, 0.5)"
-                              : undefined,
-                            borderColor: u.isAdmin
-                              ? "rgba(255, 255, 255, 0.2)"
-                              : undefined,
-                          },
-                        }}
-                      >
-                        {u.isAdmin
-                          ? isSmallScreen
-                            ? "Active"
-                            : "Active"
-                          : isSmallScreen
-                          ? "Grant"
-                          : "Grant"}
-                      </Button>
                     </Box>
                   </Box>
                 ))}

@@ -22,6 +22,7 @@ html {
   *::-webkit-scrollbar {
     width: 8px;
     height: 8px;
+    display: none;
   }
 
   .landing-page::-webkit-scrollbar-track {
