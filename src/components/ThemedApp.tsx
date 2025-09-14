@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import App from '../App';
+import AdminPage from './AdminPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider, CssBaseline } from '@mui/material';
@@ -52,6 +53,14 @@ export default function ThemedApp() {
               element={
                 <ProtectedRoute>
                   <App />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute>
+                  <AdminPage />
                 </ProtectedRoute>
               } 
             />

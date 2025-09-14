@@ -25,6 +25,7 @@ import {
   DarkMode,
   Chat as ChatIcon,
   HelpOutline,
+  Shield,
 } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
@@ -566,6 +567,43 @@ export default function Sidebar({
                   <HelpOutline />
                 </IconButton>
               </Tooltip>
+
+              {/* Admin - Collapsed - Only visible to admin */}
+              {user?.email === 'goswamiajay526@gmail.com' && (
+                <Tooltip title="Admin Panel" placement="right">
+                  <IconButton
+                    onClick={() => navigate("/admin")}
+                    sx={{
+                      mb: 2,
+                      ml: 1,
+                      width: 44,
+                      height: 44,
+                      background:
+                        mode === "light"
+                          ? "rgba(255, 255, 255, 0.9)"
+                          : "rgba(255, 255, 255, 0.05)",
+                      backdropFilter: "blur(10px)",
+                      border:
+                        mode === "light"
+                          ? "1px solid rgba(0, 0, 0, 0.08)"
+                          : "1px solid rgba(255, 255, 255, 0.1)",
+                      color: mode === "light" ? "#ff6b35" : "#ff8a65",
+                      "&:hover": {
+                        background:
+                          mode === "light"
+                            ? "rgba(255, 255, 255, 1)"
+                            : "rgba(255, 255, 255, 0.1)",
+                        color: mode === "light" ? "#e55a2b" : "white",
+                        transform: "translateY(-2px) scale(1.05)",
+                        boxShadow: "0 8px 25px rgba(255, 107, 53, 0.3)",
+                      },
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    <Shield />
+                  </IconButton>
+                </Tooltip>
+              )}
             </>
           ) : (
             /* Uncollapsed - Icons in a row */
@@ -663,6 +701,31 @@ export default function Sidebar({
                   <HelpOutline />
                 </IconButton>
               </Tooltip>
+
+              {/* Admin - Only visible to admin */}
+              {user?.email === 'goswamiajay526@gmail.com' && (
+                <Tooltip title="Admin Panel">
+                  <IconButton
+                    onClick={() => navigate("/admin")}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      color: mode === "light" ? "#ff6b35" : "#ff8a65",
+                      "&:hover": {
+                        background:
+                          mode === "light"
+                            ? "rgba(255, 107, 53, 0.1)"
+                            : "rgba(255, 255, 255, 0.1)",
+                        color: mode === "light" ? "#e55a2b" : "white",
+                        transform: "scale(1.05)",
+                      },
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    <Shield />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
           )}
 
