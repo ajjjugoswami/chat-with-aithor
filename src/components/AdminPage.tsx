@@ -438,105 +438,123 @@ export default function AdminPage() {
                         >
                           {u.email}
                         </Typography>
+                        {u.isAdmin && (
+                          <Box
+                            sx={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            <AdminPanelSettings
+                              sx={{ fontSize: "0.8rem", color: "primary.main" }}
+                            />
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: "primary.main",
+                                fontWeight: 500,
+                                fontSize: "0.7rem",
+                              }}
+                            >
+                              Admin
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
                     </Box>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: 1,
-                        flexWrap: "wrap",
-                        alignItems: "center",
-                        mb: 2,
-                      }}
-                    >
-                      {u.apiKeys.slice(0, isSmallScreen ? 2 : 3).map((k) => (
-                        <Box
-                          key={k._id}
-                          sx={{
-                            bgcolor: "primary.light",
-                            color: "primary.contrastText",
-                            px: isSmallScreen ? 1 : 1.5,
-                            py: isSmallScreen ? 0.4 : 0.6,
-                            borderRadius: 2,
-                            fontSize: isSmallScreen ? "0.7rem" : "0.8rem",
-                            fontWeight: 500,
-                            whiteSpace: "nowrap",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {k.provider}
-                        </Box>
-                      ))}
-                      {u.apiKeys.length > (isSmallScreen ? 2 : 3) && (
-                        <Box
-                          sx={{
-                            bgcolor: "grey.300",
-                            px: isSmallScreen ? 1 : 1.5,
-                            py: isSmallScreen ? 0.4 : 0.6,
-                            borderRadius: 2,
-                            fontSize: isSmallScreen ? "0.7rem" : "0.8rem",
-                            color: "text.secondary",
-                            fontWeight: 500,
-                            whiteSpace: "nowrap",
-                            flexShrink: 0,
-                          }}
-                        >
-                          +{u.apiKeys.length - (isSmallScreen ? 2 : 3)} more
-                        </Box>
-                      )}
-                    </Box>
+                    {u.apiKeys.length === 0 && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "text.secondary",
+                          fontStyle: "italic",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        No API keys
+                      </Typography>
+                    )}
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: isSmallScreen ? 1 : 1,
-                        justifyContent: "flex-start",
-                        alignItems: "center",
-                        mt: "auto",
-                        pt: 1,
-                        flexDirection: isSmallScreen ? "column" : "row",
-                        width: "100%",
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        size={isSmallScreen ? "small" : "small"}
-                        startIcon={<Add />}
-                        onClick={() => handleOpenAddDialog(u)}
+                    {/* Spacer to maintain consistent card height */}
+                    <Box sx={{ flex: 1 }} />
+
+                    {u.isAdmin && (
+                      <Box
                         sx={{
-                          textTransform: "none",
-                          borderRadius: 2,
-                          fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
-                          px: isSmallScreen ? 1.5 : 2,
-                          py: isSmallScreen ? 0.5 : 1,
-                          width: isSmallScreen ? "100%" : "auto",
-                          mb: isSmallScreen ? 1 : 0,
+                          display: "flex",
+                          gap: isSmallScreen ? 1 : 1,
+                          justifyContent: "flex-start",
+                          alignItems: "center",
+                          pt: 1,
+                          flexDirection: isSmallScreen ? "column" : "row",
+                          width: "100%",
                         }}
                       >
-                        Add Key
-                      </Button>
-                      <Button
-                        variant="contained"
-                        size={isSmallScreen ? "small" : "small"}
-                        startIcon={<VpnKey />}
-                        onClick={() => {
-                          setSelectedUser(u);
-                          setTabValue(1);
-                        }}
+                        <Button
+                          variant="outlined"
+                          size={isSmallScreen ? "small" : "small"}
+                          startIcon={<Add />}
+                          onClick={() => handleOpenAddDialog(u)}
+                          sx={{
+                            textTransform: "none",
+                            borderRadius: 2,
+                            fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                            px: isSmallScreen ? 1.5 : 2,
+                            py: isSmallScreen ? 0.5 : 1,
+                            width: isSmallScreen ? "100%" : "auto",
+                            mb: isSmallScreen ? 1 : 0,
+                          }}
+                        >
+                          Add Key
+                        </Button>
+                        <Button
+                          variant="contained"
+                          size={isSmallScreen ? "small" : "small"}
+                          startIcon={<VpnKey />}
+                          onClick={() => {
+                            setSelectedUser(u);
+                            setTabValue(1);
+                          }}
+                          sx={{
+                            textTransform: "none",
+                            borderRadius: 2,
+                            fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                            px: isSmallScreen ? 1.5 : 2,
+                            py: isSmallScreen ? 0.5 : 1,
+                            width: isSmallScreen ? "100%" : "auto",
+                            "&:hover": { bgcolor: "primary.dark" },
+                          }}
+                        >
+                          View Keys
+                        </Button>
+                      </Box>
+                    )}
+
+                    {!u.isAdmin && (
+                      <Box
                         sx={{
-                          textTransform: "none",
-                          borderRadius: 2,
-                          fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
-                          px: isSmallScreen ? 1.5 : 2,
-                          py: isSmallScreen ? 0.5 : 1,
-                          width: isSmallScreen ? "100%" : "auto",
-                          "&:hover": { bgcolor: "primary.dark" },
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          pt: 1,
+                          opacity: 0.7,
                         }}
                       >
-                        View Keys
-                      </Button>
-                    </Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontStyle: "italic",
+                            fontSize: "0.75rem",
+                          }}
+                        >
+                          Standard User
+                        </Typography>
+                      </Box>
+                    )}
                   </Box>
                 ))}
 
@@ -607,59 +625,61 @@ export default function AdminPage() {
                 <Person /> Users
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                {usersWithKeys.map((u) => (
-                  <Box
-                    key={u._id}
-                    onClick={() => setSelectedUser(u)}
-                    sx={{
-                      display: "flex",
-                      gap: 2,
-                      alignItems: "center",
-                      p: 1,
-                      borderRadius: 1.5,
-                      cursor: "pointer",
-                      bgcolor:
-                        selectedUser?._id === u._id
-                          ? "action.selected"
-                          : "transparent",
-                      "&:hover": { bgcolor: "action.hover" },
-                    }}
-                  >
-                    <Avatar
-                      src={u.picture}
+                {usersWithKeys
+                  .filter((u) => u.isAdmin)
+                  .map((u) => (
+                    <Box
+                      key={u._id}
+                      onClick={() => setSelectedUser(u)}
                       sx={{
-                        width: 40,
-                        height: 40,
-                        bgcolor: "primary.main",
-                        fontSize: "0.95rem",
-                        fontWeight: 700,
+                        display: "flex",
+                        gap: 2,
+                        alignItems: "center",
+                        p: 1,
+                        borderRadius: 1.5,
+                        cursor: "pointer",
+                        bgcolor:
+                          selectedUser?._id === u._id
+                            ? "action.selected"
+                            : "transparent",
+                        "&:hover": { bgcolor: "action.hover" },
                       }}
                     >
-                      {u.name
-                        ? u.name.charAt(0).toUpperCase()
-                        : u.email.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography
-                        variant="body1"
+                      <Avatar
+                        src={u.picture}
                         sx={{
-                          fontWeight: 600,
+                          width: 40,
+                          height: 40,
+                          bgcolor: "primary.main",
                           fontSize: "0.95rem",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          fontWeight: 700,
                         }}
                       >
-                        {u.name || u.email}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        {u.email}
-                      </Typography>
+                        {u.name
+                          ? u.name.charAt(0).toUpperCase()
+                          : u.email.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "0.95rem",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {u.name || u.email}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          {u.email}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                ))}
+                  ))}
               </Box>
             </Box>
 
@@ -820,14 +840,12 @@ export default function AdminPage() {
                       p: isSmallScreen ? 1.5 : 2,
                       borderRadius: 2,
                       border: "1px solid",
-                      borderColor: "divider",
-                      bgcolor: u.isAdmin
+                      borderColor: u.isAdmin
                         ? "primary.main"
                         : "background.default",
+
                       transition: "all 0.2s ease",
-                      "&:hover": {
-                        bgcolor: u.isAdmin ? "primary.dark" : "action.hover",
-                      },
+
                       flexDirection: isSmallScreen ? "column" : "row",
                       gap: isSmallScreen ? 1 : 0,
                     }}
@@ -923,8 +941,12 @@ export default function AdminPage() {
                               : undefined,
                           },
                           "&.Mui-disabled": {
-                            color: u.isAdmin ? "rgba(255, 255, 255, 0.5)" : undefined,
-                            borderColor: u.isAdmin ? "rgba(255, 255, 255, 0.2)" : undefined,
+                            color: u.isAdmin
+                              ? "rgba(255, 255, 255, 0.5)"
+                              : undefined,
+                            borderColor: u.isAdmin
+                              ? "rgba(255, 255, 255, 0.2)"
+                              : undefined,
                           },
                         }}
                       >
