@@ -262,7 +262,8 @@ export default function AdminPage() {
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setSelectedUser(null);
+    // Don't clear selectedUser to keep the user selected in the panel
+    // setSelectedUser(null);
     setEditingKey(null);
     setNewKeyName("");
     setNewKeyValue("");
