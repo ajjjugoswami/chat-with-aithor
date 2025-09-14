@@ -1,86 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  IconButton,
-  Tabs,
-  Tab,
-  Card,
-  CardContent,
-  Chip,
-  Menu,
-  MenuItem,
-  Alert,
   CircularProgress,
   useMediaQuery,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Avatar,
 } from '@mui/material';
-import {
-  Add,
-  Edit,
-  Delete,
-  MoreVert,
-  Key,
-  Save,
-  Refresh,
-  Close,
-  ExpandMore,
-  Person,
-} from '@mui/icons-material';
+import { Person } from '@mui/icons-material';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import {
-  getProviderDisplayName,
-} from '../utils/enhancedApiKeys';
-
-interface ServerAPIKey {
-  _id: string;
-  modelId: string;
-  name: string;
-  isActive: boolean;
-  isDefault: boolean;
-  lastUsed?: string;
-  usageCount: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface UserWithKeys {
-  _id: string;
-  email: string;
-  name?: string;
-  apiKeys: ServerAPIKey[];
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`admin-tabpanel-${index}`}
-      aria-labelledby={`admin-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
+  AdminHeader,
+  AdminTabs,
+  UserAccordion,
+  APIKeyCard,
+  AdminDialog,
+  AddKeyForm,
+  type UserWithKeys,
+  type ServerAPIKey,
+} from './admin';
 
 export default function AdminPage() {
   const { mode } = useTheme();
@@ -100,7 +37,7 @@ export default function AdminPage() {
   const [newKeyValue, setNewKeyValue] = useState('');
   const [selectedModelId, setSelectedModelId] = useState('');
 
-  // Menu
+  // Menu state for API key cards
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedKey, setSelectedKey] = useState<ServerAPIKey | null>(null);
 
@@ -175,7 +112,7 @@ export default function AdminPage() {
         modelId: selectedModelId,
         key: newKeyValue.trim(),
         name: newKeyName.trim(),
-        isDefault: false, // Admin can set this later if needed
+        isDefault: false,
       };
 
       const url = editingKey
@@ -194,7 +131,7 @@ export default function AdminPage() {
       });
 
       if (response.ok) {
-        await fetchAllUsersAndKeys(); // Refresh the list
+        await fetchAllUsersAndKeys();
         handleCloseDialog();
       } else {
         const errorData = await response.json();
@@ -222,7 +159,7 @@ export default function AdminPage() {
       });
 
       if (response.ok) {
-        await fetchAllUsersAndKeys(); // Refresh the list
+        await fetchAllUsersAndKeys();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to delete API key');
@@ -250,7 +187,7 @@ export default function AdminPage() {
       });
 
       if (response.ok) {
-        await fetchAllUsersAndKeys(); // Refresh the list
+        await fetchAllUsersAndKeys();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to set active API key');
@@ -275,7 +212,7 @@ export default function AdminPage() {
     setSelectedUser(user);
     setEditingKey(key);
     setNewKeyName(key.name);
-    setNewKeyValue(''); // Don't pre-fill the key value for security
+    setNewKeyValue('');
     setSelectedModelId(key.modelId);
     setDialogOpen(true);
     handleCloseMenu();
@@ -303,6 +240,13 @@ export default function AdminPage() {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  const handleClearForm = () => {
+    setSelectedUser(null);
+    setNewKeyName('');
+    setNewKeyValue('');
+    setSelectedModelId('');
   };
 
   if (!isAdmin) {
@@ -334,435 +278,120 @@ export default function AdminPage() {
     >
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant={isMobile ? 'h5' : 'h4'}
-            sx={{
-              fontWeight: 700,
-              mb: 2,
-              color: mode === 'light' ? '#1a1a1a' : '#fff',
-            }}
-          >
-            Admin Dashboard - API Key Management
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: mode === 'light' ? '#666' : '#ccc',
-              mb: 3,
-            }}
-          >
-            Manage API keys for all users across different AI models
-          </Typography>
-        </Box>
-
-        {/* Error Alert */}
-        {error && (
-          <Alert
-            severity="error"
-            sx={{ mb: 3 }}
-            onClose={() => setError('')}
-          >
-            {error}
-          </Alert>
-        )}
+        <AdminHeader
+          onRefresh={fetchAllUsersAndKeys}
+          loading={loading}
+          error={error}
+          onClearError={() => setError('')}
+        />
 
         {/* Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            aria-label="admin tabs"
-            sx={{
-              '& .MuiTab-root': {
-                color: mode === 'light' ? '#666' : '#ccc',
-                '&.Mui-selected': {
-                  color: mode === 'light' ? '#1a1a1a' : '#fff',
-                },
-              },
-              '& .MuiTabs-indicator': {
-                bgcolor: mode === 'light' ? '#1a1a1a' : '#fff',
-              },
-            }}
-          >
-            <Tab label="All Users & Keys" />
-            <Tab label="Add Key for User" />
-          </Tabs>
-        </Box>
+        <AdminTabs value={tabValue} onChange={handleTabChange} />
 
-        {/* All Users & Keys Tab */}
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="outlined"
-              startIcon={<Refresh />}
-              onClick={fetchAllUsersAndKeys}
-              disabled={loading}
-              sx={{
-                borderColor: mode === 'light' ? '#666' : '#ccc',
-                color: mode === 'light' ? '#666' : '#ccc',
-              }}
-            >
-              Refresh
-            </Button>
-          </Box>
-
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {usersWithKeys.map((user) => (
-                <Accordion
-                  key={user._id}
-                  sx={{
-                    bgcolor: mode === 'light' ? '#fff' : '#1e1e1e',
-                    borderRadius: 2,
-                    '&:before': { display: 'none' },
-                    boxShadow: mode === 'light'
-                      ? '0 2px 8px rgba(0,0,0,0.1)'
-                      : '0 2px 8px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    sx={{
-                      '& .MuiAccordionSummary-content': {
-                        alignItems: 'center',
-                        gap: 2,
-                      },
-                    }}
+        {/* Tab Content */}
+        {tabValue === 0 && (
+          <Box>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+                <CircularProgress size={60} />
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {usersWithKeys.map((user) => (
+                  <UserAccordion
+                    key={user._id}
+                    user={user}
+                    onAddKey={handleOpenAddDialog}
                   >
-                    <Avatar sx={{ width: 40, height: 40 }}>
-                      <Person />
-                    </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        {user.name || user.email}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : '#ccc' }}>
-                        {user.email} • {user.apiKeys.length} API key{user.apiKeys.length !== 1 ? 's' : ''}
-                      </Typography>
-                    </Box>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<Add />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenAddDialog(user);
-                      }}
-                      sx={{ mr: 2 }}
-                    >
-                      Add Key
-                    </Button>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ pt: 0 }}>
                     {user.apiKeys.length === 0 ? (
-                      <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : '#ccc', textAlign: 'center', py: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                          textAlign: 'center',
+                          py: 4,
+                          fontStyle: 'italic',
+                        }}
+                      >
                         No API keys configured for this user
                       </Typography>
                     ) : (
-                      <Box sx={{ display: 'grid', gap: 2 }}>
+                      <Box sx={{ display: 'grid', gap: 1 }}>
                         {user.apiKeys.map((key) => (
-                          <Card
+                          <APIKeyCard
                             key={key._id}
-                            sx={{
-                              bgcolor: mode === 'light' ? '#f8f9fa' : '#2a2a2a',
-                              borderRadius: 2,
-                            }}
-                          >
-                            <CardContent sx={{ p: 3 }}>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <Box sx={{ flex: 1 }}>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                                      {key.name}
-                                    </Typography>
-                                    {key.isDefault && (
-                                      <Chip
-                                        label="Active"
-                                        size="small"
-                                        color="primary"
-                                        sx={{ fontSize: '0.75rem' }}
-                                      />
-                                    )}
-                                  </Box>
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      color: mode === 'light' ? '#666' : '#ccc',
-                                      mb: 1,
-                                      fontFamily: 'monospace',
-                                    }}
-                                  >
-                                    Model: {getProviderDisplayName(key.modelId)}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      color: mode === 'light' ? '#666' : '#ccc',
-                                      mb: 1,
-                                    }}
-                                  >
-                                    Key: {key._id.substring(0, 20)}...
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      color: mode === 'light' ? '#888' : '#999',
-                                    }}
-                                  >
-                                    Created: {new Date(key.createdAt).toLocaleDateString()} •
-                                    Used: {key.usageCount} times
-                                    {key.lastUsed && ` • Last used: ${new Date(key.lastUsed).toLocaleDateString()}`}
-                                  </Typography>
-                                </Box>
-                                <IconButton
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleOpenMenu(e, key);
-                                  }}
-                                  sx={{
-                                    color: mode === 'light' ? '#666' : '#ccc',
-                                  }}
-                                >
-                                  <MoreVert />
-                                </IconButton>
-                              </Box>
-                            </CardContent>
-                          </Card>
+                            keyData={key}
+                            onEdit={(key) => handleOpenEditDialog(user, key)}
+                            onSetActive={(keyId) => handleSetActive(user._id, keyId)}
+                            onDelete={(keyId) => handleDeleteKey(user._id, keyId)}
+                            menuAnchor={menuAnchor}
+                            onMenuOpen={handleOpenMenu}
+                            onMenuClose={handleCloseMenu}
+                            selectedKey={selectedKey}
+                          />
                         ))}
                       </Box>
                     )}
-                  </AccordionDetails>
-                </Accordion>
-              ))}
-              {usersWithKeys.length === 0 && (
-                <Box sx={{ textAlign: 'center', p: 4 }}>
-                  <Person sx={{ fontSize: 48, color: mode === 'light' ? '#ccc' : '#666', mb: 2 }} />
-                  <Typography variant="h6" sx={{ color: mode === 'light' ? '#666' : '#ccc' }}>
-                    No users found
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          )}
-        </TabPanel>
-
-        {/* Add Key for User Tab */}
-        <TabPanel value={tabValue} index={1}>
-          <Card
-            sx={{
-              bgcolor: mode === 'light' ? '#fff' : '#1e1e1e',
-              borderRadius: 2,
-              boxShadow: mode === 'light'
-                ? '0 2px 8px rgba(0,0,0,0.1)'
-                : '0 2px 8px rgba(0,0,0,0.3)',
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                Add API Key for User
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 3, color: mode === 'light' ? '#666' : '#ccc' }}>
-                Select a user and add an API key for their account
-              </Typography>
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <TextField
-                  select
-                  label="Select User"
-                  value={selectedUser?._id || ''}
-                  onChange={(e) => {
-                    const user = usersWithKeys.find(u => u._id === e.target.value);
-                    setSelectedUser(user || null);
-                  }}
-                  fullWidth
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
-                    },
-                  }}
-                >
-                  {usersWithKeys.map((user) => (
-                    <MenuItem key={user._id} value={user._id}>
-                      {user.name || user.email} ({user.email})
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  select
-                  label="AI Model"
-                  value={selectedModelId}
-                  onChange={(e) => setSelectedModelId(e.target.value)}
-                  fullWidth
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
-                    },
-                  }}
-                >
-                  {availableModels.map((model) => (
-                    <MenuItem key={model.id} value={model.id}>
-                      {model.displayName}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  label="Key Name"
-                  value={newKeyName}
-                  onChange={(e) => setNewKeyName(e.target.value)}
-                  placeholder="e.g., My OpenAI Key"
-                  fullWidth
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
-                    },
-                  }}
-                />
-
-                <TextField
-                  label="API Key"
-                  value={newKeyValue}
-                  onChange={(e) => setNewKeyValue(e.target.value)}
-                  placeholder="Enter the API key"
-                  fullWidth
-                  type="password"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: mode === 'light' ? '#f5f5f5' : '#2a2a2a',
-                      fontFamily: 'monospace',
-                    },
-                  }}
-                />
-
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      setSelectedUser(null);
-                      setNewKeyName('');
-                      setNewKeyValue('');
-                      setSelectedModelId('');
-                    }}
+                  </UserAccordion>
+                ))}
+                {usersWithKeys.length === 0 && (
+                  <Box
                     sx={{
-                      borderColor: mode === 'light' ? '#666' : '#ccc',
-                      color: mode === 'light' ? '#666' : '#ccc',
+                      textAlign: 'center',
+                      p: 8,
+                      bgcolor: 'background.paper',
+                      borderRadius: 3,
+                      border: '2px dashed',
+                      borderColor: 'divider',
                     }}
                   >
-                    Clear
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<Save />}
-                    onClick={handleSaveKey}
-                    disabled={!selectedUser || !selectedModelId || !newKeyName.trim() || !newKeyValue.trim()}
-                    sx={{
-                      bgcolor: mode === 'light' ? '#1a1a1a' : '#fff',
-                      color: mode === 'light' ? '#fff' : '#1a1a1a',
-                      '&:hover': {
-                        bgcolor: mode === 'light' ? '#333' : '#e0e0e0',
-                      },
-                    }}
-                  >
-                    Save Key
-                  </Button>
-                </Box>
+                    <Person sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                    <Typography variant="h6" sx={{ color: 'text.secondary', mb: 1 }}>
+                      No users found
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      Users will appear here once they register
+                    </Typography>
+                  </Box>
+                )}
               </Box>
-            </CardContent>
-          </Card>
-        </TabPanel>
+            )}
+          </Box>
+        )}
+
+        {tabValue === 1 && (
+          <AddKeyForm
+            users={usersWithKeys}
+            selectedUser={selectedUser}
+            onUserChange={setSelectedUser}
+            selectedModelId={selectedModelId}
+            onModelChange={setSelectedModelId}
+            keyName={newKeyName}
+            onKeyNameChange={setNewKeyName}
+            keyValue={newKeyValue}
+            onKeyValueChange={setNewKeyValue}
+            onSave={handleSaveKey}
+            onClear={handleClearForm}
+            availableModels={availableModels}
+            loading={loading}
+          />
+        )}
 
         {/* Add/Edit Dialog */}
-        <Dialog
+        <AdminDialog
           open={dialogOpen}
           onClose={handleCloseDialog}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            {editingKey ? 'Edit API Key' : 'Add New API Key'}
-            <IconButton onClick={handleCloseDialog}>
-              <Close />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
-              <Typography variant="body2" sx={{ color: mode === 'light' ? '#666' : '#ccc' }}>
-                User: {selectedUser?.email}
-              </Typography>
-              
-              <TextField
-                select
-                label="AI Model"
-                value={selectedModelId}
-                onChange={(e) => setSelectedModelId(e.target.value)}
-                fullWidth
-              >
-                {availableModels.map((model) => (
-                  <MenuItem key={model.id} value={model.id}>
-                    {model.displayName}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                label="Key Name"
-                value={newKeyName}
-                onChange={(e) => setNewKeyName(e.target.value)}
-                placeholder="e.g., My OpenAI Key"
-                fullWidth
-              />
-
-              <TextField
-                label="API Key"
-                value={newKeyValue}
-                onChange={(e) => setNewKeyValue(e.target.value)}
-                placeholder="Enter the API key"
-                fullWidth
-                type="password"
-              />
-
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
-                <Button onClick={handleCloseDialog}>Cancel</Button>
-                <Button
-                  variant="contained"
-                  onClick={handleSaveKey}
-                  startIcon={<Save />}
-                >
-                  {editingKey ? 'Update' : 'Save'}
-                </Button>
-              </Box>
-            </Box>
-          </DialogContent>
-        </Dialog>
-
-        {/* Context Menu */}
-        <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleCloseMenu}
-        >
-          <MenuItem onClick={() => selectedKey && selectedUser && handleOpenEditDialog(selectedUser, selectedKey)}>
-            <Edit sx={{ mr: 1 }} />
-            Edit
-          </MenuItem>
-          <MenuItem onClick={() => selectedKey && selectedUser && handleSetActive(selectedUser._id, selectedKey._id)}>
-            <Key sx={{ mr: 1 }} />
-            Set as Active
-          </MenuItem>
-          <MenuItem
-            onClick={() => selectedKey && selectedUser && handleDeleteKey(selectedUser._id, selectedKey._id)}
-            sx={{ color: 'error.main' }}
-          >
-            <Delete sx={{ mr: 1 }} />
-            Delete
-          </MenuItem>
-        </Menu>
+          selectedUser={selectedUser}
+          editingKey={editingKey}
+          newKeyName={newKeyName}
+          setNewKeyName={setNewKeyName}
+          newKeyValue={newKeyValue}
+          setNewKeyValue={setNewKeyValue}
+          selectedModelId={selectedModelId}
+          setSelectedModelId={setSelectedModelId}
+          onSave={handleSaveKey}
+          availableModels={availableModels}
+        />
       </Box>
     </Box>
   );
