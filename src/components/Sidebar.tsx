@@ -26,6 +26,7 @@ import {
   Chat as ChatIcon,
   HelpOutline,
   Shield,
+  Feedback,
 } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
@@ -44,6 +45,7 @@ interface SidebarProps {
   onChatSelect: (chatId: string) => void;
   onSettingsClick: () => void;
   onHelpClick: () => void;
+  onFeedbackClick: () => void;
   onDeleteChat?: (chatId: string) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
@@ -56,6 +58,7 @@ export default function Sidebar({
   onChatSelect,
   onSettingsClick,
   onHelpClick,
+  onFeedbackClick,
   onDeleteChat,
   isCollapsed = false,
   onToggleCollapse,
@@ -568,6 +571,41 @@ export default function Sidebar({
                 </IconButton>
               </Tooltip>
 
+              {/* Feedback - Collapsed */}
+              <Tooltip title="Feedback" placement="right">
+                <IconButton
+                  onClick={onFeedbackClick}
+                  sx={{
+                    mb: 1,
+                    ml: 1,
+                    width: 44,
+                    height: 44,
+                    background:
+                      mode === "light"
+                        ? "rgba(255, 255, 255, 0.9)"
+                        : "rgba(255, 255, 255, 0.05)",
+                    backdropFilter: "blur(10px)",
+                    border:
+                      mode === "light"
+                        ? "1px solid rgba(0, 0, 0, 0.08)"
+                        : "1px solid rgba(255, 255, 255, 0.1)",
+                    color: mode === "light" ? "#667eea" : "#888",
+                    "&:hover": {
+                      background:
+                        mode === "light"
+                          ? "rgba(255, 255, 255, 1)"
+                          : "rgba(255, 255, 255, 0.1)",
+                      color: mode === "light" ? "#5a6fd8" : "white",
+                      transform: "translateY(-2px) scale(1.05)",
+                      boxShadow: "0 8px 25px rgba(102, 126, 234, 0.2)",
+                    },
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  <Feedback />
+                </IconButton>
+              </Tooltip>
+
               {/* Admin - Collapsed - Only visible to admin */}
               {user?.isAdmin && (
                 <Tooltip title="Admin Panel" placement="right">
@@ -699,6 +737,29 @@ export default function Sidebar({
                   }}
                 >
                   <HelpOutline />
+                </IconButton>
+              </Tooltip>
+
+              {/* Feedback */}
+              <Tooltip title="Feedback">
+                <IconButton
+                  onClick={onFeedbackClick}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    color: mode === "light" ? "#667eea" : "#888",
+                    "&:hover": {
+                      background:
+                        mode === "light"
+                          ? "rgba(102, 126, 234, 0.1)"
+                          : "rgba(255, 255, 255, 0.1)",
+                      color: mode === "light" ? "#5a6fd8" : "white",
+                      transform: "scale(1.05)",
+                    },
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  <Feedback />
                 </IconButton>
               </Tooltip>
 

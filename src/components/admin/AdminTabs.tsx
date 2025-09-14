@@ -4,7 +4,7 @@ import {
   Tab,
   useMediaQuery,
 } from '@mui/material';
-import { People, AddBox, AdminPanelSettings } from '@mui/icons-material';
+import { People, AddBox, AdminPanelSettings, Feedback } from '@mui/icons-material';
 
 interface AdminTabsProps {
   value: number;
@@ -75,6 +75,17 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
           icon={<AdminPanelSettings />}
           iconPosition="start"
           label={isSmallScreen ? "Admin" : "Admin Access"}
+          sx={{
+            '& .MuiTab-iconWrapper': {
+              mr: isSmallScreen ? 0.5 : 1,
+              fontSize: isSmallScreen ? '1rem' : '1.25rem',
+            },
+          }}
+        />
+        <Tab
+          icon={<Feedback />}
+          iconPosition="start"
+          label={isSmallScreen ? "Feedback" : "User Feedback"}
           sx={{
             '& .MuiTab-iconWrapper': {
               mr: isSmallScreen ? 0.5 : 1,

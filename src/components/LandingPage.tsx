@@ -10,6 +10,7 @@ import {
 //   DeveloperSection,
   APIKeysSection,
   CTASection,
+  FeedbackSection,
   Footer,
 } from "./landing-page";
 
@@ -47,6 +48,7 @@ export default function LandingPage() {
       {/* <DeveloperSection /> */}
       <APIKeysSection />
       <CTASection />
+      <FeedbackSection />
       <Footer />
     </Box>
   );

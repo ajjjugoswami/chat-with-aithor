@@ -13,6 +13,7 @@ import {
 import UsersTab from "./admin/UsersTab";
 import UserKeysTabs from "./admin/UserKeysTabs";
 import AdminAccessTab from "./admin/AdminAccessTab";
+import FeedbackTab from "./admin/FeedbackTab";
 
 export default function AdminPage() {
   const { mode } = useTheme();
@@ -405,6 +406,10 @@ export default function AdminPage() {
             handleToggleAdminAccess={handleToggleAdminAccess}
             usersWithKeys={usersWithKeys}
           />
+        )}
+
+        {tabValue === 3 && (
+          <FeedbackTab />
         )}
 
         {/* Add/Edit Dialog */}

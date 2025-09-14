@@ -5,4 +5,5 @@ export { default as AIModelsSection } from './AIModelsSection';
 export { default as DeveloperSection } from './DeveloperSection';
 export { default as APIKeysSection } from './APIKeysSection';
 export { default as CTASection } from './CTASection';
+export { default as FeedbackSection } from './FeedbackSection';
 export { default as Footer } from './Footer';

@@ -9,6 +9,7 @@ import ChatInput from "./components/ChatInput";
 import SettingsPage from "./components/SettingsPage";
 import HelpPage from "./components/HelpPage";
 import WelcomeModal from "./components/WelcomeModal";
+import FeedbackDialog from "./components/FeedbackDialog";
 import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/enhancedApiKeys";
 import { sendToAI, type ChatMessage } from "./services/aiServices";
@@ -186,6 +187,12 @@ function App() {
     // Stop any active typewriter animations when navigating to help
     stopAllTypewriters();
     navigate("/help");
+  };
+
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+
+  const handleFeedbackClick = () => {
+    setFeedbackDialogOpen(true);
   };
 
   const handleBackToChat = () => {
@@ -412,6 +419,7 @@ function App() {
               onChatSelect={handleChatSelect}
               onSettingsClick={handleSettingsClick}
               onHelpClick={handleHelpClick}
+              onFeedbackClick={handleFeedbackClick}
               onDeleteChat={handleDeleteChat}
               isCollapsed={sidebarCollapsed}
               onToggleCollapse={handleSidebarToggle}
@@ -454,6 +462,12 @@ function App() {
     
     {/* Welcome Modal */}
     <WelcomeModal open={showWelcome} onClose={hideWelcome} />
+
+    {/* Feedback Dialog */}
+    <FeedbackDialog
+      open={feedbackDialogOpen}
+      onClose={() => setFeedbackDialogOpen(false)}
+    />
     </div>
   );
 }
