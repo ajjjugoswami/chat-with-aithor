@@ -122,7 +122,8 @@ export default function AdminPage() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchName, searchEmail, isAdmin, fetchAllUsersAndKeys]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchName, searchEmail]);
 
   const handleSaveKey = async () => {
     if (!selectedUser || !newKeyName.trim() || !selectedProvider) {
