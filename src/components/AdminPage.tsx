@@ -339,7 +339,10 @@ export default function AdminPage() {
                           height: 56,
                           borderRadius: "50%",
                         }}
-                        src={user.picture || ""}
+                        src={
+                          usersWithKeys.find((user) => user._id === u._id)
+                            ?.picture || ""
+                        }
                       />
 
                       <Box sx={{ minWidth: 0 }}>

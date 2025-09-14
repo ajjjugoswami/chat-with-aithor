@@ -14,6 +14,7 @@ export interface UserWithKeys {
   _id: string;
   email: string;
   name?: string;
+  picture?: string;
   apiKeys: ServerAPIKey[];
 }
 
