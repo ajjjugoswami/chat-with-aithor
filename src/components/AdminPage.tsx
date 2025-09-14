@@ -28,6 +28,7 @@ export default function AdminPage() {
 
   const [tabValue, setTabValue] = useState(0);
   const [usersWithKeys, setUsersWithKeys] = useState<UserWithKeys[]>([]);
+  console.log(usersWithKeys);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
