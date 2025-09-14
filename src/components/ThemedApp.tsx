@@ -8,6 +8,7 @@ import { useTheme } from '../hooks/useTheme';
 import LandingPage from './LandingPage';
 import SignUpPage from './SignUpPage';
 import SignInPage from './SignInPage';
+import CookieConsentBanner from './CookieConsentBanner';
 
 export default function ThemedApp() {
   const { mode } = useTheme();
@@ -57,6 +58,7 @@ export default function ThemedApp() {
             {/* Redirect any unknown routes to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <CookieConsentBanner />
         </AuthProvider>
       </Router>
     </ThemeProvider>

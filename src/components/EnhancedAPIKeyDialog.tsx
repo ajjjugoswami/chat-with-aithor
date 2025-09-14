@@ -223,8 +223,8 @@ export default function EnhancedAPIKeyDialog({
             mode === "light"
               ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
               : "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
-          minHeight: isMobile ? "100vh" : "600px",
-          maxHeight: isMobile ? "100vh" : "90vh",
+          minHeight: isMobile ? "100dvh" : "600px",
+          maxHeight: isMobile ? "100dvh" : "90vh",
         },
       }}
     >

@@ -7,9 +7,10 @@ import {
   Button,
   Alert,
   Divider,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Email, Lock } from "@mui/icons-material";
+import { Email, Lock, ArrowBack } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
@@ -18,9 +19,10 @@ import { ShieldCheck } from "lucide-react";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const PageContainer = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
+  minHeight: "100%",
   display: "flex",
   background: "linear-gradient(135deg, #ffffff 0%, #d1fae5 100%)",
+  position: "relative",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },
@@ -35,8 +37,6 @@ const LeftSection = styled(Box)(({ theme }) => ({
   position: "relative",
   zIndex: 1,
   [theme.breakpoints.down("md")]: {
-    flex: "none",
-    minHeight: "auto",
     padding: theme.spacing(2),
   },
 }));
@@ -286,6 +286,26 @@ export default function SignUpPage() {
 
   return (
     <PageContainer>
+      <IconButton
+        onClick={() => navigate("/")}
+        sx={{
+          position: "absolute",
+          top: 20,
+          left: 20,
+          backgroundColor: "#10b981",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          "&:hover": {
+            backgroundColor: "#059669",
+            transform: "scale(1.05)",
+            border: "none",
+          },
+          zIndex: 100000,
+        }}
+        aria-label="back to landing page"
+      >
+        <ArrowBack />
+      </IconButton>
       <LeftSection>
         <FormCard>
           <LogoContainer>

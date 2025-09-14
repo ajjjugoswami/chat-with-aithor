@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useCallback, useState } from "react";
 import {
   Box,
   Typography,
-  Container,
   TextField,
   Button,
   Alert,
   Divider,
+  IconButton,
 } from "@mui/material";
-import { Email, Lock } from "@mui/icons-material";
+import { Email, Lock, ArrowBack } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -103,9 +103,30 @@ const SignInPage: React.FC = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: 2,
+        position: "relative",
       }}
     >
-      <Container component="main" maxWidth="sm">
+      <div>
+        <IconButton
+          onClick={() => navigate("/")}
+          sx={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            backgroundColor: "#10b981",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            "&:hover": {
+              backgroundColor: "#059669",
+              transform: "scale(1.05)",
+              border:"none"
+            },
+            zIndex: 100000,
+          }}
+          aria-label="back to landing page"
+        >
+          <ArrowBack />
+        </IconButton>
         <Box
           sx={{
             display: "flex",
@@ -167,7 +188,8 @@ const SignInPage: React.FC = () => {
                 variant="h4"
                 sx={{
                   fontWeight: "800",
-                  background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                  background:
+                    "linear-gradient(135deg, #059669 0%, #10b981 100%)",
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -375,7 +397,7 @@ const SignInPage: React.FC = () => {
             </Box>
           </Box>
         </Box>
-      </Container>
+      </div>
     </Box>
   );
 };
