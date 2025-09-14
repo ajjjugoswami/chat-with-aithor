@@ -177,6 +177,26 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
     };
   }, [isRecording, stopVoiceRecording]);
 
+  // Check for URL parameters on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageUrl = urlParams.get('url');
+    const context = urlParams.get('context');
+    
+    console.log('URL Parameters detected:', { pageUrl, context, fullSearch: window.location.search });
+    
+    if (pageUrl && context) {
+      const message = `${context} - ${decodeURIComponent(pageUrl)}`;
+      console.log('Setting message to:', message);
+      setMessage(message);
+      // Clear the URL parameters to avoid re-setting on refresh
+      const newUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, newUrl);
+    } else {
+      console.log('No URL parameters found or incomplete parameters');
+    }
+  }, []);
+
   const getFileType = (file: File): UploadedFile['type'] => {
     if (file.type.startsWith('image/')) return 'image';
     if (file.type === 'application/pdf') return 'pdf';
