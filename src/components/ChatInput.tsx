@@ -177,41 +177,33 @@ export default function ChatInput({ onSendMessage, disabled = false, selectedMod
     };
   }, [isRecording, stopVoiceRecording]);
 
-  // Check for URL parameters on component mount
-  useEffect(() => {
-    console.log('ChatInput component mounted, checking URL parameters...');
-    console.log('Current location:', window.location.href);
-    console.log('Search params:', window.location.search);
+useEffect(() => {
+  console.log('ChatInput component mounted, checking URL parameters...');
+  console.log('Current location:', window.location.href);
+  console.log('Search params:', window.location.search);
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const context = urlParams.get('context');
+  
+  console.log('URL Parameters detected:', { 
+    context, 
+    fullSearch: window.location.search,
+    allParams: Object.fromEntries(urlParams.entries())
+  });
+  
+  if (context) {
+    const decodedContext = decodeURIComponent(context);
+    console.log('Setting message to:', decodedContext);
+    setMessage(decodedContext);
     
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageUrl = urlParams.get('url');
-    const context = urlParams.get('context');
-    
-    console.log('URL Parameters detected:', { 
-      pageUrl, 
-      context, 
-      fullSearch: window.location.search,
-      allParams: Object.fromEntries(urlParams.entries())
-    });
-    
-    if (pageUrl && context) {
-      const decodedUrl = decodeURIComponent(pageUrl);
-      const decodedContext = decodeURIComponent(context);
-      const message = `${decodedContext} - ${decodedUrl}`;
-      console.log('Setting message to:', message);
-      console.log('Current message before setting:', message);
-      setMessage(message);
-      
-      // Clear the URL parameters to avoid re-setting on refresh
-      const newUrl = window.location.pathname + window.location.hash;
-      console.log('Clearing URL to:', newUrl);
-      window.history.replaceState({}, document.title, newUrl);
-    } else {
-      console.log('No URL parameters found or incomplete parameters');
-      if (!pageUrl) console.log('Missing pageUrl parameter');
-      if (!context) console.log('Missing context parameter');
-    }
-  }, []);
+    // Clear the URL parameters to avoid re-setting on refresh
+    const newUrl = window.location.pathname + window.location.hash;
+    console.log('Clearing URL to:', newUrl);
+    window.history.replaceState({}, document.title, newUrl);
+  } else {
+    console.log('No context parameter found');
+  }
+}, []);
 
   const getFileType = (file: File): UploadedFile['type'] => {
     if (file.type.startsWith('image/')) return 'image';
