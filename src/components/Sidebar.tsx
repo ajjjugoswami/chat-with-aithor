@@ -953,6 +953,41 @@ export default function Sidebar({
                     >
                       {user.email}
                     </Typography>
+
+                    {/* Admin Button - Mobile */}
+                    {user?.isAdmin && (
+                      <Button
+                        startIcon={<Shield />}
+                        onClick={() => navigate("/admin")}
+                        size="small"
+                        sx={{
+                          color: mode === "light" ? "#ff6b35" : "#ff8a65",
+                          textTransform: "none",
+                          fontSize: "0.75rem",
+                          minHeight: "32px",
+                          padding: "6px 12px",
+                          borderRadius: "8px",
+                          border:
+                            mode === "light"
+                              ? "1px solid rgba(255, 107, 53, 0.3)"
+                              : "1px solid rgba(255, 138, 101, 0.3)",
+                          width: "100%",
+                          justifyContent: "flex-start",
+                          mb: 1,
+                          "&:hover": {
+                            color: "#fff",
+                            bgcolor: "rgba(255, 107, 53, 0.1)",
+                            borderColor: "#ff6b35",
+                            transform: "translateY(-1px)",
+                            boxShadow: "0 4px 8px rgba(255, 107, 53, 0.2)",
+                          },
+                          transition: "all 0.2s ease-in-out",
+                        }}
+                      >
+                        Admin Panel
+                      </Button>
+                    )}
+
                     <Button
                       startIcon={<Logout />}
                       onClick={signOut}
@@ -1008,6 +1043,33 @@ export default function Sidebar({
                     }}
                   >
                     <Logout fontSize="small" />
+                  </IconButton>
+                )}
+
+                {/* Admin Button - Mobile Collapsed */}
+                {isCollapsed && user?.isAdmin && (
+                  <IconButton
+                    onClick={() => navigate("/admin")}
+                    size="small"
+                    sx={{
+                      color: mode === "light" ? "#ff6b35" : "#ff8a65",
+                      border:
+                        mode === "light"
+                          ? "1px solid rgba(255, 107, 53, 0.3)"
+                          : "1px solid rgba(255, 138, 101, 0.3)",
+                      borderRadius: "8px",
+                      mt: 1,
+                      "&:hover": {
+                        color: "#fff",
+                        bgcolor: "rgba(255, 107, 53, 0.1)",
+                        borderColor: "#ff6b35",
+                        transform: "translateY(-1px)",
+                        boxShadow: "0 4px 8px rgba(255, 107, 53, 0.2)",
+                      },
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                  >
+                    <Shield fontSize="small" />
                   </IconButton>
                 )}
               </Box>
