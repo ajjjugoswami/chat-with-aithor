@@ -26,6 +26,8 @@ interface APIKeyCardProps {
   onMenuOpen: (event: React.MouseEvent<HTMLElement>, key: ServerAPIKey) => void;
   onMenuClose: () => void;
   selectedKey: ServerAPIKey | null;
+  deleting: boolean;
+  settingActive: boolean;
 }
 
 export default function APIKeyCard({
@@ -37,6 +39,8 @@ export default function APIKeyCard({
   onMenuOpen,
   onMenuClose,
   selectedKey,
+  deleting,
+  settingActive,
 }: APIKeyCardProps) {
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -383,6 +387,7 @@ export default function APIKeyCard({
             onSetActive(keyData._id);
             onMenuClose();
           }}
+          disabled={settingActive}
           sx={{
             py: 1.5,
             px: 2,
@@ -405,6 +410,7 @@ export default function APIKeyCard({
             onDelete(keyData._id);
             onMenuClose();
           }}
+          disabled={deleting}
           sx={{
             py: 1.5,
             px: 2,

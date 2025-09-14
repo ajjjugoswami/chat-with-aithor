@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -28,6 +28,9 @@ export default function AdminPage() {
   const [usersWithKeys, setUsersWithKeys] = useState<UserWithKeys[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [settingActive, setSettingActive] = useState(false);
   console.log(usersWithKeys);
   // Add/Edit Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -54,13 +57,7 @@ export default function AdminPage() {
   // Check if user is admin
   const isAdmin = user?.email === "goswamiajay526@gmail.com";
 
-  useEffect(() => {
-    if (isAdmin) {
-      fetchAllUsersAndKeys();
-    }
-  }, [isAdmin]);
-
-  const fetchAllUsersAndKeys = async () => {
+  const fetchAllUsersAndKeys = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -83,6 +80,17 @@ export default function AdminPage() {
       if (response.ok) {
         const data = await response.json();
         setUsersWithKeys(data);
+
+        // Update selectedUser to point to the fresh data if it exists
+        if (selectedUser) {
+          const updatedSelectedUser = data.find((u: UserWithKeys) => u._id === selectedUser._id);
+          if (updatedSelectedUser) {
+            setSelectedUser(updatedSelectedUser);
+          } else {
+            // If the selected user is no longer in the data, clear selection
+            setSelectedUser(null);
+          }
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Failed to fetch users and keys");
@@ -93,7 +101,14 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedUser]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchAllUsersAndKeys();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSaveKey = async () => {
     if (
@@ -111,6 +126,7 @@ export default function AdminPage() {
       return;
     }
 
+    setSaving(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -159,10 +175,13 @@ export default function AdminPage() {
     } catch (err) {
       setError("Network error while saving API key");
       console.error("Error saving key:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDeleteKey = async (userId: string, keyId: string) => {
+    setDeleting(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -189,11 +208,14 @@ export default function AdminPage() {
     } catch (err) {
       setError("Network error while deleting API key");
       console.error("Error deleting key:", err);
+    } finally {
+      setDeleting(false);
     }
     handleCloseMenu();
   };
 
   const handleSetActive = async (userId: string, keyId: string) => {
+    setSettingActive(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -220,6 +242,8 @@ export default function AdminPage() {
     } catch (err) {
       setError("Network error while setting active API key");
       console.error("Error setting active key:", err);
+    } finally {
+      setSettingActive(false);
     }
     handleCloseMenu();
   };
@@ -693,6 +717,8 @@ export default function AdminPage() {
                       onMenuOpen={handleOpenMenu}
                       onMenuClose={handleCloseMenu}
                       selectedKey={selectedKey}
+                      deleting={deleting}
+                      settingActive={settingActive}
                     />
                   ))}
                 </Box>
@@ -715,6 +741,7 @@ export default function AdminPage() {
           setSelectedProvider={setSelectedProvider}
           onSave={handleSaveKey}
           availableProviders={availableProviders}
+          saving={saving}
         />
       </Box>
     </Box>

@@ -30,6 +30,7 @@ export default function AdminDialog({
   setSelectedProvider,
   onSave,
   availableProviders,
+  saving,
 }: AdminDialogProps) {
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -261,7 +262,7 @@ export default function AdminDialog({
           onClick={handleSave}
           variant="contained"
           startIcon={<Save />}
-          disabled={!selectedUser || !selectedProvider || !newKeyName.trim() || !newKeyValue.trim()}
+          disabled={saving || !selectedUser || !selectedProvider || !newKeyName.trim() || (!editingKey && !newKeyValue.trim())}
           sx={{
             borderRadius: 2,
             textTransform: 'none',

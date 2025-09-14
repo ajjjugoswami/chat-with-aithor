@@ -31,4 +31,5 @@ export interface AdminDialogProps {
   setSelectedProvider: (provider: string) => void;
   onSave: () => void;
   availableProviders: { id: string; displayName: string }[];
+  saving: boolean;
 }
