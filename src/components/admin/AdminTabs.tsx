@@ -4,7 +4,8 @@ import {
   Tab,
   useMediaQuery,
 } from '@mui/material';
-import { People, AddBox, AdminPanelSettings, Feedback } from '@mui/icons-material';
+import { People, AddBox, AdminPanelSettings } from '@mui/icons-material';
+import { MessageSquare } from 'lucide-react';
 
 interface AdminTabsProps {
   value: number;
@@ -83,7 +84,7 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
           }}
         />
         <Tab
-          icon={<Feedback />}
+          icon={<MessageSquare size={20} />}
           iconPosition="start"
           label={isSmallScreen ? "Feedback" : "User Feedback"}
           sx={{

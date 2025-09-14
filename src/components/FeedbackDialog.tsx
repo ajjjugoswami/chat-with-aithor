@@ -15,8 +15,8 @@ import {
 } from '@mui/material';
 import {
   Close,
-  Feedback as FeedbackIcon,
 } from '@mui/icons-material';
+import { MessageSquare } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 
@@ -173,7 +173,7 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ open, onClose }) => {
                   flexShrink: 0,
                 }}
               >
-                <FeedbackIcon />
+                <MessageSquare size={24} />
               </Box>
               <Box
                 sx={{

@@ -26,8 +26,8 @@ import {
   Chat as ChatIcon,
   HelpOutline,
   Shield,
-  Feedback,
 } from "@mui/icons-material";
+import { MessageSquare } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { useNavigate } from "react-router-dom";
@@ -602,7 +602,7 @@ export default function Sidebar({
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
-                  <Feedback />
+                  <MessageSquare size={20} />
                 </IconButton>
               </Tooltip>
 
@@ -759,7 +759,7 @@ export default function Sidebar({
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
-                  <Feedback />
+                  <MessageSquare size={20} />
                 </IconButton>
               </Tooltip>
 

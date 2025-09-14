@@ -10,7 +10,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Feedback as FeedbackIcon } from '@mui/icons-material';
+import { MessageSquare } from 'lucide-react';
 
 const StyledFeedbackSection = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1a1a1a',
@@ -186,7 +186,7 @@ export default function FeedbackSection() {
                 variant="contained"
                 size="large"
                 disabled={!formData.name || !formData.email || !formData.feedback}
-                startIcon={loading ? <CircularProgress size={20} /> : <FeedbackIcon />}
+                startIcon={loading ? <CircularProgress size={20} /> : <MessageSquare size={20} />}
                 sx={{
                   minWidth: '200px',
                   py: 1.5,
