@@ -894,14 +894,14 @@ export default function AdminPage() {
                             fontSize: isSmallScreen ? "0.7rem" : "0.75rem",
                           }}
                         >
-                          ADMIN
+                          ACTIVE
                         </Typography>
                       )}
                       <Button
                         variant={u.isAdmin ? "outlined" : "contained"}
                         size={isSmallScreen ? "small" : "small"}
                         onClick={() => handleToggleAdminAccess(u)}
-                        disabled={u._id === user?.id} // Can't modify own admin status
+                        disabled={u.isAdmin}
                         sx={{
                           textTransform: "none",
                           borderRadius: 2,
@@ -921,12 +921,16 @@ export default function AdminPage() {
                               ? "rgba(255, 255, 255, 0.5)"
                               : undefined,
                           },
+                          "&.Mui-disabled": {
+                            color: u.isAdmin ? "rgba(255, 255, 255, 0.5)" : undefined,
+                            borderColor: u.isAdmin ? "rgba(255, 255, 255, 0.2)" : undefined,
+                          },
                         }}
                       >
                         {u.isAdmin
                           ? isSmallScreen
-                            ? "Revoke"
-                            : "Revoke"
+                            ? "Active"
+                            : "Active"
                           : isSmallScreen
                           ? "Grant"
                           : "Grant"}
