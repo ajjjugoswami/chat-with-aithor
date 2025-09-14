@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Add, AdminPanelSettings, Person, VpnKey } from "@mui/icons-material";
+import { Add, AdminPanelSettings, Person, VpnKey, Search, Email, Clear } from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Button,
   CircularProgress,
+  TextField,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -15,12 +16,170 @@ const UsersTab = ({
   handleOpenAddDialog,
   setSelectedUser,
   setTabValue,
+  searchName,
+  setSearchName,
+  searchEmail,
+  setSearchEmail,
 }: any) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const isSmallScreen = useMediaQuery("(max-width: 480px)");
   return (
     <>
       <Box>
+        {/* Search Filters */}
+        <Box
+          sx={{
+            mb: 3,
+            p: 3,
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            border: "1px solid",
+            borderColor: "divider",
+            boxShadow: (theme) => theme.shadows[1],
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 2,
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <Search sx={{ fontSize: 20 }} />
+            Filter Users
+          </Typography>
+
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              flexDirection: isSmallScreen ? "column" : "row",
+              alignItems: isSmallScreen ? "stretch" : "center",
+            }}
+          >
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search by name..."
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <Person sx={{ mr: 1, color: "text.secondary", fontSize: 18 }} />
+                ),
+                endAdornment: searchName && (
+                  <Clear
+                    sx={{ cursor: "pointer", color: "text.secondary", fontSize: 18 }}
+                    onClick={() => setSearchName("")}
+                  />
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
+            />
+
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search by email..."
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <Email sx={{ mr: 1, color: "text.secondary", fontSize: 18 }} />
+                ),
+                endAdornment: searchEmail && (
+                  <Clear
+                    sx={{ cursor: "pointer", color: "text.secondary", fontSize: 18 }}
+                    onClick={() => setSearchEmail("")}
+                  />
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
+            />
+          </Box>
+
+          {(searchName || searchEmail) && (
+            <Box sx={{ mt: 2, display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                Filtering by:
+              </Typography>
+              {searchName && (
+                <Box
+                  sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    bgcolor: "primary.light",
+                    color: "primary.contrastText",
+                    borderRadius: 1,
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                >
+                  Name: "{searchName}"
+                  <Clear
+                    sx={{ fontSize: 14, cursor: "pointer", "&:hover": { opacity: 0.7 } }}
+                    onClick={() => setSearchName("")}
+                  />
+                </Box>
+              )}
+              {searchEmail && (
+                <Box
+                  sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    bgcolor: "secondary.light",
+                    color: "secondary.contrastText",
+                    borderRadius: 1,
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                >
+                  Email: "{searchEmail}"
+                  <Clear
+                    sx={{ fontSize: 14, cursor: "pointer", "&:hover": { opacity: 0.7 } }}
+                    onClick={() => setSearchEmail("")}
+                  />
+                </Box>
+              )}
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setSearchName("");
+                  setSearchEmail("");
+                }}
+                sx={{
+                  ml: "auto",
+                  fontSize: "0.75rem",
+                  py: 0.5,
+                  px: 1.5,
+                  borderRadius: 1,
+                  textTransform: "none",
+                }}
+              >
+                Clear All
+              </Button>
+            </Box>
+          )}
+        </Box>
+
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", p: 6 }}>
             <CircularProgress size={60} />

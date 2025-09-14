@@ -28,6 +28,8 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [settingActive, setSettingActive] = useState(false);
+  const [searchName, setSearchName] = useState("");
+  const [searchEmail, setSearchEmail] = useState("");
   console.log(usersWithKeys);
   // Add/Edit Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -50,7 +52,7 @@ export default function AdminPage() {
   // Check if user is admin
   const isAdmin = user?.isAdmin;
 
-  const fetchAllUsersAndKeys = useCallback(async () => {
+  const fetchAllUsersAndKeys = useCallback(async (name = "", email = "") => {
     setLoading(true);
     setError("");
 
@@ -61,14 +63,20 @@ export default function AdminPage() {
         return;
       }
 
-      const response = await fetch(
-        "https://aithor-be.vercel.app/api/api-keys/admin/all",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const params = new URLSearchParams();
+      if (name) params.append('name', name);
+      if (email) params.append('email', email);
+      const queryString = params.toString();
+
+      const url = queryString 
+        ? `https://aithor-be.vercel.app/api/api-keys/admin/all?${queryString}`
+        : "https://aithor-be.vercel.app/api/api-keys/admin/all";
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -104,6 +112,17 @@ export default function AdminPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isAdmin) {
+        fetchAllUsersAndKeys(searchName, searchEmail);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchName, searchEmail, isAdmin, fetchAllUsersAndKeys]);
 
   const handleSaveKey = async () => {
     if (!selectedUser || !newKeyName.trim() || !selectedProvider) {
@@ -359,6 +378,10 @@ export default function AdminPage() {
             setSelectedUser={setSelectedUser}
             handleOpenAddDialog={handleOpenAddDialog}
             setTabValue={setTabValue}
+            searchName={searchName}
+            setSearchName={setSearchName}
+            searchEmail={searchEmail}
+            setSearchEmail={setSearchEmail}
           />
         )}
 
