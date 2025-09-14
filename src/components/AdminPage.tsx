@@ -40,10 +40,6 @@ export default function AdminPage() {
   const [newKeyValue, setNewKeyValue] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("");
 
-  // Menu state for API key cards
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-  const [selectedKey, setSelectedKey] = useState<ServerAPIKey | null>(null);
-
   // Available providers for selection
   const availableProviders = [
     { id: "ChatGPT", displayName: "ChatGPT" },
@@ -211,7 +207,6 @@ export default function AdminPage() {
     } finally {
       setDeleting(false);
     }
-    handleCloseMenu();
   };
 
   const handleSetActive = async (userId: string, keyId: string) => {
@@ -245,7 +240,6 @@ export default function AdminPage() {
     } finally {
       setSettingActive(false);
     }
-    handleCloseMenu();
   };
 
   const handleOpenAddDialog = (user: UserWithKeys) => {
@@ -264,7 +258,6 @@ export default function AdminPage() {
     setNewKeyValue(""); // Keep empty for security - user can re-enter if needed
     setSelectedProvider(key.provider);
     setDialogOpen(true);
-    handleCloseMenu();
   };
 
   const handleCloseDialog = () => {
@@ -275,19 +268,6 @@ export default function AdminPage() {
     setNewKeyValue("");
     setSelectedProvider("");
     setError("");
-  };
-
-  const handleOpenMenu = (
-    event: React.MouseEvent<HTMLElement>,
-    key: ServerAPIKey
-  ) => {
-    setMenuAnchor(event.currentTarget);
-    setSelectedKey(key);
-  };
-
-  const handleCloseMenu = () => {
-    setMenuAnchor(null);
-    setSelectedKey(null);
   };
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -713,10 +693,6 @@ export default function AdminPage() {
                       onDelete={(keyId) =>
                         handleDeleteKey(selectedUser._id, keyId)
                       }
-                      menuAnchor={menuAnchor}
-                      onMenuOpen={handleOpenMenu}
-                      onMenuClose={handleCloseMenu}
-                      selectedKey={selectedKey}
                       deleting={deleting}
                       settingActive={settingActive}
                     />

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardContent,
@@ -6,13 +5,11 @@ import {
   IconButton,
   Box,
   Chip,
-  Menu,
-  MenuItem,
   Tooltip,
   Snackbar,
   Alert,
 } from "@mui/material";
-import { MoreVert, Edit, Key, Delete, ContentCopy } from "@mui/icons-material";
+import { Edit, Key, Delete, ContentCopy } from "@mui/icons-material";
 import { useState } from "react";
 import type { ServerAPIKey } from "./types";
 import { getProviderDisplayName } from "../../utils/enhancedApiKeys";
@@ -22,10 +19,6 @@ interface APIKeyCardProps {
   onEdit: (key: ServerAPIKey) => void;
   onSetActive: (keyId: string) => void;
   onDelete: (keyId: string) => void;
-  menuAnchor: HTMLElement | null;
-  onMenuOpen: (event: React.MouseEvent<HTMLElement>, key: ServerAPIKey) => void;
-  onMenuClose: () => void;
-  selectedKey: ServerAPIKey | null;
   deleting: boolean;
   settingActive: boolean;
 }
@@ -35,10 +28,6 @@ export default function APIKeyCard({
   onEdit,
   onSetActive,
   onDelete,
-  menuAnchor,
-  onMenuOpen,
-  onMenuClose,
-  selectedKey,
   deleting,
   settingActive,
 }: APIKeyCardProps) {
@@ -323,112 +312,71 @@ export default function APIKeyCard({
               </Box>
             </Box>
 
-            <IconButton
-              onClick={(e) => onMenuOpen(e, keyData)}
+            <Box
               sx={{
-                color: "text.secondary",
-                "&:hover": {
-                  color: "primary.main",
-                  bgcolor: "primary.light",
-                  transform: "scale(1.1)",
-                },
-                transition: "all 0.2s ease-in-out",
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
                 flexShrink: 0,
-                alignSelf: "flex-start",
-                borderRadius: 2,
-                p: 1,
               }}
             >
-              <MoreVert />
-            </IconButton>
+              <Tooltip title="Edit API Key">
+                <IconButton
+                  onClick={() => onEdit(keyData)}
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": {
+                      color: "primary.main",
+                      // bgcolor: "primary.light",
+                    },
+                    transition: "all 0.2s ease-in-out",
+                    borderRadius: 2,
+                    p: 1,
+                  }}
+                >
+                  <Edit fontSize="small" />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Set as Active">
+                <IconButton
+                  onClick={() => onSetActive(keyData._id)}
+                  disabled={settingActive}
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": {
+                      color: "success.main",
+                    },
+                    transition: "all 0.2s ease-in-out",
+                    borderRadius: 2,
+                    p: 1,
+                  }}
+                >
+                  <Key fontSize="small" />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Delete API Key">
+                <IconButton
+                  onClick={() => onDelete(keyData._id)}
+                  disabled={deleting}
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": {
+                      color: "error.main",
+                    },
+                    transition: "all 0.2s ease-in-out",
+                    borderRadius: 2,
+                    p: 1,
+                  }}
+                >
+                  <Delete fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </CardContent>
       </Card>
-
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor) && selectedKey?._id === keyData._id}
-        onClose={onMenuClose}
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            minWidth: 160,
-            boxShadow: (theme) => theme.shadows[12],
-            border: "1px solid",
-            borderColor: "divider",
-            mt: 1,
-          },
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            onEdit(keyData);
-            onMenuClose();
-          }}
-          sx={{
-            py: 1.5,
-            px: 2,
-            borderRadius: 1,
-            mx: 0.5,
-            mb: 0.5,
-            "&:hover": {
-              bgcolor: "primary.light",
-              color: "primary.main",
-              borderRadius: 2,
-            },
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          <Edit sx={{ mr: 1.5, fontSize: "1.1rem" }} />
-          Edit
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            onSetActive(keyData._id);
-            onMenuClose();
-          }}
-          disabled={settingActive}
-          sx={{
-            py: 1.5,
-            px: 2,
-            borderRadius: 1,
-            mx: 0.5,
-            mb: 0.5,
-            "&:hover": {
-              bgcolor: "success.light",
-              color: "success.main",
-              borderRadius: 2,
-            },
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          <Key sx={{ mr: 1.5, fontSize: "1.1rem" }} />
-          Set as Active
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            onDelete(keyData._id);
-            onMenuClose();
-          }}
-          disabled={deleting}
-          sx={{
-            py: 1.5,
-            px: 2,
-            borderRadius: 1,
-            mx: 0.5,
-            color: "error.main",
-            "&:hover": {
-              bgcolor: "error.light",
-              color: "error.dark",
-              borderRadius: 2,
-            },
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          <Delete sx={{ mr: 1.5, fontSize: "1.1rem" }} />
-          Delete
-        </MenuItem>
-      </Menu>
 
       <Snackbar
         open={copySuccess}
