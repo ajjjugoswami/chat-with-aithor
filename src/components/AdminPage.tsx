@@ -28,7 +28,7 @@ export default function AdminPage() {
   const [usersWithKeys, setUsersWithKeys] = useState<UserWithKeys[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  console.log(usersWithKeys);
   // Add/Edit Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithKeys | null>(null);
@@ -333,17 +333,13 @@ export default function AdminPage() {
                     }}
                   >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <img
-                        style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: "50%",
-                        }}
-                        src={
-                          usersWithKeys.find((user) => user._id === u._id)
-                            ?.picture || ""
-                        }
-                      />
+                      <Avatar
+                        src={u.picture}
+                        alt={u.name || u.email}
+                        sx={{ width: 56, height: 56 }}
+                      >
+                        {(u.name || u.email || "").charAt(0).toUpperCase()}
+                      </Avatar>
 
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
