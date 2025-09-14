@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ import {
   Feedback as FeedbackIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
 
 interface FeedbackDialogProps {
   open: boolean;
@@ -37,6 +38,18 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ open, onClose }) => {
   const { mode } = useTheme();
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
+  const { user, isAuthenticated } = useAuth();
+
+  // Auto-fill user data when dialog opens and user is authenticated
+  useEffect(() => {
+    if (open && isAuthenticated && user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [open, isAuthenticated, user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
