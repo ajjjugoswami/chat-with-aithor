@@ -23,6 +23,8 @@ export default function AdminPage() {
   const { mode } = useTheme();
   const { user } = useAuth();
   const isMobile = useMediaQuery("(max-width: 600px)");
+  const isTablet = useMediaQuery("(max-width: 960px)");
+  const isSmallScreen = useMediaQuery("(max-width: 480px)");
 
   const [tabValue, setTabValue] = useState(0);
   const [usersWithKeys, setUsersWithKeys] = useState<UserWithKeys[]>([]);
@@ -79,7 +81,9 @@ export default function AdminPage() {
 
         // Update selectedUser to point to the fresh data if it exists
         if (selectedUser) {
-          const updatedSelectedUser = data.find((u: UserWithKeys) => u._id === selectedUser._id);
+          const updatedSelectedUser = data.find(
+            (u: UserWithKeys) => u._id === selectedUser._id
+          );
           if (updatedSelectedUser) {
             setSelectedUser(updatedSelectedUser);
           } else {
@@ -107,11 +111,7 @@ export default function AdminPage() {
   }, []);
 
   const handleSaveKey = async () => {
-    if (
-      !selectedUser ||
-      !newKeyName.trim() ||
-      !selectedProvider
-    ) {
+    if (!selectedUser || !newKeyName.trim() || !selectedProvider) {
       setError("Provider, name are required");
       return;
     }
@@ -283,23 +283,28 @@ export default function AdminPage() {
         return;
       }
 
-      const response = await fetch(`https://aithor-be.vercel.app/api/auth/${user.isAdmin ? 'revoke' : 'grant'}-admin/${user._id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://aithor-be.vercel.app/api/auth/${
+          user.isAdmin ? "revoke" : "grant"
+        }-admin/${user._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to update admin access');
+        throw new Error("Failed to update admin access");
       }
 
       // Refresh the users list to reflect the change
       await fetchAllUsersAndKeys();
     } catch (error) {
-      console.error('Error toggling admin access:', error);
-      setError('Failed to update admin access');
+      console.error("Error toggling admin access:", error);
+      setError("Failed to update admin access");
     }
   };
 
@@ -329,7 +334,7 @@ export default function AdminPage() {
         minHeight: "100vh",
         bgcolor: mode === "light" ? "#f5f5f5" : "#121212",
         color: mode === "light" ? "#000" : "#fff",
-        p: isMobile ? 2 : 4,
+        p: isSmallScreen ? 1 : isMobile ? 2 : 4,
       }}
     >
       <Box sx={{ maxWidth: "100%", mx: "auto" }}>
@@ -355,8 +360,12 @@ export default function AdminPage() {
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                  gap: 3,
+                  gridTemplateColumns: isSmallScreen
+                    ? "1fr"
+                    : isMobile
+                    ? "repeat(auto-fit, minmax(280px, 1fr))"
+                    : "repeat(auto-fit, minmax(320px, 1fr))",
+                  gap: isSmallScreen ? 2 : 3,
                 }}
               >
                 {usersWithKeys.map((u) => (
@@ -380,11 +389,24 @@ export default function AdminPage() {
                       },
                     }}
                   >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: isSmallScreen ? "flex-start" : "center",
+                        gap: isSmallScreen ? 1.5 : 2,
+                        mb: 2,
+                        flexDirection: isSmallScreen ? "column" : "row",
+                      }}
+                    >
                       <Avatar
                         src={u.picture}
                         alt={u.name || u.email}
-                        sx={{ width: 56, height: 56, flexShrink: 0 }}
+                        sx={{
+                          width: isSmallScreen ? 40 : 56,
+                          height: isSmallScreen ? 40 : 56,
+                          flexShrink: 0,
+                          mb: isSmallScreen ? 1 : 0,
+                        }}
                       >
                         {(u.name || u.email || "").charAt(0).toUpperCase()}
                       </Avatar>
@@ -394,7 +416,7 @@ export default function AdminPage() {
                           variant="h6"
                           sx={{
                             fontWeight: 600,
-                            fontSize: "1rem",
+                            fontSize: isSmallScreen ? "1rem" : "1.1rem",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -407,7 +429,7 @@ export default function AdminPage() {
                           variant="body2"
                           sx={{
                             color: "text.secondary",
-                            fontSize: "0.85rem",
+                            fontSize: isSmallScreen ? "0.8rem" : "0.85rem",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -427,16 +449,16 @@ export default function AdminPage() {
                         mb: 2,
                       }}
                     >
-                      {u.apiKeys.slice(0, 3).map((k) => (
+                      {u.apiKeys.slice(0, isSmallScreen ? 2 : 3).map((k) => (
                         <Box
                           key={k._id}
                           sx={{
                             bgcolor: "primary.light",
                             color: "primary.contrastText",
-                            px: 1.5,
-                            py: 0.6,
+                            px: isSmallScreen ? 1 : 1.5,
+                            py: isSmallScreen ? 0.4 : 0.6,
                             borderRadius: 2,
-                            fontSize: "0.8rem",
+                            fontSize: isSmallScreen ? "0.7rem" : "0.8rem",
                             fontWeight: 500,
                             whiteSpace: "nowrap",
                             flexShrink: 0,
@@ -445,21 +467,21 @@ export default function AdminPage() {
                           {k.provider}
                         </Box>
                       ))}
-                      {u.apiKeys.length > 3 && (
+                      {u.apiKeys.length > (isSmallScreen ? 2 : 3) && (
                         <Box
                           sx={{
                             bgcolor: "grey.300",
-                            px: 1.5,
-                            py: 0.6,
+                            px: isSmallScreen ? 1 : 1.5,
+                            py: isSmallScreen ? 0.4 : 0.6,
                             borderRadius: 2,
-                            fontSize: "0.8rem",
+                            fontSize: isSmallScreen ? "0.7rem" : "0.8rem",
                             color: "text.secondary",
                             fontWeight: 500,
                             whiteSpace: "nowrap",
                             flexShrink: 0,
                           }}
                         >
-                          +{u.apiKeys.length - 3} more
+                          +{u.apiKeys.length - (isSmallScreen ? 2 : 3)} more
                         </Box>
                       )}
                     </Box>
@@ -467,28 +489,35 @@ export default function AdminPage() {
                     <Box
                       sx={{
                         display: "flex",
-                        gap: 1,
+                        gap: isSmallScreen ? 1 : 1,
                         justifyContent: "flex-start",
                         alignItems: "center",
                         mt: "auto",
                         pt: 1,
+                        flexDirection: isSmallScreen ? "column" : "row",
+                        width: "100%",
                       }}
                     >
                       <Button
                         variant="outlined"
-                        size="small"
+                        size={isSmallScreen ? "small" : "small"}
                         startIcon={<Add />}
                         onClick={() => handleOpenAddDialog(u)}
                         sx={{
                           textTransform: "none",
                           borderRadius: 2,
+                          fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                          px: isSmallScreen ? 1.5 : 2,
+                          py: isSmallScreen ? 0.5 : 1,
+                          width: isSmallScreen ? "100%" : "auto",
+                          mb: isSmallScreen ? 1 : 0,
                         }}
                       >
                         Add Key
                       </Button>
                       <Button
                         variant="contained"
-                        size="small"
+                        size={isSmallScreen ? "small" : "small"}
                         startIcon={<VpnKey />}
                         onClick={() => {
                           setSelectedUser(u);
@@ -497,6 +526,10 @@ export default function AdminPage() {
                         sx={{
                           textTransform: "none",
                           borderRadius: 2,
+                          fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                          px: isSmallScreen ? 1.5 : 2,
+                          py: isSmallScreen ? 0.5 : 1,
+                          width: isSmallScreen ? "100%" : "auto",
                           "&:hover": { bgcolor: "primary.dark" },
                         }}
                       >
@@ -544,9 +577,9 @@ export default function AdminPage() {
           <Box
             sx={{
               display: "flex",
-              gap: 3,
+              gap: isSmallScreen ? 2 : 3,
               alignItems: "flex-start",
-              flexDirection: { xs: "column", md: "row" },
+              flexDirection: isTablet ? "column" : "row",
             }}
           >
             <Box
@@ -629,44 +662,47 @@ export default function AdminPage() {
               </Box>
             </Box>
 
-            <Box sx={{ flex: 1 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    {selectedUser && (
-                      <Avatar
-                        src={selectedUser.picture}
-                        sx={{ width: 48, height: 48 }}
-                      >
-                        {(selectedUser.name || selectedUser.email || "").charAt(0).toUpperCase()}
-                      </Avatar>
-                    )}
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      {selectedUser
-                        ? selectedUser.name || selectedUser.email
-                        : "Select a user"}
-                    </Typography>
-                  </Box>
+            <Box sx={{ flex: 1, width: "100%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   {selectedUser && (
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<Add />}
-                        onClick={() => handleOpenAddDialog(selectedUser)}
-                        sx={{ textTransform: "none", borderRadius: 2 }}
-                      >
-                        Add Key
-                      </Button>
-                    </Box>
+                    <Avatar
+                      src={selectedUser.picture}
+                      sx={{ width: 48, height: 48 }}
+                    >
+                      {(selectedUser.name || selectedUser.email || "")
+                        .charAt(0)
+                        .toUpperCase()}
+                    </Avatar>
                   )}
-                </Box>              {!selectedUser ? (
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {selectedUser
+                      ? selectedUser.name || selectedUser.email
+                      : "Select a user"}
+                  </Typography>
+                </Box>
+                {selectedUser && (
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<Add />}
+                      onClick={() => handleOpenAddDialog(selectedUser)}
+                      sx={{ textTransform: "none", borderRadius: 2 }}
+                    >
+                      Add Key
+                    </Button>
+                  </Box>
+                )}
+              </Box>{" "}
+              {!selectedUser ? (
                 <Box
                   sx={{
                     p: 6,
@@ -766,7 +802,8 @@ export default function AdminPage() {
                 variant="body2"
                 sx={{ color: "text.secondary", mb: 3 }}
               >
-                Grant or revoke admin access for users. Admin users can access this admin panel and manage API keys for all users.
+                Grant or revoke admin access for users. Admin users can access
+                this admin panel and manage API keys for all users.
               </Typography>
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -775,32 +812,53 @@ export default function AdminPage() {
                     key={u._id}
                     sx={{
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      p: 2,
+                      alignItems: isSmallScreen ? "stretch" : "center",
+                      justifyContent: isSmallScreen
+                        ? "flex-start"
+                        : "space-between",
+                      p: isSmallScreen ? 1.5 : 2,
                       borderRadius: 2,
                       border: "1px solid",
                       borderColor: "divider",
-                      bgcolor: u.isAdmin ? "primary.main" : "background.default",
+                      bgcolor: u.isAdmin
+                        ? "primary.main"
+                        : "background.default",
                       transition: "all 0.2s ease",
                       "&:hover": {
                         bgcolor: u.isAdmin ? "primary.dark" : "action.hover",
                       },
+                      flexDirection: isSmallScreen ? "column" : "row",
+                      gap: isSmallScreen ? 1 : 0,
                     }}
                   >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: isSmallScreen ? 1.5 : 2,
+                      }}
+                    >
                       <Avatar
                         src={u.picture}
-                        sx={{ width: 40, height: 40 }}
+                        sx={{
+                          width: isSmallScreen ? 32 : 40,
+                          height: isSmallScreen ? 32 : 40,
+                        }}
                       >
                         {(u.name || u.email || "").charAt(0).toUpperCase()}
                       </Avatar>
-                      <Box>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
                         <Typography
                           variant="body1"
                           sx={{
                             fontWeight: 600,
-                            color: u.isAdmin ? "primary.contrastText" : "text.primary",
+                            fontSize: isSmallScreen ? "0.9rem" : "1rem",
+                            color: u.isAdmin
+                              ? "primary.contrastText"
+                              : "text.primary",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           {u.name || u.email}
@@ -808,7 +866,13 @@ export default function AdminPage() {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: u.isAdmin ? "primary.contrastText" : "text.secondary",
+                            fontSize: isSmallScreen ? "0.7rem" : "0.75rem",
+                            color: u.isAdmin
+                              ? "primary.contrastText"
+                              : "text.secondary",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           {u.email}
@@ -823,10 +887,11 @@ export default function AdminPage() {
                           sx={{
                             color: "primary.contrastText",
                             fontWeight: 600,
-                            px: 1,
+                            px: isSmallScreen ? 0.5 : 1,
                             py: 0.5,
                             bgcolor: "rgba(255, 255, 255, 0.2)",
                             borderRadius: 1,
+                            fontSize: isSmallScreen ? "0.7rem" : "0.75rem",
                           }}
                         >
                           ADMIN
@@ -834,22 +899,37 @@ export default function AdminPage() {
                       )}
                       <Button
                         variant={u.isAdmin ? "outlined" : "contained"}
-                        size="small"
+                        size={isSmallScreen ? "small" : "small"}
                         onClick={() => handleToggleAdminAccess(u)}
                         disabled={u._id === user?.id} // Can't modify own admin status
                         sx={{
                           textTransform: "none",
                           borderRadius: 2,
-                          minWidth: 100,
+                          minWidth: isSmallScreen ? 70 : 100,
+                          fontSize: isSmallScreen ? "0.7rem" : "0.875rem",
+                          px: isSmallScreen ? 1 : 1.5,
+                          py: isSmallScreen ? 0.25 : 0.5,
                           color: u.isAdmin ? "primary.contrastText" : undefined,
-                          borderColor: u.isAdmin ? "rgba(255, 255, 255, 0.3)" : undefined,
+                          borderColor: u.isAdmin
+                            ? "rgba(255, 255, 255, 0.3)"
+                            : undefined,
                           "&:hover": {
-                            bgcolor: u.isAdmin ? "rgba(255, 255, 255, 0.1)" : undefined,
-                            borderColor: u.isAdmin ? "rgba(255, 255, 255, 0.5)" : undefined,
+                            bgcolor: u.isAdmin
+                              ? "rgba(255, 255, 255, 0.1)"
+                              : undefined,
+                            borderColor: u.isAdmin
+                              ? "rgba(255, 255, 255, 0.5)"
+                              : undefined,
                           },
                         }}
                       >
-                        {u.isAdmin ? "Revoke" : "Grant"}
+                        {u.isAdmin
+                          ? isSmallScreen
+                            ? "Revoke"
+                            : "Revoke"
+                          : isSmallScreen
+                          ? "Grant"
+                          : "Grant"}
                       </Button>
                     </Box>
                   </Box>

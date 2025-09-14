@@ -7,6 +7,7 @@ import {
   Typography,
   Button,
   Box,
+  useMediaQuery,
 } from '@mui/material';
 import { Add, ExpandMore, Person } from '@mui/icons-material';
 import type { UserWithKeys } from './types';
@@ -18,12 +19,13 @@ interface UserAccordionProps {
 }
 
 export default function UserAccordion({ user, onAddKey, children }: UserAccordionProps) {
+   const isSmallScreen = useMediaQuery('(max-width: 640px)');
   return (
     <Accordion
       sx={{
         bgcolor: 'background.paper',
         borderRadius: 3,
-        mb: 2,
+        mb: isSmallScreen ? 1.5 : 2,
         boxShadow: (theme) => theme.shadows[2],
         '&:before': { display: 'none' },
         '&:hover': {
@@ -32,26 +34,28 @@ export default function UserAccordion({ user, onAddKey, children }: UserAccordio
       }}
     >
       <AccordionSummary
-        expandIcon={<ExpandMore sx={{ color: 'primary.main' }} />}
+        expandIcon={<ExpandMore sx={{ color: 'primary.main', fontSize: isSmallScreen ? '1.25rem' : '1.5rem' }} />}
         sx={{
           '& .MuiAccordionSummary-content': {
             alignItems: 'center',
-            gap: 2,
-            py: 1,
+            gap: isSmallScreen ? 1 : 2,
+            py: isSmallScreen ? 0.75 : 1,
           },
           borderRadius: 3,
           '&:hover': {
             bgcolor: 'action.hover',
           },
+          minHeight: isSmallScreen ? 56 : 64,
         }}
       >
         <Avatar
           sx={{
-            width: 48,
-            height: 48,
+            width: isSmallScreen ? 40 : 48,
+            height: isSmallScreen ? 40 : 48,
             bgcolor: 'primary.main',
-            fontSize: '1.2rem',
+            fontSize: isSmallScreen ? '1rem' : '1.2rem',
             fontWeight: 'bold',
+            flexShrink: 0,
           }}
         >
           <Person />
@@ -61,7 +65,7 @@ export default function UserAccordion({ user, onAddKey, children }: UserAccordio
             variant="h6"
             sx={{
               fontWeight: 600,
-              fontSize: '1.1rem',
+              fontSize: isSmallScreen ? '1rem' : '1.1rem',
               color: 'text.primary',
               mb: 0.5,
             }}
@@ -72,7 +76,7 @@ export default function UserAccordion({ user, onAddKey, children }: UserAccordio
             variant="body2"
             sx={{
               color: 'text.secondary',
-              fontSize: '0.9rem',
+              fontSize: isSmallScreen ? '0.8rem' : '0.9rem',
             }}
           >
             {user.email} • {user.apiKeys.length} API key{user.apiKeys.length !== 1 ? 's' : ''}

@@ -15,6 +15,7 @@ import {
   Chip,
   Avatar,
   Divider,
+  useMediaQuery,
 } from '@mui/material';
 import { Close, Save, ContentCopy, Key as KeyIcon, Person, Security } from '@mui/icons-material';
 import { useState } from 'react';
@@ -36,6 +37,7 @@ export default function AdminDialog({
   saving,
 }: AdminDialogProps) {
   const [copySuccess, setCopySuccess] = useState(false);
+   const isSmallScreen = useMediaQuery('(max-width: 640px)');
 
   const handleCopyKey = async () => {
     if (newKeyValue.trim()) {
@@ -66,8 +68,9 @@ export default function AdminDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth={isSmallScreen ? "xs" : "md"}
       fullWidth
+      fullScreen={isSmallScreen}
       BackdropProps={{
         sx: {
           backdropFilter: 'blur(8px)',
@@ -104,17 +107,17 @@ export default function AdminDialog({
           justifyContent: 'space-between',
           alignItems: 'center',
           pb: 2,
-          pt: 4,
-          px: 4,
+          pt: isSmallScreen ? 3 : 4,
+          px: isSmallScreen ? 3 : 4,
           background: (theme) =>
             `linear-gradient(135deg, ${theme.palette.primary.main}08 0%, ${theme.palette.background.paper} 100%)`,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: isSmallScreen ? 1.5 : 2, flex: 1 }}>
           <Box
             sx={{
-              width: 48,
-              height: 48,
+              width: isSmallScreen ? 40 : 48,
+              height: isSmallScreen ? 40 : 48,
               borderRadius: 3,
               background: (theme) =>
                 `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
@@ -122,17 +125,19 @@ export default function AdminDialog({
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: (theme) => theme.shadows[4],
+              flexShrink: 0,
             }}
           >
-            <Security sx={{ color: 'white', fontSize: 24 }} />
+            <Security sx={{ color: 'white', fontSize: isSmallScreen ? 20 : 24 }} />
           </Box>
-          <Box>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
             <Typography
-              variant="h5"
+              variant={isSmallScreen ? "h6" : "h5"}
               sx={{
                 fontWeight: 700,
                 color: 'text.primary',
                 lineHeight: 1.2,
+                fontSize: isSmallScreen ? '1.1rem' : '1.25rem',
               }}
             >
               {editingKey ? 'Edit API Key' : 'Add New API Key'}
@@ -142,6 +147,7 @@ export default function AdminDialog({
               sx={{
                 color: 'text.secondary',
                 mt: 0.5,
+                fontSize: isSmallScreen ? '0.8rem' : '0.875rem',
               }}
             >
               {editingKey ? 'Update your API key configuration' : 'Configure a new API key for AI services'}
@@ -159,6 +165,7 @@ export default function AdminDialog({
             },
             transition: 'all 0.2s ease-in-out',
             borderRadius: 2,
+            flexShrink: 0,
           }}
         >
           <Close />
@@ -167,12 +174,12 @@ export default function AdminDialog({
 
       <Divider />
 
-      <DialogContent sx={{ px: 4, pb: 3, pt: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <DialogContent sx={{ px: isSmallScreen ? 3 : 4, pb: 3, pt: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSmallScreen ? 3 : 4 }}>
           {selectedUser && (
             <Box
               sx={{
-                p: 3,
+                p: isSmallScreen ? 2.5 : 3,
                 bgcolor: (theme) =>
                   theme.palette.mode === 'dark'
                     ? 'rgba(255, 255, 255, 0.05)'
@@ -184,24 +191,27 @@ export default function AdminDialog({
                   `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.primary.main}04 100%)`,
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: isSmallScreen ? 'flex-start' : 'center', gap: isSmallScreen ? 1.5 : 2, mb: 2, flexDirection: isSmallScreen ? 'column' : 'row' }}>
                 <Avatar
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: isSmallScreen ? 35 : 40,
+                    height: isSmallScreen ? 35 : 40,
                     bgcolor: 'primary.main',
                     fontWeight: 600,
+                    fontSize: isSmallScreen ? '0.9rem' : '1rem',
+                    flexShrink: 0,
                   }}
                 >
                   <Person />
                 </Avatar>
-                <Box sx={{ flex: 1 }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography
                     variant="subtitle1"
                     sx={{
                       fontWeight: 600,
                       color: 'text.primary',
                       lineHeight: 1.2,
+                      fontSize: isSmallScreen ? '0.9rem' : '1rem',
                     }}
                   >
                     {selectedUser.name || selectedUser.email}
@@ -210,7 +220,7 @@ export default function AdminDialog({
                     variant="body2"
                     sx={{
                       color: 'text.secondary',
-                      fontSize: '0.875rem',
+                      fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
                     }}
                   >
                     {selectedUser.email}
@@ -219,19 +229,21 @@ export default function AdminDialog({
               </Box>
               <Chip
                 label="API Key Management"
-                size="small"
+                size={isSmallScreen ? "small" : "small"}
                 color="primary"
                 variant="outlined"
                 sx={{
                   alignSelf: 'flex-start',
                   fontWeight: 500,
                   borderRadius: 2,
+                  fontSize: isSmallScreen ? '0.7rem' : '0.75rem',
+                  height: isSmallScreen ? 20 : 24,
                 }}
               />
             </Box>
           )}
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSmallScreen ? 2.5 : 3 }}>
             <TextField
               select
               label="AI Provider"
@@ -262,6 +274,7 @@ export default function AdminDialog({
                 },
                 '& .MuiInputLabel-root': {
                   fontWeight: 500,
+                  fontSize: isSmallScreen ? '0.8rem' : '0.875rem',
                   '&.Mui-focused': {
                     color: 'primary.main',
                   },
@@ -335,7 +348,7 @@ export default function AdminDialog({
               required={!editingKey}
               type="password"
               multiline
-              rows={4}
+              rows={isSmallScreen ? 3 : 4}
               InputProps={{
                 endAdornment: newKeyValue.trim() ? (
                   <InputAdornment position="end">
@@ -350,10 +363,11 @@ export default function AdminDialog({
                         },
                         transition: 'all 0.2s ease-in-out',
                         borderRadius: 2,
+                        p: isSmallScreen ? 0.5 : 1,
                       }}
                       title="Copy API Key"
                     >
-                      <ContentCopy />
+                      <ContentCopy sx={{ fontSize: isSmallScreen ? 16 : 18 }} />
                     </IconButton>
                   </InputAdornment>
                 ) : null,
@@ -381,12 +395,13 @@ export default function AdminDialog({
                   },
                   '& textarea': {
                     fontFamily: 'monospace',
-                    fontSize: '0.9rem',
+                    fontSize: isSmallScreen ? '0.8rem' : '0.9rem',
                     lineHeight: 1.5,
                   },
                 },
                 '& .MuiInputLabel-root': {
                   fontWeight: 500,
+                  fontSize: isSmallScreen ? '0.8rem' : '0.875rem',
                   '&.Mui-focused': {
                     color: 'primary.main',
                   },
@@ -440,10 +455,11 @@ export default function AdminDialog({
 
       <DialogActions
         sx={{
-          px: 4,
-          pb: 4,
+          px: isSmallScreen ? 3 : 4,
+          pb: isSmallScreen ? 3 : 4,
           pt: 2,
-          gap: 2,
+          gap: isSmallScreen ? 1.5 : 2,
+          flexDirection: isSmallScreen ? 'column' : 'row',
           background: (theme) =>
             `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.primary.main}02 100%)`,
         }}
@@ -454,11 +470,13 @@ export default function AdminDialog({
           sx={{
             borderRadius: 3,
             textTransform: 'none',
-            px: 4,
-            py: 1.5,
+            px: isSmallScreen ? 3 : 4,
+            py: isSmallScreen ? 1 : 1.5,
             fontWeight: 500,
             borderColor: 'divider',
             color: 'text.secondary',
+            fontSize: isSmallScreen ? '0.8rem' : '0.875rem',
+            width: isSmallScreen ? '100%' : 'auto',
             '&:hover': {
               borderColor: 'text.primary',
               color: 'text.primary',
@@ -478,12 +496,14 @@ export default function AdminDialog({
           sx={{
             borderRadius: 3,
             textTransform: 'none',
-            px: 4,
-            py: 1.5,
+            px: isSmallScreen ? 3 : 4,
+            py: isSmallScreen ? 1 : 1.5,
             fontWeight: 600,
             background: (theme) =>
               `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
             boxShadow: (theme) => theme.shadows[4],
+            fontSize: isSmallScreen ? '0.8rem' : '0.875rem',
+            width: isSmallScreen ? '100%' : 'auto',
             '&:hover': {
               background: (theme) =>
                 `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,

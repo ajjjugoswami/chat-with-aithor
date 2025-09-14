@@ -2,6 +2,7 @@ import {
   Box,
   Tabs,
   Tab,
+  useMediaQuery,
 } from '@mui/material';
 import { People, AddBox, AdminPanelSettings } from '@mui/icons-material';
 
@@ -11,19 +12,25 @@ interface AdminTabsProps {
 }
 
 export default function AdminTabs({ value, onChange }: AdminTabsProps) {
+  const isMobile = useMediaQuery('(max-width: 600px)');
+  const isSmallScreen = useMediaQuery('(max-width: 480px)');
   return (
-    <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+    <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: isSmallScreen ? 2 : 3 }}>
       <Tabs
         value={value}
         onChange={onChange}
         aria-label="admin tabs"
+        variant={isMobile ? "fullWidth" : "standard"}
+        scrollButtons={isMobile ? "auto" : false}
+        allowScrollButtonsMobile
         sx={{
           '& .MuiTab-root': {
             textTransform: 'none',
             fontWeight: 500,
-            fontSize: '0.95rem',
-            minHeight: 48,
+            fontSize: isSmallScreen ? '0.8rem' : '0.95rem',
+            minHeight: isSmallScreen ? 40 : 48,
             color: 'text.secondary',
+            minWidth: isMobile ? 'auto' : 120,
             '&.Mui-selected': {
               color: 'primary.main',
               fontWeight: 600,
@@ -34,35 +41,44 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
             borderRadius: 1.5,
             bgcolor: 'primary.main',
           },
+          '& .MuiTabs-scrollButtons': {
+            width: 32,
+            '&.Mui-disabled': {
+              opacity: 0.3,
+            },
+          },
         }}
       >
         <Tab
           icon={<People />}
           iconPosition="start"
-          label="Users"
+          label={isSmallScreen ? "Users" : "Users"}
           sx={{
             '& .MuiTab-iconWrapper': {
-              mr: 1,
+              mr: isSmallScreen ? 0.5 : 1,
+              fontSize: isSmallScreen ? '1rem' : '1.25rem',
             },
           }}
         />
         <Tab
           icon={<AddBox />}
           iconPosition="start"
-          label="User Keys"
+          label={isSmallScreen ? "Keys" : "User Keys"}
           sx={{
             '& .MuiTab-iconWrapper': {
-              mr: 1,
+              mr: isSmallScreen ? 0.5 : 1,
+              fontSize: isSmallScreen ? '1rem' : '1.25rem',
             },
           }}
         />
         <Tab
           icon={<AdminPanelSettings />}
           iconPosition="start"
-          label="Admin Access"
+          label={isSmallScreen ? "Admin" : "Admin Access"}
           sx={{
             '& .MuiTab-iconWrapper': {
-              mr: 1,
+              mr: isSmallScreen ? 0.5 : 1,
+              fontSize: isSmallScreen ? '1rem' : '1.25rem',
             },
           }}
         />
