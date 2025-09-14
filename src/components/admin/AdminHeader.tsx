@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -5,7 +6,7 @@ import {
   Alert,
   useMediaQuery,
 } from '@mui/material';
-import { Refresh, AdminPanelSettings } from '@mui/icons-material';
+import { Refresh, AdminPanelSettings, ArrowBack } from '@mui/icons-material';
 
 interface AdminHeaderProps {
   onRefresh: () => void;
@@ -21,10 +22,33 @@ export default function AdminHeader({
   onClearError,
 }: AdminHeaderProps) {
   const isMobile = useMediaQuery('(max-width: 600px)');
+  const navigate = useNavigate();
+
+  const handleBackToChat = () => {
+    navigate('/chat');
+  };
 
   return (
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={handleBackToChat}
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 500,
+            px: 2,
+            py: 1,
+            borderColor: 'primary.main',
+            color: 'primary.main',
+          
+            minWidth: 'auto',
+          }}
+        >
+          {!isMobile && 'Back to Chat'}
+        </Button>
         <AdminPanelSettings
           sx={{
             fontSize: isMobile ? '2rem' : '2.5rem',
