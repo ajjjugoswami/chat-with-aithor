@@ -333,19 +333,15 @@ export default function AdminPage() {
                     }}
                   >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Avatar
-                        sx={{
+                      <img
+                        style={{
                           width: 56,
                           height: 56,
-                          bgcolor: "primary.main",
-                          fontSize: "1.1rem",
-                          fontWeight: 700,
+                          borderRadius: "50%",
                         }}
-                      >
-                        {u.name
-                          ? u.name.charAt(0).toUpperCase()
-                          : u.email.charAt(0).toUpperCase()}
-                      </Avatar>
+                        src={user.picture || ""}
+                      />
+
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
                           variant="h6"
@@ -419,7 +415,7 @@ export default function AdminPage() {
                         sx={{
                           textTransform: "none",
                           borderRadius: 2,
-                         }}
+                        }}
                       >
                         Add Key
                       </Button>
