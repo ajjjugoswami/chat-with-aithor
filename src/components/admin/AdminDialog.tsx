@@ -22,13 +22,13 @@ export default function AdminDialog({
   setNewKeyName,
   newKeyValue,
   setNewKeyValue,
-  selectedModelId,
-  setSelectedModelId,
+  selectedProvider,
+  setSelectedProvider,
   onSave,
-  availableModels,
+  availableProviders,
 }: AdminDialogProps) {
   const handleSave = () => {
-    if (!newKeyName.trim() || !newKeyValue.trim() || !selectedModelId) {
+    if (!newKeyName.trim() || !newKeyValue.trim() || !selectedProvider) {
       return;
     }
     onSave();
@@ -125,9 +125,9 @@ export default function AdminDialog({
 
           <TextField
             select
-            label="AI Model"
-            value={selectedModelId}
-            onChange={(e) => setSelectedModelId(e.target.value)}
+            label="AI Provider"
+            value={selectedProvider}
+            onChange={(e) => setSelectedProvider(e.target.value)}
             fullWidth
             required
             sx={{
@@ -136,9 +136,9 @@ export default function AdminDialog({
               },
             }}
           >
-            {availableModels.map((model) => (
-              <MenuItem key={model.id} value={model.id}>
-                {model.displayName}
+            {availableProviders.map((provider) => (
+              <MenuItem key={provider.id} value={provider.id}>
+                {provider.displayName}
               </MenuItem>
             ))}
           </TextField>
@@ -147,7 +147,7 @@ export default function AdminDialog({
             label="Key Name"
             value={newKeyName}
             onChange={(e) => setNewKeyName(e.target.value)}
-            placeholder="e.g., My OpenAI Key"
+            placeholder="e.g., My Gemini Key 1, OpenAI Backup"
             fullWidth
             required
             sx={{
@@ -204,7 +204,7 @@ export default function AdminDialog({
           onClick={handleSave}
           variant="contained"
           startIcon={<Save />}
-          disabled={!selectedUser || !selectedModelId || !newKeyName.trim() || !newKeyValue.trim()}
+          disabled={!selectedUser || !selectedProvider || !newKeyName.trim() || !newKeyValue.trim()}
           sx={{
             borderRadius: 2,
             textTransform: 'none',

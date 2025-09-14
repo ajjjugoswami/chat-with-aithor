@@ -1,61 +1,58 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
   CircularProgress,
+  Button,
+  Avatar,
   useMediaQuery,
-} from '@mui/material';
-import { Person } from '@mui/icons-material';
-import { useTheme } from '../hooks/useTheme';
-import { useAuth } from '../hooks/useAuth';
+} from "@mui/material";
+import { Person, Add, VpnKey } from "@mui/icons-material";
+import { useTheme } from "../hooks/useTheme";
+import { useAuth } from "../hooks/useAuth";
 import {
   AdminHeader,
   AdminTabs,
-  UserAccordion,
   APIKeyCard,
   AdminDialog,
-  AddKeyForm,
   type UserWithKeys,
   type ServerAPIKey,
-} from './admin';
+} from "./admin";
 
 export default function AdminPage() {
   const { mode } = useTheme();
   const { user } = useAuth();
-  const isMobile = useMediaQuery('(max-width: 600px)');
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   const [tabValue, setTabValue] = useState(0);
   const [usersWithKeys, setUsersWithKeys] = useState<UserWithKeys[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Add/Edit Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithKeys | null>(null);
   const [editingKey, setEditingKey] = useState<ServerAPIKey | null>(null);
-  const [newKeyName, setNewKeyName] = useState('');
-  const [newKeyValue, setNewKeyValue] = useState('');
-  const [selectedModelId, setSelectedModelId] = useState('');
+  const [newKeyName, setNewKeyName] = useState("");
+  const [newKeyValue, setNewKeyValue] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
 
   // Menu state for API key cards
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedKey, setSelectedKey] = useState<ServerAPIKey | null>(null);
 
-  // Available models for selection
-  const availableModels = [
-    { id: 'gpt-4o-mini', displayName: 'ChatGPT (GPT-4o Mini)' },
-    { id: 'gpt-4', displayName: 'ChatGPT (GPT-4)' },
-    { id: 'gpt-3.5-turbo', displayName: 'ChatGPT (GPT-3.5 Turbo)' },
-    { id: 'gemini-2.0-flash', displayName: 'Google Gemini 2.0 Flash' },
-    { id: 'gemini-pro', displayName: 'Google Gemini Pro' },
-    { id: 'claude-3-haiku', displayName: 'Anthropic Claude 3 Haiku' },
-    { id: 'claude-3-sonnet', displayName: 'Anthropic Claude 3 Sonnet' },
-    { id: 'deepseek-chat', displayName: 'DeepSeek Chat' },
-    { id: 'perplexity-sonar', displayName: 'Perplexity Sonar' },
+  // Available providers for selection
+  const availableProviders = [
+    { id: "ChatGPT", displayName: "ChatGPT" },
+    { id: "Gemini", displayName: "Gemini" },
+    { id: "DeepSeek", displayName: "DeepSeek" },
+    { id: "Claude", displayName: "Claude" },
+    { id: "Perplexity", displayName: "Perplexity" },
+    { id: "Ollama", displayName: "Ollama" },
   ];
 
   // Check if user is admin
-  const isAdmin = user?.email === 'goswamiajay526@gmail.com';
+  const isAdmin = user?.email === "goswamiajay526@gmail.com";
 
   useEffect(() => {
     if (isAdmin) {
@@ -65,51 +62,59 @@ export default function AdminPage() {
 
   const fetchAllUsersAndKeys = async () => {
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('No authentication token found');
+        setError("No authentication token found");
         return;
       }
 
-      const response = await fetch('https://aithor-be.vercel.app/api/api-keys/admin/all', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "https://aithor-be.vercel.app/api/api-keys/admin/all",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         setUsersWithKeys(data);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to fetch users and keys');
+        setError(errorData.error || "Failed to fetch users and keys");
       }
     } catch (err) {
-      setError('Network error while fetching data');
-      console.error('Error fetching users and keys:', err);
+      setError("Network error while fetching data");
+      console.error("Error fetching users and keys:", err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleSaveKey = async () => {
-    if (!selectedUser || !newKeyName.trim() || !newKeyValue.trim() || !selectedModelId) {
-      setError('All fields are required');
+    if (
+      !selectedUser ||
+      !newKeyName.trim() ||
+      !newKeyValue.trim() ||
+      !selectedProvider
+    ) {
+      setError("All fields are required");
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('No authentication token found');
+        setError("No authentication token found");
         return;
       }
 
       const keyData = {
-        modelId: selectedModelId,
+        provider: selectedProvider,
         key: newKeyValue.trim(),
         name: newKeyName.trim(),
         isDefault: false,
@@ -119,13 +124,13 @@ export default function AdminPage() {
         ? `https://aithor-be.vercel.app/api/api-keys/admin/${selectedUser._id}/${editingKey._id}`
         : `https://aithor-be.vercel.app/api/api-keys/admin/${selectedUser._id}`;
 
-      const method = editingKey ? 'PUT' : 'POST';
+      const method = editingKey ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(keyData),
       });
@@ -135,66 +140,72 @@ export default function AdminPage() {
         handleCloseDialog();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to save API key');
+        setError(errorData.error || "Failed to save API key");
       }
     } catch (err) {
-      setError('Network error while saving API key');
-      console.error('Error saving key:', err);
+      setError("Network error while saving API key");
+      console.error("Error saving key:", err);
     }
   };
 
   const handleDeleteKey = async (userId: string, keyId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('No authentication token found');
+        setError("No authentication token found");
         return;
       }
 
-      const response = await fetch(`https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         await fetchAllUsersAndKeys();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to delete API key');
+        setError(errorData.error || "Failed to delete API key");
       }
     } catch (err) {
-      setError('Network error while deleting API key');
-      console.error('Error deleting key:', err);
+      setError("Network error while deleting API key");
+      console.error("Error deleting key:", err);
     }
     handleCloseMenu();
   };
 
   const handleSetActive = async (userId: string, keyId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('No authentication token found');
+        setError("No authentication token found");
         return;
       }
 
-      const response = await fetch(`https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}/active`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}/active`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         await fetchAllUsersAndKeys();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to set active API key');
+        setError(errorData.error || "Failed to set active API key");
       }
     } catch (err) {
-      setError('Network error while setting active API key');
-      console.error('Error setting active key:', err);
+      setError("Network error while setting active API key");
+      console.error("Error setting active key:", err);
     }
     handleCloseMenu();
   };
@@ -202,9 +213,9 @@ export default function AdminPage() {
   const handleOpenAddDialog = (user: UserWithKeys) => {
     setSelectedUser(user);
     setEditingKey(null);
-    setNewKeyName('');
-    setNewKeyValue('');
-    setSelectedModelId('');
+    setNewKeyName("");
+    setNewKeyValue("");
+    setSelectedProvider("");
     setDialogOpen(true);
   };
 
@@ -212,8 +223,8 @@ export default function AdminPage() {
     setSelectedUser(user);
     setEditingKey(key);
     setNewKeyName(key.name);
-    setNewKeyValue('');
-    setSelectedModelId(key.modelId);
+    setNewKeyValue("");
+    setSelectedProvider(key.provider);
     setDialogOpen(true);
     handleCloseMenu();
   };
@@ -222,13 +233,16 @@ export default function AdminPage() {
     setDialogOpen(false);
     setSelectedUser(null);
     setEditingKey(null);
-    setNewKeyName('');
-    setNewKeyValue('');
-    setSelectedModelId('');
-    setError('');
+    setNewKeyName("");
+    setNewKeyValue("");
+    setSelectedProvider("");
+    setError("");
   };
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, key: ServerAPIKey) => {
+  const handleOpenMenu = (
+    event: React.MouseEvent<HTMLElement>,
+    key: ServerAPIKey
+  ) => {
     setMenuAnchor(event.currentTarget);
     setSelectedKey(key);
   };
@@ -242,22 +256,17 @@ export default function AdminPage() {
     setTabValue(newValue);
   };
 
-  const handleClearForm = () => {
-    setSelectedUser(null);
-    setNewKeyName('');
-    setNewKeyValue('');
-    setSelectedModelId('');
-  };
+  // Clear form handler is not used in the new UI; AdminDialog handles its own clearing
 
   if (!isAdmin) {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          bgcolor: mode === 'light' ? '#f5f5f5' : '#121212',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          bgcolor: mode === "light" ? "#f5f5f5" : "#121212",
         }}
       >
         <Typography variant="h6" color="error">
@@ -270,19 +279,19 @@ export default function AdminPage() {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        bgcolor: mode === 'light' ? '#f5f5f5' : '#121212',
-        color: mode === 'light' ? '#000' : '#fff',
+        minHeight: "100vh",
+        bgcolor: mode === "light" ? "#f5f5f5" : "#121212",
+        color: mode === "light" ? "#000" : "#fff",
         p: isMobile ? 2 : 4,
       }}
     >
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      <Box sx={{ maxWidth: "100%", mx: "auto" }}>
         {/* Header */}
         <AdminHeader
           onRefresh={fetchAllUsersAndKeys}
           loading={loading}
           error={error}
-          onClearError={() => setError('')}
+          onClearError={() => setError("")}
         />
 
         {/* Tabs */}
@@ -292,64 +301,173 @@ export default function AdminPage() {
         {tabValue === 0 && (
           <Box>
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+              <Box sx={{ display: "flex", justifyContent: "center", p: 6 }}>
                 <CircularProgress size={60} />
               </Box>
             ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {usersWithKeys.map((user) => (
-                  <UserAccordion
-                    key={user._id}
-                    user={user}
-                    onAddKey={handleOpenAddDialog}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                  gap: 3,
+                }}
+              >
+                {usersWithKeys.map((u) => (
+                  <Box
+                    key={u._id}
+                    sx={{
+                      bgcolor: "background.paper",
+                      borderRadius: 3,
+                      p: 3,
+                      boxShadow: (theme) => theme.shadows[3],
+                      border: "1px solid",
+                      borderColor: "divider",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      transition: "all 0.2s ease-in-out",
+                      "&:hover": {
+                        boxShadow: (theme) => theme.shadows[6],
+                        transform: "translateY(-2px)",
+                      },
+                    }}
                   >
-                    {user.apiKeys.length === 0 ? (
-                      <Typography
-                        variant="body2"
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Avatar
                         sx={{
-                          color: 'text.secondary',
-                          textAlign: 'center',
-                          py: 4,
-                          fontStyle: 'italic',
+                          width: 56,
+                          height: 56,
+                          bgcolor: "primary.main",
+                          fontSize: "1.1rem",
+                          fontWeight: 700,
                         }}
                       >
-                        No API keys configured for this user
-                      </Typography>
-                    ) : (
-                      <Box sx={{ display: 'grid', gap: 1 }}>
-                        {user.apiKeys.map((key) => (
-                          <APIKeyCard
-                            key={key._id}
-                            keyData={key}
-                            onEdit={(key) => handleOpenEditDialog(user, key)}
-                            onSetActive={(keyId) => handleSetActive(user._id, keyId)}
-                            onDelete={(keyId) => handleDeleteKey(user._id, keyId)}
-                            menuAnchor={menuAnchor}
-                            onMenuOpen={handleOpenMenu}
-                            onMenuClose={handleCloseMenu}
-                            selectedKey={selectedKey}
-                          />
-                        ))}
+                        {u.name
+                          ? u.name.charAt(0).toUpperCase()
+                          : u.email.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "1rem",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {u.name || u.email}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary", fontSize: "0.85rem" }}
+                        >
+                          {u.email}
+                        </Typography>
                       </Box>
-                    )}
-                  </UserAccordion>
+                    </Box>
+
+                    <Box
+                      sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}
+                    >
+                      {u.apiKeys.slice(0, 3).map((k) => (
+                        <Box
+                          key={k._id}
+                          sx={{
+                            bgcolor: "primary.light",
+                            color: "primary.contrastText",
+                            px: 1.5,
+                            py: 0.6,
+                            borderRadius: 2,
+                            fontSize: "0.8rem",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {k.provider}
+                        </Box>
+                      ))}
+                      {u.apiKeys.length > 3 && (
+                        <Box
+                          sx={{
+                            bgcolor: "grey.300",
+                            px: 1.5,
+                            py: 0.6,
+                            borderRadius: 2,
+                            fontSize: "0.8rem",
+                            color: "text.secondary",
+                            fontWeight: 500,
+                          }}
+                        >
+                          +{u.apiKeys.length - 3} more
+                        </Box>
+                      )}
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        justifyContent: "flex-end",
+                        mt: 1,
+                      }}
+                    >
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Add />}
+                        onClick={() => handleOpenAddDialog(u)}
+                        sx={{
+                          textTransform: "none",
+                          borderRadius: 2,
+                         }}
+                      >
+                        Add Key
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<VpnKey />}
+                        onClick={() => {
+                          setSelectedUser(u);
+                          setTabValue(1);
+                        }}
+                        sx={{
+                          textTransform: "none",
+                          borderRadius: 2,
+                          "&:hover": { bgcolor: "primary.dark" },
+                        }}
+                      >
+                        View Keys
+                      </Button>
+                    </Box>
+                  </Box>
                 ))}
+
                 {usersWithKeys.length === 0 && (
                   <Box
                     sx={{
-                      textAlign: 'center',
+                      gridColumn: "1 / -1",
+                      textAlign: "center",
                       p: 8,
-                      bgcolor: 'background.paper',
+                      bgcolor: "background.paper",
                       borderRadius: 3,
-                      border: '2px dashed',
-                      borderColor: 'divider',
+                      border: "2px dashed",
+                      borderColor: "divider",
                     }}
                   >
-                    <Person sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                    <Typography variant="h6" sx={{ color: 'text.secondary', mb: 1 }}>
+                    <Person
+                      sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
+                    />
+                    <Typography
+                      variant="h6"
+                      sx={{ color: "text.secondary", mb: 1 }}
+                    >
                       No users found
                     </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary" }}
+                    >
                       Users will appear here once they register
                     </Typography>
                   </Box>
@@ -360,21 +478,188 @@ export default function AdminPage() {
         )}
 
         {tabValue === 1 && (
-          <AddKeyForm
-            users={usersWithKeys}
-            selectedUser={selectedUser}
-            onUserChange={setSelectedUser}
-            selectedModelId={selectedModelId}
-            onModelChange={setSelectedModelId}
-            keyName={newKeyName}
-            onKeyNameChange={setNewKeyName}
-            keyValue={newKeyValue}
-            onKeyValueChange={setNewKeyValue}
-            onSave={handleSaveKey}
-            onClear={handleClearForm}
-            availableModels={availableModels}
-            loading={loading}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              gap: 3,
+              alignItems: "flex-start",
+              flexDirection: { xs: "column", md: "row" },
+            }}
+          >
+            <Box
+              sx={{
+                width: { xs: "100%", md: 320 },
+                bgcolor: "background.paper",
+                borderRadius: 3,
+                p: 3,
+                boxShadow: (theme) => theme.shadows[3],
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  mb: 2,
+                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Person /> Users
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                {usersWithKeys.map((u) => (
+                  <Box
+                    key={u._id}
+                    onClick={() => setSelectedUser(u)}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      alignItems: "center",
+                      p: 1,
+                      borderRadius: 1.5,
+                      cursor: "pointer",
+                      bgcolor:
+                        selectedUser?._id === u._id
+                          ? "action.selected"
+                          : "transparent",
+                      "&:hover": { bgcolor: "action.hover" },
+                    }}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        bgcolor: "primary.main",
+                        fontSize: "0.95rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {u.name
+                        ? u.name.charAt(0).toUpperCase()
+                        : u.email.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: "0.95rem",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {u.name || u.email}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        {u.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  {selectedUser
+                    ? selectedUser.name || selectedUser.email
+                    : "Select a user"}
+                </Typography>
+                {selectedUser && (
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<Add />}
+                      onClick={() => handleOpenAddDialog(selectedUser)}
+                      sx={{ textTransform: "none", borderRadius: 2 }}
+                    >
+                      Add Key
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+
+              {!selectedUser ? (
+                <Box
+                  sx={{
+                    p: 6,
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    border: "1px dashed",
+                    borderColor: "divider",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    Choose a user from the left to view and manage their API
+                    keys.
+                  </Typography>
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                    gap: 3,
+                  }}
+                >
+                  {selectedUser.apiKeys.length === 0 && (
+                    <Box
+                      sx={{
+                        gridColumn: "1 / -1",
+                        p: 4,
+                        bgcolor: "background.paper",
+                        borderRadius: 2,
+                        border: "1px dashed",
+                        borderColor: "divider",
+                        textAlign: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        This user has no API keys yet.
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {selectedUser.apiKeys.map((key) => (
+                    <APIKeyCard
+                      key={key._id}
+                      keyData={key}
+                      onEdit={(key) => handleOpenEditDialog(selectedUser, key)}
+                      onSetActive={(keyId) =>
+                        handleSetActive(selectedUser._id, keyId)
+                      }
+                      onDelete={(keyId) =>
+                        handleDeleteKey(selectedUser._id, keyId)
+                      }
+                      menuAnchor={menuAnchor}
+                      onMenuOpen={handleOpenMenu}
+                      onMenuClose={handleCloseMenu}
+                      selectedKey={selectedKey}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
+          </Box>
         )}
 
         {/* Add/Edit Dialog */}
@@ -387,10 +672,10 @@ export default function AdminPage() {
           setNewKeyName={setNewKeyName}
           newKeyValue={newKeyValue}
           setNewKeyValue={setNewKeyValue}
-          selectedModelId={selectedModelId}
-          setSelectedModelId={setSelectedModelId}
+          selectedProvider={selectedProvider}
+          setSelectedProvider={setSelectedProvider}
           onSave={handleSaveKey}
-          availableModels={availableModels}
+          availableProviders={availableProviders}
         />
       </Box>
     </Box>

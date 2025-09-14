@@ -39,7 +39,7 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
         <Tab
           icon={<People />}
           iconPosition="start"
-          label="All Users & Keys"
+          label="Users"
           sx={{
             '& .MuiTab-iconWrapper': {
               mr: 1,
@@ -49,7 +49,7 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
         <Tab
           icon={<AddBox />}
           iconPosition="start"
-          label="Add Key for User"
+          label="User Keys"
           sx={{
             '& .MuiTab-iconWrapper': {
               mr: 1,

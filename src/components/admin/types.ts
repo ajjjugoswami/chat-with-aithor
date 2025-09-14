@@ -1,6 +1,6 @@
 export interface ServerAPIKey {
   _id: string;
-  modelId: string;
+  provider: string;
   name: string;
   isActive: boolean;
   isDefault: boolean;
@@ -26,8 +26,8 @@ export interface AdminDialogProps {
   setNewKeyName: (name: string) => void;
   newKeyValue: string;
   setNewKeyValue: (value: string) => void;
-  selectedModelId: string;
-  setSelectedModelId: (modelId: string) => void;
+  selectedProvider: string;
+  setSelectedProvider: (provider: string) => void;
   onSave: () => void;
-  availableModels: { id: string; displayName: string }[];
+  availableProviders: { id: string; displayName: string }[];
 }

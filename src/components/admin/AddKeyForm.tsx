@@ -14,15 +14,15 @@ interface AddKeyFormProps {
   users: UserWithKeys[];
   selectedUser: UserWithKeys | null;
   onUserChange: (user: UserWithKeys | null) => void;
-  selectedModelId: string;
-  onModelChange: (modelId: string) => void;
+  selectedProvider: string;
+  onProviderChange: (provider: string) => void;
   keyName: string;
   onKeyNameChange: (name: string) => void;
   keyValue: string;
   onKeyValueChange: (value: string) => void;
   onSave: () => void;
   onClear: () => void;
-  availableModels: { id: string; displayName: string }[];
+  availableProviders: { id: string; displayName: string }[];
   loading?: boolean;
 }
 
@@ -30,15 +30,15 @@ export default function AddKeyForm({
   users,
   selectedUser,
   onUserChange,
-  selectedModelId,
-  onModelChange,
+  selectedProvider,
+  onProviderChange,
   keyName,
   onKeyNameChange,
   keyValue,
   onKeyValueChange,
   onSave,
   onClear,
-  availableModels,
+  availableProviders,
   loading = false,
 }: AddKeyFormProps) {
   return (
@@ -110,9 +110,9 @@ export default function AddKeyForm({
 
           <TextField
             select
-            label="AI Model"
-            value={selectedModelId}
-            onChange={(e) => onModelChange(e.target.value)}
+            label="AI Provider"
+            value={selectedProvider}
+            onChange={(e) => onProviderChange(e.target.value)}
             fullWidth
             required
             sx={{
@@ -121,9 +121,9 @@ export default function AddKeyForm({
               },
             }}
           >
-            {availableModels.map((model) => (
-              <MenuItem key={model.id} value={model.id}>
-                {model.displayName}
+            {availableProviders.map((provider) => (
+              <MenuItem key={provider.id} value={provider.id}>
+                {provider.displayName}
               </MenuItem>
             ))}
           </TextField>
@@ -132,7 +132,7 @@ export default function AddKeyForm({
             label="Key Name"
             value={keyName}
             onChange={(e) => onKeyNameChange(e.target.value)}
-            placeholder="e.g., My OpenAI Key"
+            placeholder="e.g., My Gemini Key 1, OpenAI Backup"
             fullWidth
             required
             sx={{
@@ -192,7 +192,7 @@ export default function AddKeyForm({
               variant="contained"
               startIcon={<Save />}
               onClick={onSave}
-              disabled={!selectedUser || !selectedModelId || !keyName.trim() || !keyValue.trim() || loading}
+              disabled={!selectedUser || !selectedProvider || !keyName.trim() || !keyValue.trim() || loading}
               sx={{
                 borderRadius: 2,
                 textTransform: 'none',

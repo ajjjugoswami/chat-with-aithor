@@ -93,7 +93,7 @@ export default function APIKeyCard({
                     fontWeight: 500,
                   }}
                 >
-                  Model: {getProviderDisplayName(keyData.modelId)}
+                  Provider: {getProviderDisplayName(keyData.provider)}
                 </Typography>
                 <Typography
                   variant="body2"
