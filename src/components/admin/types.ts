@@ -15,6 +15,7 @@ export interface UserWithKeys {
   email: string;
   name?: string;
   picture?: string;
+  isAdmin?: boolean;
   apiKeys: ServerAPIKey[];
 }
 

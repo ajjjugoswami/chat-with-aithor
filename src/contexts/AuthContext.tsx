@@ -6,6 +6,7 @@ interface User {
   name?: string;
   email: string;
   picture?: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
@@ -56,7 +57,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         if (data.valid) {
-          setUser(JSON.parse(localStorage.getItem('user') || '{}'));
+          // Use fresh user data from backend instead of localStorage
+          setUser(data.user);
+          // Update localStorage with fresh data
+          localStorage.setItem('user', JSON.stringify(data.user));
         } else {
           // Token invalid, clear storage
           localStorage.removeItem('token');

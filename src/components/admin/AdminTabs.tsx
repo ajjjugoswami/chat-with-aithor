@@ -3,7 +3,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import { People, AddBox } from '@mui/icons-material';
+import { People, AddBox, AdminPanelSettings } from '@mui/icons-material';
 
 interface AdminTabsProps {
   value: number;
@@ -50,6 +50,16 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
           icon={<AddBox />}
           iconPosition="start"
           label="User Keys"
+          sx={{
+            '& .MuiTab-iconWrapper': {
+              mr: 1,
+            },
+          }}
+        />
+        <Tab
+          icon={<AdminPanelSettings />}
+          iconPosition="start"
+          label="Admin Access"
           sx={{
             '& .MuiTab-iconWrapper': {
               mr: 1,

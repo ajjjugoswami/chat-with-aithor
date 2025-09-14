@@ -7,7 +7,7 @@ import {
   Avatar,
   useMediaQuery,
 } from "@mui/material";
-import { Person, Add, VpnKey } from "@mui/icons-material";
+import { Person, Add, VpnKey, AdminPanelSettings } from "@mui/icons-material";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -51,7 +51,7 @@ export default function AdminPage() {
   ];
 
   // Check if user is admin
-  const isAdmin = user?.email === "goswamiajay526@gmail.com";
+  const isAdmin = user?.isAdmin;
 
   const fetchAllUsersAndKeys = useCallback(async () => {
     setLoading(true);
@@ -273,6 +273,34 @@ export default function AdminPage() {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  const handleToggleAdminAccess = async (user: UserWithKeys) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No authentication token found");
+        return;
+      }
+
+      const response = await fetch(`https://aithor-be.vercel.app/api/auth/${user.isAdmin ? 'revoke' : 'grant'}-admin/${user._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update admin access');
+      }
+
+      // Refresh the users list to reflect the change
+      await fetchAllUsersAndKeys();
+    } catch (error) {
+      console.error('Error toggling admin access:', error);
+      setError('Failed to update admin access');
+    }
   };
 
   // Clear form handler is not used in the new UI; AdminDialog handles its own clearing
@@ -700,6 +728,133 @@ export default function AdminPage() {
                   ))}
                 </Box>
               )}
+            </Box>
+          </Box>
+        )}
+
+        {tabValue === 2 && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+            }}
+          >
+            <Box
+              sx={{
+                bgcolor: "background.paper",
+                borderRadius: 3,
+                p: 3,
+                boxShadow: (theme) => theme.shadows[3],
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 3,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <AdminPanelSettings /> Admin Access Management
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mb: 3 }}
+              >
+                Grant or revoke admin access for users. Admin users can access this admin panel and manage API keys for all users.
+              </Typography>
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {usersWithKeys.map((u) => (
+                  <Box
+                    key={u._id}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      p: 2,
+                      borderRadius: 2,
+                      border: "1px solid",
+                      borderColor: "divider",
+                      bgcolor: u.isAdmin ? "primary.main" : "background.default",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        bgcolor: u.isAdmin ? "primary.dark" : "action.hover",
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Avatar
+                        src={u.picture}
+                        sx={{ width: 40, height: 40 }}
+                      >
+                        {(u.name || u.email || "").charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: 600,
+                            color: u.isAdmin ? "primary.contrastText" : "text.primary",
+                          }}
+                        >
+                          {u.name || u.email}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: u.isAdmin ? "primary.contrastText" : "text.secondary",
+                          }}
+                        >
+                          {u.email}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {u.isAdmin && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "primary.contrastText",
+                            fontWeight: 600,
+                            px: 1,
+                            py: 0.5,
+                            bgcolor: "rgba(255, 255, 255, 0.2)",
+                            borderRadius: 1,
+                          }}
+                        >
+                          ADMIN
+                        </Typography>
+                      )}
+                      <Button
+                        variant={u.isAdmin ? "outlined" : "contained"}
+                        size="small"
+                        onClick={() => handleToggleAdminAccess(u)}
+                        disabled={u._id === user?.id} // Can't modify own admin status
+                        sx={{
+                          textTransform: "none",
+                          borderRadius: 2,
+                          minWidth: 100,
+                          color: u.isAdmin ? "primary.contrastText" : undefined,
+                          borderColor: u.isAdmin ? "rgba(255, 255, 255, 0.3)" : undefined,
+                          "&:hover": {
+                            bgcolor: u.isAdmin ? "rgba(255, 255, 255, 0.1)" : undefined,
+                            borderColor: u.isAdmin ? "rgba(255, 255, 255, 0.5)" : undefined,
+                          },
+                        }}
+                      >
+                        {u.isAdmin ? "Revoke" : "Grant"}
+                      </Button>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </Box>
         )}
