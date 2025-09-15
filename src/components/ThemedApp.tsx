@@ -9,6 +9,8 @@ import { useTheme } from '../hooks/useTheme';
 import LandingPage from './LandingPage';
 import SignUpPage from './SignUpPage';
 import SignInPage from './SignInPage';
+import ForgotPasswordPage from './ForgotPasswordPage';
+import ResetPasswordPage from './ResetPasswordPage';
 import CookieConsentBanner from './CookieConsentBanner';
 
 export default function ThemedApp() {
@@ -23,7 +25,10 @@ export default function ThemedApp() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/signin" element={<SignInPage />} />
+            <Route path="/sign-in" element={<SignInPage />} />
             <Route path="/sign-up" element={<SignUpPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
             <Route 
               path="/chat" 
               element={

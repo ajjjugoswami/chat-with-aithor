@@ -382,8 +382,7 @@ export default function SignUpPage() {
         // Store token and user data
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        // Trigger auth context update by reloading
-        window.location.reload();
+         navigate("/chat");
         return { success: true, message: "Account created successfully!" };
       } else {
         return { success: false, message: data.error || "OTP verification failed" };

@@ -376,6 +376,24 @@ const SignInPage: React.FC = () => {
               </Button>
             </Box>
 
+            <Box sx={{ textAlign: "center", mt: 2 }}>
+              <Typography
+                variant="body2"
+                onClick={() => navigate("/forgot-password")}
+                sx={{
+                  color: "#059669",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  fontWeight: 500,
+                  "&:hover": {
+                    color: "#047857",
+                  },
+                }}
+              >
+                Forgot Password?
+              </Typography>
+            </Box>
+
             <Box
               sx={{
                 mt: 3,
