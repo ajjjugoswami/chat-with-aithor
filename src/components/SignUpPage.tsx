@@ -15,6 +15,7 @@ import { CheckCircle, Cancel } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
+import OTPVerification from "./shared/OTPVerification";
 
 // Get Google Client ID from environment variables
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -44,7 +45,7 @@ const LeftSection = styled(Box)(({ theme }) => ({
 
 const FormCard = styled(Card)(({ theme }) => ({
   width: "100%",
-  maxWidth: "450px",
+  maxWidth: "550px",
   padding: theme.spacing(4),
   borderRadius: theme.spacing(3),
   background: "rgba(255, 255, 255, 0.98)",
@@ -55,7 +56,7 @@ const FormCard = styled(Card)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     maxWidth: "100%",
     padding: theme.spacing(3),
-  },
+   },
 }));
 
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -183,6 +184,10 @@ export default function SignUpPage() {
     hasSpecialChar: false,
   });
 
+  // OTP verification state
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [otpSuccess, setOtpSuccess] = useState("");
+
   // Password validation function
   const validatePassword = (password: string) => {
     const validation = {
@@ -210,7 +215,7 @@ export default function SignUpPage() {
     }
   };
 
-  // Handle form submission
+  // Handle form submission - Send OTP
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -314,8 +319,41 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
+      // Send OTP instead of creating account directly
       const response = await fetch(
-        "https://aithor-be.vercel.app/api/auth/signup",
+        "https://aithor-be.vercel.app/api/auth/send-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setShowOTPVerification(true);
+        setOtpSuccess("OTP sent successfully! Please check your email.");
+      } else {
+        setError(data.error || "Failed to send OTP");
+      }
+    } catch (error) {
+      setError("Network error. Please try again.");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle OTP verification
+  const handleOTPVerify = async (otp: string) => {
+    try {
+      const response = await fetch(
+        "https://aithor-be.vercel.app/api/auth/signup-with-otp",
         {
           method: "POST",
           headers: {
@@ -324,6 +362,8 @@ export default function SignUpPage() {
           body: JSON.stringify({
             email: formData.email,
             password: formData.password,
+            name: formData.email.split('@')[0], // Use email prefix as name
+            otp: otp,
           }),
         }
       );
@@ -336,18 +376,50 @@ export default function SignUpPage() {
         localStorage.setItem("user", JSON.stringify(data.user));
         // Trigger auth context update by reloading
         window.location.reload();
+        return { success: true, message: "Account created successfully!" };
       } else {
-        setError(data.error || "Signup failed");
+        return { success: false, message: data.error || "OTP verification failed" };
       }
     } catch (error) {
-      setError("Network error. Please try again.");
       console.log(error);
-    } finally {
-      setLoading(false);
+      return { success: false, message: "Network error. Please try again." };
     }
   };
 
-  // Handle Google credential response
+  // Handle OTP resend
+  const handleOTPResend = async () => {
+    try {
+      const response = await fetch(
+        "https://aithor-be.vercel.app/api/auth/send-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        return { success: true, message: data.message || "OTP sent successfully!" };
+      } else {
+        return { success: false, message: data.error || "Failed to resend OTP" };
+      }
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "Network error. Please try again." };
+    }
+  };
+
+  // Handle cancel OTP verification
+  const handleCancelOTP = () => {
+    setShowOTPVerification(false);
+    setOtpSuccess("");
+  };
   const handleCredentialResponse = useCallback(
     (response: { credential: string }) => {
       signIn(response.credential);
@@ -507,7 +579,28 @@ export default function SignUpPage() {
               </Alert>
             )}
 
-            <Box component="form" onSubmit={handleFormSubmit}>
+            {otpSuccess && !showOTPVerification && (
+              <Alert
+                severity="success"
+                sx={{
+                  mb: 3,
+                  borderRadius: 2,
+                  background:
+                    "linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1))",
+                  border: "1px solid rgba(34, 197, 94, 0.2)",
+                  color: "#16a34a",
+                  "& .MuiAlert-icon": {
+                    color: "#16a34a",
+                  },
+                }}
+              >
+                {otpSuccess}
+              </Alert>
+            )}
+
+            {!showOTPVerification ? (
+              // Signup Form
+              <Box component="form" onSubmit={handleFormSubmit}>
               <StyledTextField
                 fullWidth
                 label="Email Address"
@@ -642,6 +735,18 @@ export default function SignUpPage() {
                 {loading ? "Creating Account..." : "Create Account"}
               </GradientButton>
             </Box>
+
+            ) : (
+              // OTP Verification
+              <OTPVerification
+                email={formData.email}
+                onVerify={handleOTPVerify}
+                onResend={handleOTPResend}
+                onCancel={handleCancelOTP}
+                title="Verify Your Email"
+                subtitle="We've sent a 6-digit code to your email address"
+              />
+            )}
           </Box>
 
           <Box
