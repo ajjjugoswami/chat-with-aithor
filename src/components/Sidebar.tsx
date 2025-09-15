@@ -935,6 +935,43 @@ export default function Sidebar({
 
       {isMobile && (
         <>
+          {/* Feedback Button - Mobile */}
+          <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+            <Button
+              startIcon={<MessageSquare size={16} />}
+              onClick={onFeedbackClick}
+              size="small"
+              sx={{
+                color: mode === "light" ? "#667eea" : "#888",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                minHeight: "32px",
+                padding: "6px 12px",
+                width: "100%",
+                borderRadius: "8px",
+                border:
+                  mode === "light"
+                    ? "1px solid rgba(102, 126, 234, 0.3)"
+                    : "1px solid rgba(255, 255, 255, 0.3)",
+                background:
+                  mode === "light"
+                    ? "rgba(255, 255, 255, 0.9)"
+                    : "rgba(255, 255, 255, 0.05)",
+                backdropFilter: "blur(10px)",
+                "&:hover": {
+                  color: "#fff",
+                  bgcolor: "rgba(102, 126, 234, 0.1)",
+                  borderColor: "#667eea",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 4px 8px rgba(102, 126, 234, 0.2)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Feedback
+            </Button>
+          </Box>
+
           {user && (
             <Box
               sx={{

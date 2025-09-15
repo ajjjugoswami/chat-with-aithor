@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -8,143 +8,121 @@ import {
   Alert,
   Paper,
   CircularProgress,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { MessageSquare } from 'lucide-react';
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { MessageSquare } from "lucide-react";
+import { fakeDomains, validTLDs } from "../../utils/constants";
 
 const StyledFeedbackSection = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1a1a1a',
+  backgroundColor: theme.palette.mode === "light" ? "#f8fafc" : "#1a1a1a",
   padding: theme.spacing(8, 0),
-  borderTop: `1px solid ${theme.palette.mode === 'light' ? '#e2e8f0' : '#374151'}`,
+  borderTop: `1px solid ${
+    theme.palette.mode === "light" ? "#e2e8f0" : "#374151"
+  }`,
 }));
 
 const FeedbackPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
-  backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#2a2a2a',
-  borderRadius: '16px',
-  boxShadow: theme.palette.mode === 'light'
-    ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-    : '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
-  border: `1px solid ${theme.palette.mode === 'light' ? '#e2e8f0' : '#374151'}`,
+  backgroundColor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+  borderRadius: "16px",
+  boxShadow:
+    theme.palette.mode === "light"
+      ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+      : "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)",
+  border: `1px solid ${theme.palette.mode === "light" ? "#e2e8f0" : "#374151"}`,
 }));
 
 export default function FeedbackSection() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    feedback: ''
+    name: "",
+    email: "",
+    feedback: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     setSuccess(false);
 
     // Enhanced email validation
     const email = formData.email.trim().toLowerCase();
-    
+
     // Basic email format validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address format');
+      setError("Please enter a valid email address format");
       setLoading(false);
       return;
     }
 
     // Extract domain from email
-    const domain = email.split('@')[1];
-    
-    // List of common valid TLDs
-    const validTLDs = [
-      'com', 'org', 'net', 'edu', 'gov', 'mil', 'int', 'info', 'biz', 'name',
-      'pro', 'coop', 'aero', 'museum', 'travel', 'jobs', 'mobi', 'cat', 'tel',
-      'asia', 'post', 'xxx', 'ac', 'ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'an',
-      'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd',
-      'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bm', 'bn', 'bo', 'br', 'bs', 'bt',
-      'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck',
-      'cl', 'cm', 'cn', 'co', 'cr', 'cu', 'cv', 'cx', 'cy', 'cz', 'de', 'dj',
-      'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'eh', 'er', 'es', 'et', 'eu',
-      'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg',
-      'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw',
-      'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in',
-      'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh',
-      'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li',
-      'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mg',
-      'mh', 'mk', 'ml', 'mm', 'mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu',
-      'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl',
-      'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk',
-      'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs',
-      'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk',
-      'sl', 'sm', 'sn', 'so', 'sr', 'ss', 'st', 'su', 'sv', 'sx', 'sy', 'sz',
-      'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tp',
-      'tr', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'uk', 'us', 'uy', 'uz', 'va',
-      'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'ye', 'yt', 'za', 'zm',
-      'zw', 'io', 'sh', 'ac', 'gg', 'im', 'je', 'uk'
-    ];
-
-    // List of known fake/invalid domains
-    const fakeDomains = [
-      'mail.com', 'email.com', 'example.com', 'test.com', 'fake.com', 'dummy.com', 
-      'temp.com', 'trash.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
-      'temp-mail.org', 'throwaway.email', 'yopmail.com', 'maildrop.cc', 'tempail.com',
-      'dispostable.com', '0-mail.com', 'anonbox.net', 'mailcatch.com', 'spamgourmet.com'
-    ];
+    const domain = email.split("@")[1];
 
     // Check if domain has a valid TLD
-    const tld = domain.split('.').pop();
+    const tld = domain.split(".").pop();
     if (!tld || !validTLDs.includes(tld)) {
-      setError('Please enter a valid email address with a proper domain');
+      setError("Please enter a valid email address with a proper domain");
       setLoading(false);
       return;
     }
 
     // Check for obviously fake domains
     if (fakeDomains.includes(domain)) {
-      setError('Please use a real email address, not a temporary or fake one');
+      setError("Please use a real email address, not a temporary or fake one");
       setLoading(false);
       return;
     }
 
     // Additional checks for suspicious patterns
-    if (domain.length < 4 || domain.includes('..') || domain.startsWith('.') || domain.endsWith('.')) {
-      setError('Please enter a valid email address');
+    if (
+      domain.length < 4 ||
+      domain.includes("..") ||
+      domain.startsWith(".") ||
+      domain.endsWith(".")
+    ) {
+      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('https://aithor-be.vercel.app/api/feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://aithor-be.vercel.app/api/feedback",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to submit feedback');
+        throw new Error("Failed to submit feedback");
       }
 
       setSuccess(true);
-      setFormData({ name: '', email: '', feedback: '' });
+      setFormData({ name: "", email: "", feedback: "" });
       setTimeout(() => {
         setSuccess(false);
       }, 3000);
     } catch (err) {
-      console.error('Feedback submission error:', err);
-      setError('Failed to submit feedback. Please try again.');
+      console.error("Feedback submission error:", err);
+      setError("Failed to submit feedback. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -157,13 +135,13 @@ export default function FeedbackSection() {
           <Typography
             variant="h3"
             sx={{
-              fontSize: { xs: '2rem', sm: '2.5rem' },
-              fontWeight: 'bold',
+              fontSize: { xs: "2rem", sm: "2.5rem" },
+              fontWeight: "bold",
               mb: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
             Share Your Feedback
@@ -171,13 +149,14 @@ export default function FeedbackSection() {
           <Typography
             variant="h6"
             sx={{
-              color: 'text.secondary',
-              maxWidth: '600px',
-              mx: 'auto',
+              color: "text.secondary",
+              maxWidth: "600px",
+              mx: "auto",
               lineHeight: 1.6,
             }}
           >
-            Help us improve Aithor by sharing your thoughts, suggestions, or reporting any issues you've encountered.
+            Help us improve Aithor by sharing your thoughts, suggestions, or
+            reporting any issues you've encountered.
           </Typography>
         </Box>
 
@@ -195,7 +174,14 @@ export default function FeedbackSection() {
           )}
 
           <Box component="form" onSubmit={handleSubmit}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, mb: 3 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: 3,
+                mb: 3,
+              }}
+            >
               <Box sx={{ flex: 1 }}>
                 <TextField
                   fullWidth
@@ -206,8 +192,8 @@ export default function FeedbackSection() {
                   required
                   variant="outlined"
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '12px',
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
                     },
                   }}
                   disabled={loading}
@@ -224,8 +210,8 @@ export default function FeedbackSection() {
                   required
                   variant="outlined"
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '12px',
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
                     },
                   }}
                   disabled={loading}
@@ -245,8 +231,8 @@ export default function FeedbackSection() {
                 placeholder="Tell us what you think..."
                 variant="outlined"
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '12px',
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "12px",
                   },
                 }}
                 disabled={loading}
@@ -255,24 +241,32 @@ export default function FeedbackSection() {
             <Box display="flex" justifyContent="center">
               <Button
                 type="submit"
-                variant="contained"
                 size="large"
-                disabled={!formData.name || !formData.email || !formData.feedback}
-                startIcon={loading ? <CircularProgress size={20} /> : <MessageSquare size={20} />}
+                disabled={
+                  !formData.name || !formData.email || !formData.feedback
+                }
+                startIcon={
+                  loading ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <MessageSquare size={20} />
+                  )
+                }
                 sx={{
-                  minWidth: '200px',
+                  minWidth: "200px",
                   py: 1.5,
                   px: 4,
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  fontSize: '1.1rem',
+                  borderRadius: "12px",
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  fontSize: "1.1rem",
                   fontWeight: 600,
-                  textTransform: 'none',
-                 
-                  transition: 'all 0.3s ease',
+                  textTransform: "none",
+                  color: "white",
+                  transition: "all 0.3s ease",
                 }}
               >
-                {loading ? 'Submitting...' : 'Send Feedback'}
+                {loading ? "Submitting..." : "Send Feedback"}
               </Button>
             </Box>
           </Box>

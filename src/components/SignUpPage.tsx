@@ -11,11 +11,18 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Email, Lock, ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  Email,
+  Lock,
+  ArrowBack,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { ShieldCheck } from "lucide-react";
 import OTPVerification from "./shared/OTPVerification";
+import { fakeDomains, validTLDs } from "../utils/constants";
 const PageContainer = styled(Box)(({ theme }) => ({
   minHeight: "100%",
   display: "flex",
@@ -52,7 +59,7 @@ const FormCard = styled(Card)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     maxWidth: "100%",
     padding: theme.spacing(3),
-   },
+  },
 }));
 
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -209,7 +216,7 @@ export default function SignUpPage() {
     });
 
     // Validate password when password field changes
-    if (name === 'password') {
+    if (name === "password") {
       validatePassword(value);
     }
   };
@@ -221,7 +228,7 @@ export default function SignUpPage() {
 
     // Enhanced email validation
     const email = formData.email.trim().toLowerCase();
-    
+
     // Basic email format validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
@@ -230,46 +237,10 @@ export default function SignUpPage() {
     }
 
     // Extract domain from email
-    const domain = email.split('@')[1];
-    
-    // List of common valid TLDs
-    const validTLDs = [
-      'com', 'org', 'net', 'edu', 'gov', 'mil', 'int', 'info', 'biz', 'name',
-      'pro', 'coop', 'aero', 'museum', 'travel', 'jobs', 'mobi', 'cat', 'tel',
-      'asia', 'post', 'xxx', 'ac', 'ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'an',
-      'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd',
-      'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bm', 'bn', 'bo', 'br', 'bs', 'bt',
-      'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck',
-      'cl', 'cm', 'cn', 'co', 'cr', 'cu', 'cv', 'cx', 'cy', 'cz', 'de', 'dj',
-      'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'eh', 'er', 'es', 'et', 'eu',
-      'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg',
-      'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw',
-      'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in',
-      'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh',
-      'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li',
-      'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mg',
-      'mh', 'mk', 'ml', 'mm', 'mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu',
-      'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl',
-      'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk',
-      'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs',
-      'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk',
-      'sl', 'sm', 'sn', 'so', 'sr', 'ss', 'st', 'su', 'sv', 'sx', 'sy', 'sz',
-      'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tp',
-      'tr', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'uk', 'us', 'uy', 'uz', 'va',
-      'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'ye', 'yt', 'za', 'zm',
-      'zw', 'io', 'sh', 'ac', 'gg', 'im', 'je', 'uk'
-    ];
-
-    // List of known fake/invalid domains
-    const fakeDomains = [
-      'mail.com', 'email.com', 'example.com', 'test.com', 'fake.com', 'dummy.com', 
-      'temp.com', 'trash.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
-      'temp-mail.org', 'throwaway.email', 'yopmail.com', 'maildrop.cc', 'tempail.com',
-      'dispostable.com', '0-mail.com', 'anonbox.net', 'mailcatch.com', 'spamgourmet.com'
-    ];
+    const domain = email.split("@")[1];
 
     // Check if domain has a valid TLD
-    const tld = domain.split('.').pop();
+    const tld = domain.split(".").pop();
     if (!tld || !validTLDs.includes(tld)) {
       setError("Please enter a valid email address with a proper domain");
       return;
@@ -282,7 +253,12 @@ export default function SignUpPage() {
     }
 
     // Additional checks for suspicious patterns
-    if (domain.length < 4 || domain.includes('..') || domain.startsWith('.') || domain.endsWith('.')) {
+    if (
+      domain.length < 4 ||
+      domain.includes("..") ||
+      domain.startsWith(".") ||
+      domain.endsWith(".")
+    ) {
       setError("Please enter a valid email address");
       return;
     }
@@ -311,7 +287,9 @@ export default function SignUpPage() {
       return;
     }
     if (!passwordStrength.hasSpecialChar) {
-      setError("Password must contain at least one special character (!@#$%^&* etc.)");
+      setError(
+        "Password must contain at least one special character (!@#$%^&* etc.)"
+      );
       return;
     }
 
@@ -340,8 +318,12 @@ export default function SignUpPage() {
       } else {
         // Handle specific error cases
         if (data.error?.includes("Too many OTP requests")) {
-          setError("You've requested too many OTPs. Please wait 24 hours before requesting another one.");
-        } else if (data.error?.includes("User already exists and is verified")) {
+          setError(
+            "You've requested too many OTPs. Please wait 24 hours before requesting another one."
+          );
+        } else if (
+          data.error?.includes("User already exists and is verified")
+        ) {
           setError("This email is already registered. Please sign in instead.");
           // Optionally redirect to sign in page after a delay
           setTimeout(() => {
@@ -372,7 +354,7 @@ export default function SignUpPage() {
           body: JSON.stringify({
             email: formData.email,
             password: formData.password,
-            name: formData.email.split('@')[0], // Use email prefix as name
+            name: formData.email.split("@")[0], // Use email prefix as name
             otp: otp,
           }),
         }
@@ -386,7 +368,10 @@ export default function SignUpPage() {
         navigate("/chat");
         return { success: true, message: "Account created successfully!" };
       } else {
-        return { success: false, message: data.error || "OTP verification failed" };
+        return {
+          success: false,
+          message: data.error || "OTP verification failed",
+        };
       }
     } catch (error) {
       console.log(error);
@@ -413,14 +398,21 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (response.ok) {
-        return { success: true, message: data.message || "OTP sent successfully!" };
+        return {
+          success: true,
+          message: data.message || "OTP sent successfully!",
+        };
       } else {
         // Handle specific error cases for resend
         let errorMessage = data.error || "Failed to resend OTP";
         if (data.error?.includes("Too many OTP requests")) {
-          errorMessage = "You've requested too many OTPs. Please wait 24 hours before requesting another one.";
-        } else if (data.error?.includes("User already exists and is verified")) {
-          errorMessage = "This email is already registered. Please sign in instead.";
+          errorMessage =
+            "You've requested too many OTPs. Please wait 24 hours before requesting another one.";
+        } else if (
+          data.error?.includes("User already exists and is verified")
+        ) {
+          errorMessage =
+            "This email is already registered. Please sign in instead.";
         }
         return { success: false, message: errorMessage };
       }
@@ -554,159 +546,219 @@ export default function SignUpPage() {
             {!showOTPVerification ? (
               // Signup Form
               <Box component="form" onSubmit={handleFormSubmit}>
-              <StyledTextField
-                fullWidth
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                sx={{ mb: 2 }}
-                InputProps={{
-                  startAdornment: <Email sx={{ color: "#059669", mr: 1 }} />,
-                }}
-              />
-              <StyledTextField
-                fullWidth
-                label="Password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                sx={{ mb: 1 }}
-                InputProps={{
-                  startAdornment: <Lock sx={{ color: "#059669", mr: 1 }} />,
-                  endAdornment: (
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      sx={{ color: "#059669" }}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  ),
-                }}
-              />
-              
-              {/* Password validation display */}
-              {formData.password && !(
-                passwordValidation.hasMinLength &&
-                passwordValidation.hasUpperCase &&
-                passwordValidation.hasLowerCase &&
-                passwordValidation.hasNumber &&
-                passwordValidation.hasSpecialChar
-              ) && (
-                <Box sx={{ mb: 2, pl: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: "#374151" }}>
-                    Password must contain:
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {passwordValidation.hasMinLength ? (
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-                      ) : (
-                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
-                      )}
-                      <Typography variant="body2" sx={{ 
-                        color: passwordValidation.hasMinLength ? '#10b981' : '#ef4444',
-                        fontSize: '0.875rem'
-                      }}>
-                        At least 8 characters
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {passwordValidation.hasUpperCase ? (
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-                      ) : (
-                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
-                      )}
-                      <Typography variant="body2" sx={{ 
-                        color: passwordValidation.hasUpperCase ? '#10b981' : '#ef4444',
-                        fontSize: '0.875rem'
-                      }}>
-                        One uppercase letter (A-Z)
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {passwordValidation.hasLowerCase ? (
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-                      ) : (
-                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
-                      )}
-                      <Typography variant="body2" sx={{ 
-                        color: passwordValidation.hasLowerCase ? '#10b981' : '#ef4444',
-                        fontSize: '0.875rem'
-                      }}>
-                        One lowercase letter (a-z)
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {passwordValidation.hasNumber ? (
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-                      ) : (
-                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
-                      )}
-                      <Typography variant="body2" sx={{ 
-                        color: passwordValidation.hasNumber ? '#10b981' : '#ef4444',
-                        fontSize: '0.875rem'
-                      }}>
-                        One number (0-9)
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {passwordValidation.hasSpecialChar ? (
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-                      ) : (
-                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
-                      )}
-                      <Typography variant="body2" sx={{ 
-                        color: passwordValidation.hasSpecialChar ? '#10b981' : '#ef4444',
-                        fontSize: '0.875rem'
-                      }}>
-                        One special character (!@#$%^&*)
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              )}
-              <StyledTextField
-                fullWidth
-                label="Confirm Password"
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-                sx={{ mb: 3, mt: 1 }}
-                InputProps={{
-                  startAdornment: (
-                    <Box sx={{ color: "#059669", mr: 1 }}>
-                      <ShieldCheck />
-                    </Box>
-                  ),
-                  endAdornment: (
-                    <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      edge="end"
-                      sx={{ color: "#059669" }}
-                    >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  ),
-                }}
-              />
-              <GradientButton
-                type="submit"
-                fullWidth
-                disabled={loading}
-                sx={{ py: 1.8 }}
-              >
-                {loading ? "Creating Account..." : "Create Account"}
-              </GradientButton>
-            </Box>
+                <StyledTextField
+                  fullWidth
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  sx={{ mb: 2 }}
+                  InputProps={{
+                    startAdornment: <Email sx={{ color: "#059669", mr: 1 }} />,
+                  }}
+                />
+                <StyledTextField
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  sx={{ mb: 1 }}
+                  InputProps={{
+                    startAdornment: <Lock sx={{ color: "#059669", mr: 1 }} />,
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        sx={{ color: "#059669" }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
+                  }}
+                />
 
+                {/* Password validation display */}
+                {formData.password &&
+                  !(
+                    passwordValidation.hasMinLength &&
+                    passwordValidation.hasUpperCase &&
+                    passwordValidation.hasLowerCase &&
+                    passwordValidation.hasNumber &&
+                    passwordValidation.hasSpecialChar
+                  ) && (
+                    <Box sx={{ mb: 2, pl: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ mb: 1, fontWeight: 500, color: "#374151" }}
+                      >
+                        Password must contain:
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 0.5,
+                        }}
+                      >
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          {passwordValidation.hasMinLength ? (
+                            <CheckCircle
+                              sx={{ color: "#10b981", fontSize: 16 }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "#ef4444", fontSize: 16 }} />
+                          )}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: passwordValidation.hasMinLength
+                                ? "#10b981"
+                                : "#ef4444",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            At least 8 characters
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          {passwordValidation.hasUpperCase ? (
+                            <CheckCircle
+                              sx={{ color: "#10b981", fontSize: 16 }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "#ef4444", fontSize: 16 }} />
+                          )}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: passwordValidation.hasUpperCase
+                                ? "#10b981"
+                                : "#ef4444",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            One uppercase letter (A-Z)
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          {passwordValidation.hasLowerCase ? (
+                            <CheckCircle
+                              sx={{ color: "#10b981", fontSize: 16 }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "#ef4444", fontSize: 16 }} />
+                          )}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: passwordValidation.hasLowerCase
+                                ? "#10b981"
+                                : "#ef4444",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            One lowercase letter (a-z)
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          {passwordValidation.hasNumber ? (
+                            <CheckCircle
+                              sx={{ color: "#10b981", fontSize: 16 }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "#ef4444", fontSize: 16 }} />
+                          )}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: passwordValidation.hasNumber
+                                ? "#10b981"
+                                : "#ef4444",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            One number (0-9)
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          {passwordValidation.hasSpecialChar ? (
+                            <CheckCircle
+                              sx={{ color: "#10b981", fontSize: 16 }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "#ef4444", fontSize: 16 }} />
+                          )}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: passwordValidation.hasSpecialChar
+                                ? "#10b981"
+                                : "#ef4444",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            One special character (!@#$%^&*)
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  )}
+                <StyledTextField
+                  fullWidth
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  required
+                  sx={{ mb: 3, mt: 1 }}
+                  InputProps={{
+                    startAdornment: (
+                      <Box sx={{ color: "#059669", mr: 1 }}>
+                        <ShieldCheck />
+                      </Box>
+                    ),
+                    endAdornment: (
+                      <IconButton
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        edge="end"
+                        sx={{ color: "#059669" }}
+                      >
+                        {showConfirmPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    ),
+                  }}
+                />
+                <GradientButton
+                  type="submit"
+                  fullWidth
+                  disabled={loading}
+                  sx={{ py: 1.8 }}
+                >
+                  {loading ? "Creating Account..." : "Create Account"}
+                </GradientButton>
+              </Box>
             ) : (
               // OTP Verification
               <OTPVerification

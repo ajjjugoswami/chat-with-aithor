@@ -32,6 +32,7 @@ interface MobileHeaderProps {
   onChatSelect: (chatId: string) => void;
   onSettingsClick: () => void;
   onHelpClick: () => void;
+  onFeedbackClick: () => void;
   onDeleteChat?: (chatId: string) => void;
 }
 
@@ -42,6 +43,7 @@ export default function MobileHeader({
   onChatSelect,
   onSettingsClick,
   onHelpClick,
+  onFeedbackClick,
   onDeleteChat,
 }: MobileHeaderProps) {
   const { mode, toggleTheme } = useTheme();
@@ -328,9 +330,9 @@ export default function MobileHeader({
               navigate("/help");
               setDrawerOpen(false);
             }}
+            onFeedbackClick={onFeedbackClick}
             onDeleteChat={onDeleteChat}
             isCollapsed={false}
-            onFeedbackClick={() => {}}
           />
         </Box>
       </Drawer>

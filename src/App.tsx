@@ -409,6 +409,7 @@ function App() {
               onChatSelect={handleChatSelect}
               onSettingsClick={handleSettingsClick}
               onHelpClick={handleHelpClick}
+              onFeedbackClick={handleFeedbackClick}
               onDeleteChat={handleDeleteChat}
             />
           ) : (

@@ -8,6 +8,7 @@ import {
   Divider,
   IconButton,
   CircularProgress,
+  useTheme,
 } from "@mui/material";
 import { Email, Lock, ArrowBack } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
@@ -20,7 +21,7 @@ const SignInPage: React.FC = () => {
   const { signIn, signInWithForm, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const googleButtonRef = useRef<HTMLDivElement>(null);
-
+  const theme = useTheme();
   // Form state
   const [formData, setFormData] = useState({
     email: "",
@@ -59,7 +60,11 @@ const SignInPage: React.FC = () => {
       try {
         await signIn(response.credential);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Google authentication failed");
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Google authentication failed"
+        );
       } finally {
         setGoogleLoading(false);
       }
@@ -127,7 +132,7 @@ const SignInPage: React.FC = () => {
             "&:hover": {
               backgroundColor: "#059669",
               transform: "scale(1.05)",
-              border:"none"
+              border: "none",
             },
             zIndex: 100000,
           }}
@@ -154,7 +159,7 @@ const SignInPage: React.FC = () => {
               border: "1px solid rgba(255, 255, 255, 0.2)",
               "@media (max-width: 600px)": {
                 maxWidth: "100%",
-              }
+              },
             }}
           >
             <Box
@@ -348,23 +353,32 @@ const SignInPage: React.FC = () => {
               <Button
                 type="submit"
                 fullWidth
-                variant="contained"
                 disabled={loading}
                 sx={{
-                  py: 1.8,
                   background:
                     "linear-gradient(135deg, #059669 0%, #10b981 100%)",
                   color: "white",
-                  borderRadius: 2,
+                  padding: theme.spacing(1.5, 3),
+                  borderRadius: theme.spacing(2),
                   fontSize: "1rem",
                   fontWeight: 700,
                   textTransform: "none",
                   boxShadow: "0 8px 25px rgba(5, 150, 105, 0.3)",
+                  transition: "all 0.3s ease",
+                  position: "relative",
+                  overflow: "hidden",
+
                   "&:hover": {
                     background:
                       "linear-gradient(135deg, #047857 0%, #065f46 100%)",
                     transform: "translateY(-2px)",
                     boxShadow: "0 12px 35px rgba(5, 150, 105, 0.4)",
+                    "&::before": {
+                      left: "100%",
+                    },
+                  },
+                  "&:active": {
+                    transform: "translateY(0px)",
                   },
                   "&:disabled": {
                     background: "#9ca3af",
@@ -444,7 +458,10 @@ const SignInPage: React.FC = () => {
         >
           <Box sx={{ textAlign: "center" }}>
             <CircularProgress sx={{ color: "#059669", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#059669", fontWeight: 500 }}>
+            <Typography
+              variant="body1"
+              sx={{ color: "#059669", fontWeight: 500 }}
+            >
               Signing in with Google...
             </Typography>
           </Box>
