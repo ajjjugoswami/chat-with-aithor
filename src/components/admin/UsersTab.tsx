@@ -10,6 +10,7 @@ import {
   useMediaQuery,
   Pagination,
 } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
 
 const UsersTab = ({
   usersWithKeys,
@@ -28,6 +29,56 @@ const UsersTab = ({
 }: any) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const isSmallScreen = useMediaQuery("(max-width: 480px)");
+
+  // Local state for debounced inputs
+  const [nameInput, setNameInput] = useState(searchName);
+  const [emailInput, setEmailInput] = useState(searchEmail);
+  const [nameTimer, setNameTimer] = useState<NodeJS.Timeout | null>(null);
+  const [emailTimer, setEmailTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Email validation function
+  const isValidEmail = useCallback((email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }, []);
+
+  // Sync local state with props
+  useEffect(() => {
+    setNameInput(searchName);
+  }, [searchName]);
+
+  useEffect(() => {
+    setEmailInput(searchEmail);
+  }, [searchEmail]);
+
+  // Debounced handlers
+  const handleNameChange = useCallback((value: string) => {
+    setNameInput(value);
+    if (nameTimer) clearTimeout(nameTimer);
+    const timer = setTimeout(() => {
+      setSearchName(value);
+    }, 500);
+    setNameTimer(timer);
+  }, [nameTimer, setSearchName]);
+
+  const handleEmailChange = useCallback((value: string) => {
+    setEmailInput(value);
+    if (emailTimer) clearTimeout(emailTimer);
+    const timer = setTimeout(() => {
+      if (value === '' || isValidEmail(value)) {
+        setSearchEmail(value);
+      }
+    }, 500);
+    setEmailTimer(timer);
+  }, [emailTimer, setSearchEmail, isValidEmail]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (nameTimer) clearTimeout(nameTimer);
+      if (emailTimer) clearTimeout(emailTimer);
+    };
+  }, [nameTimer, emailTimer]);
 
   console.log('UsersTab props:', { currentPage, totalPages, totalUsers, usersCount: usersWithKeys?.length }); // Debug log
   return (
@@ -71,16 +122,16 @@ const UsersTab = ({
               fullWidth
               size="small"
               placeholder="Search by name..."
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+              value={nameInput}
+              onChange={(e) => handleNameChange(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <Person sx={{ mr: 1, color: "text.secondary", fontSize: 18 }} />
                 ),
-                endAdornment: searchName && (
+                endAdornment: nameInput && (
                   <Clear
                     sx={{ cursor: "pointer", color: "text.secondary", fontSize: 18 }}
-                    onClick={() => setSearchName("")}
+                    onClick={() => handleNameChange("")}
                   />
                 ),
               }}
@@ -95,16 +146,16 @@ const UsersTab = ({
               fullWidth
               size="small"
               placeholder="Search by email..."
-              value={searchEmail}
-              onChange={(e) => setSearchEmail(e.target.value)}
+              value={emailInput}
+              onChange={(e) => handleEmailChange(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <Email sx={{ mr: 1, color: "text.secondary", fontSize: 18 }} />
                 ),
-                endAdornment: searchEmail && (
+                endAdornment: emailInput && (
                   <Clear
                     sx={{ cursor: "pointer", color: "text.secondary", fontSize: 18 }}
-                    onClick={() => setSearchEmail("")}
+                    onClick={() => handleEmailChange("")}
                   />
                 ),
               }}
@@ -139,7 +190,7 @@ const UsersTab = ({
                   Name: "{searchName}"
                   <Clear
                     sx={{ fontSize: 14, cursor: "pointer", "&:hover": { opacity: 0.7 } }}
-                    onClick={() => setSearchName("")}
+                    onClick={() => handleNameChange("")}
                   />
                 </Box>
               )}
@@ -161,7 +212,7 @@ const UsersTab = ({
                   Email: "{searchEmail}"
                   <Clear
                     sx={{ fontSize: 14, cursor: "pointer", "&:hover": { opacity: 0.7 } }}
-                    onClick={() => setSearchEmail("")}
+                    onClick={() => handleEmailChange("")}
                   />
                 </Box>
               )}
@@ -169,8 +220,8 @@ const UsersTab = ({
                 size="small"
                 variant="outlined"
                 onClick={() => {
-                  setSearchName("");
-                  setSearchEmail("");
+                  handleNameChange("");
+                  handleEmailChange("");
                 }}
                 sx={{
                   ml: "auto",
