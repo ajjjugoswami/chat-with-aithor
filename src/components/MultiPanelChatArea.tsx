@@ -68,7 +68,7 @@ interface ModelPanelProps {
   onVariantChange: (variant: ModelVariant) => void;
   userQuotas?: { [provider: string]: { usedCalls: number; maxFreeCalls: number; remainingCalls: number } };
   isBlocked?: boolean;
-  onGoToSettings?: () => void;
+  onOpenAPIKeyDialog?: (modelId: string) => void;
 }
 
 function ModelPanel({
@@ -86,7 +86,7 @@ function ModelPanel({
   onVariantChange,
   userQuotas = {},
   isBlocked = false,
-  onGoToSettings,
+  onOpenAPIKeyDialog,
 }: ModelPanelProps) {
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
@@ -330,7 +330,7 @@ function ModelPanel({
                 <Typography sx={{ color: 'white' }}>
                   Free quota is over for {model.displayName}. Add your API key to continue.
                 </Typography>
-                <Button variant="contained" onClick={onGoToSettings}>Go to Settings</Button>
+                <Button variant="contained" onClick={() => onOpenAPIKeyDialog?.(model.id)}>Add API Key</Button>
               </Box>
             )}
             {!isEnabled ? (
@@ -525,10 +525,10 @@ interface MultiPanelChatAreaProps {
   chats: Chat[];
   selectedChatId?: string;
   onChatSelect: (chatId: string) => void;
-  onSettingsClick: () => void;
   onDeleteChat?: (chatId: string) => void;
   userQuotas?: any;
   blockedProviders?: { [provider: string]: boolean };
+  onOpenAPIKeyDialog?: (modelId: string) => void;
 }
 
 export default function MultiPanelChatArea({
@@ -538,7 +538,7 @@ export default function MultiPanelChatArea({
   onModelToggle,
   userQuotas = {},
   blockedProviders = {},
-  onSettingsClick,
+  onOpenAPIKeyDialog,
 }: MultiPanelChatAreaProps) {
   const { mode } = useTheme();
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -862,7 +862,7 @@ export default function MultiPanelChatArea({
                   const provider = id.includes('gemini') ? 'gemini' : (id.includes('gpt') || id.includes('chatgpt')) ? 'openai' : id;
                   return !!blockedProviders[provider];
                 })()}
-                onGoToSettings={onSettingsClick}
+                onOpenAPIKeyDialog={onOpenAPIKeyDialog}
               />
             );
           })

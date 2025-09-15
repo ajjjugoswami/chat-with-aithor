@@ -35,7 +35,7 @@ import {
 import { useTheme } from "./hooks/useTheme";
 import { useWelcomeModal } from "./hooks/useWelcomeModal";
 import MobileHeader from "./components/MobileHeader";
-import { useMediaQuery, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
+import { useMediaQuery, Snackbar, Alert } from "@mui/material";
 import { AuthContext } from "./contexts/AuthContext";
 import { useContext } from "react";
 import React from "react";
@@ -200,10 +200,15 @@ function App() {
   const [quotaExceeded, setQuotaExceeded] = useState<{ provider: string } | null>(null);
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
   const [blockedProviders, setBlockedProviders] = useState<{ [provider: string]: boolean }>({});
-  const [showQuotaDialog, setShowQuotaDialog] = useState(false);
 
   // Access auth context to refresh quotas
   const authCtx = React.useContext(AuthContext);
+
+  const openAPIKeyDialogForProvider = (modelId: string) => {
+    const providerId = modelId;
+    setQuotaExceeded({ provider: providerId });
+    setKeyDialogOpen(true);
+  };
 
   const handleFeedbackClick = () => {
     setFeedbackDialogOpen(true);
@@ -348,7 +353,6 @@ function App() {
           // Block this provider until user adds own key
           const provider = (response.provider || model.id).toLowerCase();
           setBlockedProviders(prev => ({ ...prev, [provider]: true }));
-          setShowQuotaDialog(true);
           
           // Remove loading message and show error
           setChats((prev) =>
@@ -370,7 +374,6 @@ function App() {
           setQuotaExceeded({ provider: response.provider || model.id });
           const provider = (response.provider || model.id).toLowerCase();
           setBlockedProviders(prev => ({ ...prev, [provider]: true }));
-          setShowQuotaDialog(true);
           
           // Remove loading message and show error
           setChats((prev) =>
@@ -524,9 +527,9 @@ function App() {
             chats={chats}
             selectedChatId={selectedChatId}
             onChatSelect={handleChatSelect}
-            onSettingsClick={handleSettingsClick}
             onDeleteChat={handleDeleteChat}
             userQuotas={quotas}
+            onOpenAPIKeyDialog={openAPIKeyDialogForProvider}
             chatInput={
               <ChatInput
                 onSendMessage={handleSendMessage}
@@ -570,19 +573,7 @@ function App() {
       }}
     />
 
-    {/* New Quota Over Dialog */}
-    <Dialog open={showQuotaDialog} onClose={() => setShowQuotaDialog(false)}>
-      <DialogTitle>You're out of free calls</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Your free quota for {quotaExceeded?.provider || 'this provider'} is over. You can add your own API key to continue, or contact support.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => { window.open('mailto:support@aithor.app'); }}>Contact Support</Button>
-        <Button onClick={() => { setShowQuotaDialog(false); navigate('/settings'); }} variant="contained">Go to Settings</Button>
-      </DialogActions>
-    </Dialog>
+    {/* Removed Quota Over Dialog; handled via overlay CTA in chat panel */}
 
     {/* Quota Exceeded Notification */}
     <Snackbar 
