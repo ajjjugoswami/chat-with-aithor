@@ -7,7 +7,7 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import { ArrowLeft, Zap, Key, Edit, Wifi } from "lucide-react";
+import { ArrowLeft, Zap, Key, Edit, Wifi, Lock } from "lucide-react";
 import { useState } from "react";
 import type { AIModel } from "./AIModelTabs";
 import {
@@ -15,6 +15,7 @@ import {
   getAllAPIKeysForModel,
 } from "../utils/enhancedApiKeys";
 import EnhancedAPIKeyDialog from "./EnhancedAPIKeyDialog";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 import { useTheme } from "../hooks/useTheme";
 
 interface SettingsPageProps {
@@ -30,6 +31,7 @@ export default function SettingsPage({
 }: SettingsPageProps) {
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -482,6 +484,148 @@ export default function SettingsPage({
         </Box>
       </Box>
 
+      {/* Change Password Section */}
+      <Box sx={{ mb: 5 ,mt:4}}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Box
+            sx={{
+              width: 20,
+              height: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mr: 2,
+            }}
+          >
+            <Lock size={16} color="#8b5cf6" />
+          </Box>
+          <Typography
+            variant="h6"
+            sx={{
+              color: mode === "light" ? "#1a1a1a" : "white",
+              fontWeight: 600,
+              fontSize: "1.1rem",
+            }}
+          >
+            Security
+          </Typography>
+        </Box>
+        <Typography
+          variant="body2"
+          sx={{
+            color: mode === "light" ? "#6b7280" : "#9ca3af",
+            mb: 3,
+            fontSize: "0.9rem",
+          }}
+        >
+          Manage your account security settings.
+        </Typography>
+
+        <Box
+          sx={{
+            borderRadius: 3,
+            padding: "1px",
+            background:
+              mode === "light"
+                ? "linear-gradient(135deg, #e5e7eb, #d1d5db, #f3f4f6) padding-box, linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899) border-box"
+                : "linear-gradient(135deg, #1e1e1e, #121212, #1a1a1a) padding-box, linear-gradient(135deg, #667eea, #764ba2, #667eea) border-box",
+            border: "1px solid transparent",
+            position: "relative",
+            overflow: "visible",
+          }}
+        >
+          <Card
+            sx={{
+              bgcolor: mode === "light" ? "#ffffff" : "#0e0e0e",
+              border: "none",
+              borderRadius: 3,
+              position: "relative",
+              overflow: "visible",
+              boxShadow:
+                mode === "light"
+                  ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                  : "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <CardContent sx={{ p: 2.5 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 2,
+                      padding: "5px",
+                      border: `2px solid #8b5cf6`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mr: 2,
+                      flexShrink: 0,
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    }}
+                  >
+                    <Lock size={20} color="#8b5cf6" />
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        color: mode === "light" ? "#1a1a1a" : "white",
+                        fontWeight: 600,
+                        fontSize: "1rem",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      Change Password
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: mode === "light" ? "#6b7280" : "#9ca3af",
+                        fontSize: "0.8rem",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      Update your account password for better security
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <IconButton
+                    onClick={() => setChangePasswordDialogOpen(true)}
+                    sx={{
+                      color: mode === "light" ? "#6b7280" : "#6b7280",
+                      "&:hover": {
+                        bgcolor:
+                          mode === "light"
+                            ? "rgba(107, 114, 128, 0.1)"
+                            : "rgba(156, 163, 175, 0.1)",
+                        color: mode === "light" ? "#374151" : "#9ca3af",
+                      },
+                      width: 32,
+                      height: 32,
+                      p: 0.5,
+                    }}
+                  >
+                    <Edit size={14} />
+                  </IconButton>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+
       {/* Enhanced API Key Dialog */}
       {selectedModel && (
         <EnhancedAPIKeyDialog
@@ -491,6 +635,16 @@ export default function SettingsPage({
           onSave={handleDialogClose}
         />
       )}
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog
+        open={changePasswordDialogOpen}
+        onClose={() => setChangePasswordDialogOpen(false)}
+        onSuccess={() => {
+          // Optional: Show success message or refresh user data
+          console.log("Password changed successfully");
+        }}
+      />
     </Box>
   );
 }
