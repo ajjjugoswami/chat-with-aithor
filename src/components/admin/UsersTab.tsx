@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
   useMediaQuery,
+  Pagination,
 } from "@mui/material";
 
 const UsersTab = ({
@@ -20,9 +21,15 @@ const UsersTab = ({
   setSearchName,
   searchEmail,
   setSearchEmail,
+  currentPage,
+  totalPages,
+  totalUsers,
+  onPageChange,
 }: any) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const isSmallScreen = useMediaQuery("(max-width: 480px)");
+
+  console.log('UsersTab props:', { currentPage, totalPages, totalUsers, usersCount: usersWithKeys?.length }); // Debug log
   return (
     <>
       <Box>
@@ -411,7 +418,32 @@ const UsersTab = ({
             )}
           </Box>
         )}
-      </Box>
+
+        {/* Pagination */}
+           <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 3,
+              mb: 2,
+              gap: 2,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Showing {usersWithKeys.length} of {totalUsers} users
+            </Typography>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(_, page) => onPageChange(page)}
+              color="primary"
+              size={isSmallScreen ? "small" : "medium"}
+              showFirstButton
+              showLastButton
+            />
+          </Box>
+       </Box>
     </>
   );
 };

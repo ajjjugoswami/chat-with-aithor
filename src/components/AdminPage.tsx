@@ -32,6 +32,11 @@ export default function AdminPage() {
   const [searchName, setSearchName] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
   console.log(usersWithKeys);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [pageSize] = useState(10); // Fixed page size of 10
   // Add/Edit Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithKeys | null>(null);
@@ -53,7 +58,7 @@ export default function AdminPage() {
   // Check if user is admin
   const isAdmin = user?.isAdmin;
 
-  const fetchAllUsersAndKeys = useCallback(async (name = "", email = "") => {
+  const fetchAllUsersAndKeys = useCallback(async (name = "", email = "", page = 1) => {
     setLoading(true);
     setError("");
 
@@ -67,6 +72,8 @@ export default function AdminPage() {
       const params = new URLSearchParams();
       if (name) params.append('name', name);
       if (email) params.append('email', email);
+      params.append('page', page.toString());
+      params.append('limit', pageSize.toString());
       const queryString = params.toString();
 
       const url = queryString 
@@ -81,11 +88,18 @@ export default function AdminPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setUsersWithKeys(data);
+        console.log('API Response:', data); // Debug log
+        console.log('Pagination data:', data.pagination); // Debug log
+        setUsersWithKeys(data.users || data); // Handle both old and new response formats
+        setCurrentPage(data.pagination?.currentPage || 1);
+        setTotalPages(data.pagination?.totalPages || 1);
+        setTotalUsers(data.pagination?.totalUsers || (data.users || data).length);
+        console.log('Total pages set to:', data.pagination?.totalPages || 1); // Debug log
 
         // Update selectedUser to point to the fresh data if it exists
         if (selectedUser) {
-          const updatedSelectedUser = data.find(
+          const userList = data.users || data;
+          const updatedSelectedUser = userList.find(
             (u: UserWithKeys) => u._id === selectedUser._id
           );
           if (updatedSelectedUser) {
@@ -105,7 +119,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedUser]);
+  }, [selectedUser, pageSize]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -125,6 +139,11 @@ export default function AdminPage() {
     return () => clearTimeout(timeoutId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchName, searchEmail]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchAllUsersAndKeys(searchName, searchEmail, page);
+  };
 
   const handleSaveKey = async () => {
     if (!selectedUser || !newKeyName.trim() || !selectedProvider) {
@@ -384,6 +403,10 @@ export default function AdminPage() {
             setSearchName={setSearchName}
             searchEmail={searchEmail}
             setSearchEmail={setSearchEmail}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalUsers={totalUsers}
+            onPageChange={handlePageChange}
           />
         )}
 
