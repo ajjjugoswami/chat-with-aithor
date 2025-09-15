@@ -16,6 +16,7 @@ interface AuthContextType {
   signInWithForm: (email: string, password: string) => Promise<void>;
   signOut: () => void;
   loading: boolean;
+  updateAuthState: (token: string, userData: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -140,6 +141,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     navigate('/');
   };
 
+  const updateAuthState = (token: string, userData: User) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    setLoading(false);
+  };
+
   const value = {
     user,
     isAuthenticated: !!user,
@@ -147,6 +155,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signInWithForm,
     signOut,
     loading,
+    updateAuthState,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

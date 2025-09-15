@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -12,7 +13,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { Email, Lock, ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { ShieldCheck } from "lucide-react";
 import OTPVerification from "./shared/OTPVerification";
 const PageContainer = styled(Box)(({ theme }) => ({
@@ -160,6 +161,7 @@ const GradientButton = styled(Button)(({ theme }) => ({
 export default function SignUpPage() {
   // Authentication hooks
   const navigate = useNavigate();
+  const { updateAuthState } = useAuth();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -379,10 +381,9 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store token and user data
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-         navigate("/chat");
+        // Update authentication state
+        updateAuthState(data.token, data.user);
+        navigate("/chat");
         return { success: true, message: "Account created successfully!" };
       } else {
         return { success: false, message: data.error || "OTP verification failed" };
