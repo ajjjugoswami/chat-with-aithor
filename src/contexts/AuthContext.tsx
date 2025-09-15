@@ -80,10 +80,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (data.valid) {
           // Use fresh user data from backend instead of localStorage
           setUser(data.user);
-          setQuotas(data.quotas);
+          setQuotas(data.user.quotas || null);
           // Update localStorage with fresh data
           localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('quotas', JSON.stringify(data.quotas));
+          localStorage.setItem('quotas', JSON.stringify(data.user.quotas || null));
         } else {
           // Token invalid, clear storage
           localStorage.removeItem('token');
