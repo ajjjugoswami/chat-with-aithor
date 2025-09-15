@@ -224,7 +224,7 @@ const ResetPasswordPage: React.FC = () => {
             required
             sx={{ mb: 2 }}
             InputProps={{
-              startAdornment: <Lock sx={{ mr: 1, color: "#9ca3af" }} />,
+              startAdornment: <Lock sx={{ mr: 1, color: "#059669" }} />,
               endAdornment: (
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
@@ -233,6 +233,23 @@ const ResetPasswordPage: React.FC = () => {
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               ),
+              sx: {
+                borderRadius: 2,
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                color: "#1f2937",
+                fontWeight: 500,
+                "& fieldset": {
+                  borderColor: "rgba(5, 150, 105, 0.2)",
+                  borderWidth: "2px",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(5, 150, 105, 0.4)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#059669",
+                  boxShadow: "0 0 0 3px rgba(5, 150, 105, 0.1)",
+                },
+              },
             }}
           />
 
@@ -246,7 +263,7 @@ const ResetPasswordPage: React.FC = () => {
             required
             sx={{ mb: 3 }}
             InputProps={{
-              startAdornment: <Lock sx={{ mr: 1, color: "#9ca3af" }} />,
+              startAdornment: <Lock sx={{ mr: 1, color: "#059669" }} />,
               endAdornment: (
                 <IconButton
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -255,6 +272,23 @@ const ResetPasswordPage: React.FC = () => {
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               ),
+              sx: {
+                borderRadius: 2,
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                color: "#1f2937",
+                fontWeight: 500,
+                "& fieldset": {
+                  borderColor: "rgba(5, 150, 105, 0.2)",
+                  borderWidth: "2px",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(5, 150, 105, 0.4)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#059669",
+                  boxShadow: "0 0 0 3px rgba(5, 150, 105, 0.1)",
+                },
+              },
             }}
           />
 
