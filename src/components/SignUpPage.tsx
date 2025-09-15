@@ -336,7 +336,18 @@ export default function SignUpPage() {
         setShowOTPVerification(true);
         setOtpSuccess("OTP sent successfully! Please check your email.");
       } else {
-        setError(data.error || "Failed to send OTP");
+        // Handle specific error cases
+        if (data.error?.includes("Too many OTP requests")) {
+          setError("You've requested too many OTPs. Please wait 24 hours before requesting another one.");
+        } else if (data.error?.includes("User already exists and is verified")) {
+          setError("This email is already registered. Please sign in instead.");
+          // Optionally redirect to sign in page after a delay
+          setTimeout(() => {
+            navigate("/signin");
+          }, 3000);
+        } else {
+          setError(data.error || "Failed to send OTP");
+        }
       }
     } catch (error) {
       setError("Network error. Please try again.");
@@ -404,7 +415,14 @@ export default function SignUpPage() {
       if (response.ok) {
         return { success: true, message: data.message || "OTP sent successfully!" };
       } else {
-        return { success: false, message: data.error || "Failed to resend OTP" };
+        // Handle specific error cases for resend
+        let errorMessage = data.error || "Failed to resend OTP";
+        if (data.error?.includes("Too many OTP requests")) {
+          errorMessage = "You've requested too many OTPs. Please wait 24 hours before requesting another one.";
+        } else if (data.error?.includes("User already exists and is verified")) {
+          errorMessage = "This email is already registered. Please sign in instead.";
+        }
+        return { success: false, message: errorMessage };
       }
     } catch (error) {
       console.log(error);
