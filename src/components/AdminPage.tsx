@@ -25,7 +25,6 @@ export default function AdminPage() {
 
   const [tabValue, setTabValue] = useState(0);
   const [usersWithKeys, setUsersWithKeys] = useState<UserWithKeys[]>([]);
-  console.log(usersWithKeys);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -33,8 +32,7 @@ export default function AdminPage() {
   const [settingActive, setSettingActive] = useState(false);
   const [searchName, setSearchName] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
-  console.log(usersWithKeys);
-  // Pagination state
+   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -96,14 +94,12 @@ export default function AdminPage() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('API Response:', data); // Debug log
-        console.log('Pagination data:', data.pagination); // Debug log
+ 
         setUsersWithKeys(data.users || data); // Handle both old and new response formats
         setCurrentPage(data.pagination?.currentPage || 1);
         setTotalPages(data.pagination?.totalPages || 1);
         setTotalUsers(data.pagination?.totalUsers || (data.users || data).length);
-        console.log('Total pages set to:', data.pagination?.totalPages || 1); // Debug log
-
+ 
         // Update selectedUser to point to the fresh data if it exists
         if (selectedUser) {
           const userList = data.users || data;

@@ -60,6 +60,10 @@ const AppManagementTab = () => {
   const [selectedProvider, setSelectedProvider] = useState<'openai' | 'gemini'>('openai');
   const [apiKey, setApiKey] = useState('');
   const [savingKey, setSavingKey] = useState(false);
+  // Edit key dialog
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editKeyId, setEditKeyId] = useState<string | null>(null);
+  const [editKeyValue, setEditKeyValue] = useState('');
 
   // Reset quota dialog
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -244,12 +248,13 @@ const AppManagementTab = () => {
                     <TableCell>Status</TableCell>
                     <TableCell>Usage Count</TableCell>
                     <TableCell>Last Used</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {appKeys.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} align="center">
+                      <TableCell colSpan={5} align="center">
                         No app keys configured
                       </TableCell>
                     </TableRow>
@@ -268,6 +273,17 @@ const AppManagementTab = () => {
                         <TableCell>
                           {key.lastUsed ? new Date(key.lastUsed).toLocaleDateString() : 'Never'}
                         </TableCell>
+                        <TableCell>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => {
+                              setEditKeyId(key._id);
+                              setEditKeyValue('');
+                              setEditDialogOpen(true);
+                            }}
+                          >Edit</Button>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -275,6 +291,63 @@ const AppManagementTab = () => {
               </Table>
             </TableContainer>
           </Box>
+          {/* Edit Key Dialog */}
+          <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+            <DialogTitle>Edit App Key</DialogTitle>
+            <DialogContent>
+              <TextField
+                fullWidth
+                label="New API Key"
+                type="password"
+                value={editKeyValue}
+                onChange={(e) => setEditKeyValue(e.target.value)}
+                placeholder="Enter new API key"
+                sx={{ mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+              <Button
+                onClick={async () => {
+                  if (!editKeyId || !editKeyValue.trim()) return;
+                  setSavingKey(true);
+                  setError('');
+                  setSuccess('');
+                  try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`${API_BASE_URL}/admin/app-key/${editKeyId}`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                      },
+                      body: JSON.stringify({ key: editKeyValue.trim() }),
+                    });
+                    if (response.ok) {
+                      setSuccess('API key updated successfully');
+                      setEditDialogOpen(false);
+                      setEditKeyId(null);
+                      setEditKeyValue('');
+                      await fetchAppKeys();
+                    } else {
+                      const errorData = await response.json();
+                      setError(errorData.error || 'Failed to update API key');
+                    }
+                  } catch (error) {
+                    setError('Network error occurred');
+                    console.error('Error updating app key:', error);
+                  } finally {
+                    setSavingKey(false);
+                  }
+                }}
+                variant="contained"
+                color="primary"
+                disabled={savingKey || !editKeyValue.trim()}
+              >
+                {savingKey ? 'Saving...' : 'Update Key'}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </CardContent>
       </Card>
 
@@ -317,14 +390,14 @@ const AppManagementTab = () => {
                   userQuotas
                     .filter(quota => quota.provider === 'openai' || quota.provider === 'gemini')
                     .map((quota) => (
-                    <TableRow key={`${quota.userId._id}-${quota.provider}`}>
+                    <TableRow key={`${quota.userId?._id || 'unknown'}-${quota.provider}`}>
                       <TableCell>
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {quota?.userId?.name || quota.userId.email}
+                            {quota?.userId?.name || quota?.userId?.email || 'Unknown User'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {quota.userId.email}
+                            {quota?.userId?.email || 'No email'}
                           </Typography>
                         </Box>
                       </TableCell>
@@ -365,7 +438,7 @@ const AppManagementTab = () => {
         <DialogTitle>Reset User Quota</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to reset the quota for {selectedQuota?.userId?.name || selectedQuota?.userId.email}?
+            Are you sure you want to reset the quota for {selectedQuota?.userId?.name || selectedQuota?.userId?.email || 'Unknown User'}?
             This will reset their {getProviderDisplayName(selectedQuota?.provider || '')} usage to 0.
           </Typography>
         </DialogContent>
