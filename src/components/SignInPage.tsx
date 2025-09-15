@@ -7,6 +7,7 @@ import {
   Alert,
   Divider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { Email, Lock, ArrowBack } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
@@ -27,6 +28,7 @@ const SignInPage: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,11 +54,17 @@ const SignInPage: React.FC = () => {
   };
 
   const handleCredentialResponse = useCallback(
-    (response: { credential: string }) => {
-      signIn(response.credential);
-      navigate("/");
+    async (response: { credential: string }) => {
+      setGoogleLoading(true);
+      try {
+        await signIn(response.credential);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Google authentication failed");
+      } finally {
+        setGoogleLoading(false);
+      }
     },
-    [signIn, navigate]
+    [signIn]
   );
 
   useEffect(() => {
@@ -401,6 +409,29 @@ const SignInPage: React.FC = () => {
           </Box>
         </Box>
       </div>
+      {googleLoading && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            zIndex: 9999,
+          }}
+        >
+          <Box sx={{ textAlign: "center" }}>
+            <CircularProgress sx={{ color: "#059669", mb: 2 }} />
+            <Typography variant="body1" sx={{ color: "#059669", fontWeight: 500 }}>
+              Signing in with Google...
+            </Typography>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };

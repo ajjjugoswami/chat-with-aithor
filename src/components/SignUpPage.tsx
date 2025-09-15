@@ -8,6 +8,7 @@ import {
   Alert,
   Divider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Email, Lock, ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
@@ -176,6 +177,7 @@ export default function SignUpPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [passwordValidation, setPasswordValidation] = useState({
     hasMinLength: false,
     hasUpperCase: false,
@@ -425,11 +427,17 @@ export default function SignUpPage() {
     setOtpSuccess("");
   };
   const handleCredentialResponse = useCallback(
-    (response: { credential: string }) => {
-      signIn(response.credential);
-      navigate("/");
+    async (response: { credential: string }) => {
+      setGoogleLoading(true);
+      try {
+        await signIn(response.credential);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Google authentication failed");
+      } finally {
+        setGoogleLoading(false);
+      }
     },
-    [signIn, navigate]
+    [signIn]
   );
 
   // Initialize Google Sign-In
@@ -803,6 +811,29 @@ export default function SignUpPage() {
           </Box>
         </FormCard>
       </LeftSection>
+      {googleLoading && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            zIndex: 9999,
+          }}
+        >
+          <Box sx={{ textAlign: "center" }}>
+            <CircularProgress sx={{ color: "#059669", mb: 2 }} />
+            <Typography variant="body1" sx={{ color: "#059669", fontWeight: 500 }}>
+              Signing up with Google...
+            </Typography>
+          </Box>
+        </Box>
+      )}
     </PageContainer>
   );
 }
