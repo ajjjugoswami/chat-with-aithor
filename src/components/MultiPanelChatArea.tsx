@@ -127,9 +127,7 @@ function ModelPanel({
     console.log(
       `Panel ${model.displayName} - isEnabled: ${isEnabled}, modelMessages: ${modelMessages.length}`
     );
-    console.log(
-      `Panel ${model.displayName} - filteredMessages: ${modelMessages.length}`
-    );
+    
     return modelMessages;
   }, [messages, model.id, isEnabled, model.displayName]);
 
@@ -680,12 +678,9 @@ export default function MultiPanelChatArea({
   };
 
   const handleToggleEnabled = (modelId: string) => {
-    console.log(`Toggling panel enabled for ${modelId}`);
-    setPanelEnabled((prev) => {
+     setPanelEnabled((prev) => {
       const newEnabled = !prev[modelId];
-      console.log(
-        `Panel ${modelId} - old: ${prev[modelId]}, new: ${newEnabled}`
-      );
+      
       savePanelEnabled(modelId, newEnabled);
       return {
         ...prev,

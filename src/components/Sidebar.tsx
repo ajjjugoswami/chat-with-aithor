@@ -66,7 +66,6 @@ export default function Sidebar({
   const { signOut, user } = useAuth();
   const { mode, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  console.log(user, "ajay");
   const groupedChats = chats?.reduce((acc, chat) => {
     if (!acc[chat.date]) {
       acc[chat.date] = [];

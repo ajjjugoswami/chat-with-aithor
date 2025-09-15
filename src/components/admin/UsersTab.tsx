@@ -114,12 +114,7 @@ const UsersTab = ({
     }
   };
 
-  console.log("UsersTab props:", {
-    currentPage,
-    totalPages,
-    totalUsers,
-    usersCount: usersWithKeys?.length,
-  }); // Debug log
+ 
   return (
     <>
       <Box>

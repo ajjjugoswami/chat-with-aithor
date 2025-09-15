@@ -21,6 +21,7 @@ import {
   DialogContent,
   DialogActions,
   useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
 import { Settings, Refresh, Key } from '@mui/icons-material';
 
@@ -34,17 +35,24 @@ interface AppKey {
 }
 
 interface UserQuota {
-  _id: string;
   userId: {
     _id: string;
     email: string;
     name?: string;
-  };
+  } | null;
   provider: string;
   usedCalls: number;
   maxFreeCalls: number;
-  createdAt: Date;
-  updatedAt: Date;
+}
+
+interface UserQuotaGroup {
+  user: {
+    _id: string;
+    email: string;
+    name?: string;
+  } | null;
+  openai: UserQuota | null;
+  gemini: UserQuota | null;
 }
 
 const API_BASE_URL = 'https://aithor-be.vercel.app/api';
@@ -83,9 +91,12 @@ const AppManagementTab = () => {
       if (response.ok) {
         const data = await response.json();
         setAppKeys(data);
+      } else {
+        setError('Failed to fetch app keys');
       }
     } catch (error) {
       console.error('Error fetching app keys:', error);
+      setError('Network error while fetching app keys');
     }
   };
 
@@ -101,14 +112,18 @@ const AppManagementTab = () => {
       if (response.ok) {
         const data = await response.json();
         setUserQuotas(data);
+      } else {
+        setError('Failed to fetch user quotas');
       }
     } catch (error) {
       console.error('Error fetching user quotas:', error);
+      setError('Network error while fetching user quotas');
     }
   };
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setError('');
     await Promise.all([fetchAppKeys(), fetchUserQuotas()]);
     setLoading(false);
   }, []);
@@ -158,7 +173,7 @@ const AppManagementTab = () => {
   };
 
   const handleResetQuota = async () => {
-    if (!selectedQuota) return;
+    if (!selectedQuota || !selectedQuota.userId) return;
 
     try {
       const token = localStorage.getItem('token');
@@ -191,6 +206,27 @@ const AppManagementTab = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+          <CircularProgress />
+          <Typography sx={{ ml: 2 }}>Loading...</Typography>
+        </Box>
+      )}
+      {error && !loading && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+          <Button
+            size="small"
+            onClick={() => {
+              setError('');
+              loadData();
+            }}
+            sx={{ ml: 2 }}
+          >
+            Retry
+          </Button>
+        </Alert>
+      )}
       {/* App Keys Management */}
       <Card>
         <CardContent>
@@ -373,56 +409,108 @@ const AppManagementTab = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>User</TableCell>
-                  <TableCell>Provider</TableCell>
-                  <TableCell>Used/Free</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>OpenAI Used/Free</TableCell>
+                  <TableCell>OpenAI Status</TableCell>
+                  <TableCell>Gemini Used/Free</TableCell>
+                  <TableCell>Gemini Status</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {userQuotas.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={6} align="center">
                       No quota data available
                     </TableCell>
                   </TableRow>
                 ) : (
-                  userQuotas
-                    .filter(quota => quota.provider === 'openai' || quota.provider === 'gemini')
-                    .map((quota) => (
-                    <TableRow key={`${quota.userId?._id || 'unknown'}-${quota.provider}`}>
+                  // Group quotas by user
+                  Object.values(
+                    userQuotas
+                      .filter(quota => quota.provider === 'openai' || quota.provider === 'gemini')
+                      .reduce((acc, quota) => {
+                        const userId = quota.userId?._id || 'unknown';
+                        if (!acc[userId]) {
+                          acc[userId] = {
+                            user: quota.userId,
+                            openai: null,
+                            gemini: null
+                          };
+                        }
+                        if (quota.provider === 'openai') {
+                          acc[userId].openai = quota;
+                        } else if (quota.provider === 'gemini') {
+                          acc[userId].gemini = quota;
+                        }
+                        return acc;
+                      }, {} as Record<string, UserQuotaGroup>)
+                  ).map((userGroup: UserQuotaGroup) => (
+                    <TableRow key={userGroup.user?._id || 'unknown'}>
                       <TableCell>
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {quota?.userId?.name || quota?.userId?.email || 'Unknown User'}
+                            {userGroup.user?.name || userGroup.user?.email || 'Unknown User'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {quota?.userId?.email || 'No email'}
+                            {userGroup.user?.email || 'No email'}
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>{getProviderDisplayName(quota.provider)}</TableCell>
                       <TableCell>
-                        {quota.usedCalls}/{quota.maxFreeCalls}
+                        {userGroup.openai ? `${userGroup.openai.usedCalls}/${userGroup.openai.maxFreeCalls}` : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          label={quota.usedCalls >= quota.maxFreeCalls ? 'Exceeded' : 'Active'}
-                          color={quota.usedCalls >= quota.maxFreeCalls ? 'error' : 'success'}
-                          size="small"
-                        />
+                        {userGroup.openai ? (
+                          <Chip
+                            label={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'Exceeded' : 'Active'}
+                            color={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'error' : 'success'}
+                            size="small"
+                          />
+                        ) : (
+                          <Chip label="No Data" color="default" size="small" />
+                        )}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => {
-                            setSelectedQuota(quota);
-                            setResetDialogOpen(true);
-                          }}
-                        >
-                          Reset
-                        </Button>
+                        {userGroup.gemini ? `${userGroup.gemini.usedCalls}/${userGroup.gemini.maxFreeCalls}` : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        {userGroup.gemini ? (
+                          <Chip
+                            label={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'Exceeded' : 'Active'}
+                            color={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'error' : 'success'}
+                            size="small"
+                          />
+                        ) : (
+                          <Chip label="No Data" color="default" size="small" />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          {userGroup.openai && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => {
+                                setSelectedQuota(userGroup.openai);
+                                setResetDialogOpen(true);
+                              }}
+                            >
+                              Reset OpenAI
+                            </Button>
+                          )}
+                          {userGroup.gemini && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => {
+                                setSelectedQuota(userGroup.gemini);
+                                setResetDialogOpen(true);
+                              }}
+                            >
+                              Reset Gemini
+                            </Button>
+                          )}
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))
