@@ -10,7 +10,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Email, Lock, ArrowBack } from "@mui/icons-material";
+import { Email, Lock, ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -183,6 +183,10 @@ export default function SignUpPage() {
     hasNumber: false,
     hasSpecialChar: false,
   });
+
+  // Password visibility states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // OTP verification state
   const [showOTPVerification, setShowOTPVerification] = useState(false);
@@ -618,13 +622,22 @@ export default function SignUpPage() {
                 fullWidth
                 label="Password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleInputChange}
                 required
                 sx={{ mb: 1 }}
                 InputProps={{
                   startAdornment: <Lock sx={{ color: "#059669", mr: 1 }} />,
+                  endAdornment: (
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                      sx={{ color: "#059669" }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  ),
                 }}
               />
               
@@ -713,7 +726,7 @@ export default function SignUpPage() {
                 fullWidth
                 label="Confirm Password"
                 name="confirmPassword"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
@@ -723,6 +736,15 @@ export default function SignUpPage() {
                     <Box sx={{ color: "#059669", mr: 1 }}>
                       <ShieldCheck />
                     </Box>
+                  ),
+                  endAdornment: (
+                    <IconButton
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      edge="end"
+                      sx={{ color: "#059669" }}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
                   ),
                 }}
               />
