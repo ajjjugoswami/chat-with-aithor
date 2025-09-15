@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
   Typography,
@@ -65,6 +66,9 @@ interface ModelPanelProps {
   isMobile?: boolean;
   selectedVariant: ModelVariant;
   onVariantChange: (variant: ModelVariant) => void;
+  userQuotas?: { [provider: string]: { usedCalls: number; maxFreeCalls: number; remainingCalls: number } };
+  isBlocked?: boolean;
+  onGoToSettings?: () => void;
 }
 
 function ModelPanel({
@@ -80,6 +84,9 @@ function ModelPanel({
   isMobile = false,
   selectedVariant,
   onVariantChange,
+  userQuotas = {},
+  isBlocked = false,
+  onGoToSettings,
 }: ModelPanelProps) {
   const { mode } = useTheme();
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
@@ -184,15 +191,34 @@ function ModelPanel({
                 }}
               >
                 {model.displayName}
+                {/* Show quota info for free providers */}
+                {(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') && (
+                  <Typography
+                    component="span"
+                    sx={{
+                      ml: 1,
+                      fontSize: "0.75rem",
+                      fontWeight: 400,
+                      color: mode === "light" ? "#666" : "#ccc",
+                      opacity: isEnabled ? 1 : 0.5,
+                    }}
+                  >
+                    {(() => {
+                      const providerKey = model.id === 'gpt-4o-mini' ? 'openai' : 'gemini';
+                      const remaining = (userQuotas && userQuotas[providerKey]?.remainingCalls) ?? 10;
+                      return `(${remaining} free left)`;
+                    })()}
+                  </Typography>
+                )}
                 {/* Show selected variant if different from base model */}
               </Typography>
 
-              {/* Model Variant Selector - show on both mobile and desktop, disabled without API key */}
+              {/* Model Variant Selector - show on both mobile and desktop, disabled without API key (except for free providers) */}
               <ModelVariantSelector
                 variants={getVariantsForModel(model.id)}
                 selectedVariant={selectedVariant}
                 onVariantSelect={onVariantChange}
-                disabled={!hasApiKey || !isEnabled}
+                disabled={(!(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') && !hasApiKey) || !isEnabled}
                 size="small"
               />
             </Box>
@@ -254,6 +280,7 @@ function ModelPanel({
               minHeight: isMobile ? "calc(100dvh - 260px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
               backgroundColor: mode === "light" ? "#f8f9fa" : "#0a0a0a",
+              position: 'relative',
               "&::-webkit-scrollbar": {
                 display:"none"
               },
@@ -285,6 +312,27 @@ function ModelPanel({
               },
             }}
           >
+            {isBlocked && !hasApiKey && (
+              <Box sx={{
+                position: 'absolute',
+                inset: 0,
+                bgcolor: 'rgba(0,0,0,0.4)',
+                backdropFilter: 'blur(3px)',
+                zIndex: 20,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                gap: 2,
+                p: 2,
+                textAlign: 'center',
+              }}>
+                <Typography sx={{ color: 'white' }}>
+                  Free quota is over for {model.displayName}. Add your API key to continue.
+                </Typography>
+                <Button variant="contained" onClick={onGoToSettings}>Go to Settings</Button>
+              </Box>
+            )}
             {!isEnabled ? (
               /* Show disabled message when panel is disabled */
               <Box
@@ -308,8 +356,8 @@ function ModelPanel({
                   {model.displayName}
                 </Typography>
               </Box>
-            ) : !hasApiKey ? (
-              /* Show API Key button when no API key exists */
+            ) : !hasApiKey && !(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') ? (
+              /* Show API Key button when no API key exists (except for free providers) */
               <Box
                 sx={{
                   display: "flex",
@@ -479,6 +527,8 @@ interface MultiPanelChatAreaProps {
   onChatSelect: (chatId: string) => void;
   onSettingsClick: () => void;
   onDeleteChat?: (chatId: string) => void;
+  userQuotas?: any;
+  blockedProviders?: { [provider: string]: boolean };
 }
 
 export default function MultiPanelChatArea({
@@ -486,6 +536,9 @@ export default function MultiPanelChatArea({
   messages,
   chatInput,
   onModelToggle,
+  userQuotas = {},
+  blockedProviders = {},
+  onSettingsClick,
 }: MultiPanelChatAreaProps) {
   const { mode } = useTheme();
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -803,6 +856,13 @@ export default function MultiPanelChatArea({
                 onVariantChange={(variant) =>
                   handleVariantChange(model.id, variant)
                 }
+                userQuotas={userQuotas}
+                isBlocked={(() => {
+                  const id = model.id.toLowerCase();
+                  const provider = id.includes('gemini') ? 'gemini' : (id.includes('gpt') || id.includes('chatgpt')) ? 'openai' : id;
+                  return !!blockedProviders[provider];
+                })()}
+                onGoToSettings={onSettingsClick}
               />
             );
           })

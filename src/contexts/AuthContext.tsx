@@ -9,14 +9,27 @@ interface User {
   isAdmin?: boolean;
 }
 
+interface QuotaInfo {
+  usedCalls: number;
+  maxFreeCalls: number;
+  remainingCalls: number;
+}
+
+interface UserQuotas {
+  openai: QuotaInfo;
+  gemini: QuotaInfo;
+}
+
 interface AuthContextType {
   user: User | null;
+  quotas: UserQuotas | null;
   isAuthenticated: boolean;
   signIn: (credential: string) => Promise<void>;
   signInWithForm: (email: string, password: string) => Promise<void>;
   signOut: () => void;
   loading: boolean;
   updateAuthState: (token: string, userData: User) => void;
+  refreshQuotas: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +44,7 @@ const API_BASE_URL = 'https://aithor-be.vercel.app/api';
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [quotas, setQuotas] = useState<UserQuotas | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -38,8 +52,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if user is already logged in (from localStorage)
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
+    const savedQuotas = localStorage.getItem('quotas');
 
     if (token && savedUser) {
+      // Set initial data from localStorage
+      setUser(JSON.parse(savedUser));
+      if (savedQuotas) {
+        setQuotas(JSON.parse(savedQuotas));
+      }
       // Verify token with backend
       verifyToken(token);
     } else {
@@ -60,12 +80,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (data.valid) {
           // Use fresh user data from backend instead of localStorage
           setUser(data.user);
+          setQuotas(data.quotas);
           // Update localStorage with fresh data
           localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('quotas', JSON.stringify(data.quotas));
         } else {
           // Token invalid, clear storage
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          localStorage.removeItem('quotas');
         }
       }
     } catch (error) {
@@ -75,6 +98,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshQuotas = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    await verifyToken(token);
   };
 
   const signIn = async (credential: string) => {
@@ -131,8 +160,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signOut = () => {
     setUser(null);
+    setQuotas(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('quotas');
     // Sign out from Google
     if (window.google) {
       window.google.accounts.id.disableAutoSelect();
@@ -150,12 +181,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     user,
+    quotas,
     isAuthenticated: !!user,
     signIn,
     signInWithForm,
     signOut,
     loading,
     updateAuthState,
+    refreshQuotas,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

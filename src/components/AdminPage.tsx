@@ -15,6 +15,7 @@ import UsersTab from "./admin/UsersTab";
 import UserKeysTabs from "./admin/UserKeysTabs";
 import AdminAccessTab from "./admin/AdminAccessTab";
 import FeedbackTab from "./admin/FeedbackTab";
+import AppManagementTab from "./admin/AppManagementTab";
 
 export default function AdminPage() {
   const { mode } = useTheme();
@@ -540,6 +541,9 @@ export default function AdminPage() {
         )}
 
         {tabValue === 3 && (
+          <AppManagementTab />
+        )}
+        {tabValue === 4 && (
           <FeedbackTab />
         )}
 

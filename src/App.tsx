@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -10,6 +11,7 @@ import SettingsPage from "./components/SettingsPage";
 import HelpPage from "./components/HelpPage";
 import WelcomeModal from "./components/WelcomeModal";
 import FeedbackDialog from "./components/FeedbackDialog";
+import EnhancedAPIKeyDialog from "./components/EnhancedAPIKeyDialog";
 import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/enhancedApiKeys";
 import { sendToAI, type ChatMessage } from "./services/aiServices";
@@ -33,7 +35,10 @@ import {
 import { useTheme } from "./hooks/useTheme";
 import { useWelcomeModal } from "./hooks/useWelcomeModal";
 import MobileHeader from "./components/MobileHeader";
-import { useMediaQuery } from "@mui/material";
+import { useMediaQuery, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
+import { AuthContext } from "./contexts/AuthContext";
+import { useContext } from "react";
+import React from "react";
 
 interface Message {
   id: string;
@@ -58,6 +63,7 @@ function App() {
   const { id: chatIdParam } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { quotas } = useContext<any>(AuthContext);
   
   const currentView = location.pathname === "/settings" ? "settings" : location.pathname === "/help" ? "help" : "chat";
   
@@ -96,7 +102,7 @@ function App() {
         icon: <GeminiAi sx={{ fontSize: 20 }} />,
         color: "#4285f4",
       },
-       {
+      {
         id: "perplexity-sonar",
         name: "perplexity-sonar",
         displayName: "Perplexity",
@@ -191,6 +197,14 @@ function App() {
 
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
 
+  const [quotaExceeded, setQuotaExceeded] = useState<{ provider: string } | null>(null);
+  const [keyDialogOpen, setKeyDialogOpen] = useState(false);
+  const [blockedProviders, setBlockedProviders] = useState<{ [provider: string]: boolean }>({});
+  const [showQuotaDialog, setShowQuotaDialog] = useState(false);
+
+  // Access auth context to refresh quotas
+  const authCtx = React.useContext(AuthContext);
+
   const handleFeedbackClick = () => {
     setFeedbackDialogOpen(true);
   };
@@ -231,7 +245,17 @@ function App() {
       currentChatId = newChatId;
     }
 
-    const enabledModels = aiModels.filter((m) => m.enabled && hasAPIKey(m.id));
+    const enabledModels = aiModels.filter((m) => {
+      if (!m.enabled) return false;
+      const id = m.id.toLowerCase();
+      const isOpenAIorGemini = id.includes("gpt") || id.includes("chatgpt") || id.includes("gemini");
+      // If provider is blocked due to free quota exceeded and no user key, skip it
+      const providerId = id.includes('gemini') ? 'gemini' : (id.includes('gpt') || id.includes('chatgpt')) ? 'openai' : id;
+      if (blockedProviders[providerId] && !hasAPIKey(m.id)) {
+        return false;
+      }
+      return hasAPIKey(m.id) || isOpenAIorGemini;
+    });
 
     // Get currently enabled panel states
     const currentPanelStates = getPanelEnabled();
@@ -315,6 +339,54 @@ function App() {
         
         const response = await sendToAI(conversationHistory, actualModelId);
 
+        // After each send, refresh quotas so UI shows updated remaining calls
+        authCtx?.refreshQuotas?.();
+
+        // Handle quota exceeded
+        if (!response.success && response.quotaExceeded) {
+          setQuotaExceeded({ provider: response.provider || model.id });
+          // Block this provider until user adds own key
+          const provider = (response.provider || model.id).toLowerCase();
+          setBlockedProviders(prev => ({ ...prev, [provider]: true }));
+          setShowQuotaDialog(true);
+          
+          // Remove loading message and show error
+          setChats((prev) =>
+            prev.map((chat) => {
+              if (chat.id === currentChatId) {
+                const updatedMessages = chat.messages.filter(
+                  (msg) => msg.id !== loadingMessageId
+                );
+                return { ...chat, messages: [...updatedMessages] };
+              }
+              return chat;
+            })
+          );
+          return;
+        }
+
+        // Handle requires user key for non-free providers
+        if (!response.success && response.requiresUserKey) {
+          setQuotaExceeded({ provider: response.provider || model.id });
+          const provider = (response.provider || model.id).toLowerCase();
+          setBlockedProviders(prev => ({ ...prev, [provider]: true }));
+          setShowQuotaDialog(true);
+          
+          // Remove loading message and show error
+          setChats((prev) =>
+            prev.map((chat) => {
+              if (chat.id === currentChatId) {
+                const updatedMessages = chat.messages.filter(
+                  (msg) => msg.id !== loadingMessageId
+                );
+                return { ...chat, messages: [...updatedMessages] };
+              }
+              return chat;
+            })
+          );
+          return;
+        }
+
         // Replace loading message with actual response
         const aiMessage: Message = {
           id: (Date.now() + index + 1).toString(),
@@ -342,6 +414,12 @@ function App() {
             return chat;
           })
         );
+
+        // Update quota information if available
+        if (response.usage) {
+          // Quota information is now handled by AuthContext
+          // The verify endpoint will update this automatically
+        }
       } catch (error) {
         // Handle any unexpected errors
         const errorMessage: Message = {
@@ -448,6 +526,7 @@ function App() {
             onChatSelect={handleChatSelect}
             onSettingsClick={handleSettingsClick}
             onDeleteChat={handleDeleteChat}
+            userQuotas={quotas}
             chatInput={
               <ChatInput
                 onSendMessage={handleSendMessage}
@@ -469,6 +548,60 @@ function App() {
       open={feedbackDialogOpen}
       onClose={() => setFeedbackDialogOpen(false)}
     />
+
+    {/* API Key Dialog for quota exceeded */}
+    <EnhancedAPIKeyDialog
+      open={keyDialogOpen}
+      onClose={() => setKeyDialogOpen(false)}
+      model={aiModels.find(m => m.id === quotaExceeded?.provider) || null}
+      onSave={() => {
+        // Unblock providers when a key is saved
+        if (quotaExceeded?.provider) {
+          const prov = quotaExceeded.provider.toLowerCase();
+          setBlockedProviders(prev => {
+            const updated = { ...prev };
+            delete updated[prov];
+            return updated;
+          });
+        }
+        setQuotaExceeded(null);
+        // Refresh quotas just in case
+        authCtx?.refreshQuotas?.();
+      }}
+    />
+
+    {/* New Quota Over Dialog */}
+    <Dialog open={showQuotaDialog} onClose={() => setShowQuotaDialog(false)}>
+      <DialogTitle>You're out of free calls</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Your free quota for {quotaExceeded?.provider || 'this provider'} is over. You can add your own API key to continue, or contact support.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => { window.open('mailto:support@aithor.app'); }}>Contact Support</Button>
+        <Button onClick={() => { setShowQuotaDialog(false); navigate('/settings'); }} variant="contained">Go to Settings</Button>
+      </DialogActions>
+    </Dialog>
+
+    {/* Quota Exceeded Notification */}
+    <Snackbar 
+      open={!!quotaExceeded} 
+      autoHideDuration={6000} 
+      onClose={() => setQuotaExceeded(null)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert 
+        onClose={() => setQuotaExceeded(null)} 
+        severity="warning" 
+        sx={{ width: '100%' }}
+      >
+        {quotaExceeded?.provider === 'openai' || quotaExceeded?.provider === 'gemini' 
+          ? `Free ${quotaExceeded?.provider} quota exceeded. Add your own API key to continue.`
+          : `Please add your own API key for ${quotaExceeded?.provider} provider.`
+        }
+      </Alert>
+    </Snackbar>
     </div>
   );
 }

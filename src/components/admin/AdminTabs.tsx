@@ -4,7 +4,7 @@ import {
   Tab,
   useMediaQuery,
 } from '@mui/material';
-import { People, AddBox, AdminPanelSettings } from '@mui/icons-material';
+import { People, AddBox, AdminPanelSettings, Settings } from '@mui/icons-material';
 import { MessageSquare } from 'lucide-react';
 
 interface AdminTabsProps {
@@ -76,6 +76,17 @@ export default function AdminTabs({ value, onChange }: AdminTabsProps) {
           icon={<AdminPanelSettings />}
           iconPosition="start"
           label={isSmallScreen ? "Admin" : "Admin Access"}
+          sx={{
+            '& .MuiTab-iconWrapper': {
+              mr: isSmallScreen ? 0.5 : 1,
+              fontSize: isSmallScreen ? '1rem' : '1.25rem',
+            },
+          }}
+        />
+        <Tab
+          icon={<Settings />}
+          iconPosition="start"
+          label={isSmallScreen ? "App" : "App Management"}
           sx={{
             '& .MuiTab-iconWrapper': {
               mr: isSmallScreen ? 0.5 : 1,
