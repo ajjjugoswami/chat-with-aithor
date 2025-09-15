@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 
@@ -244,6 +245,40 @@ export default function AdminPage() {
     }
   };
 
+  const handleDeleteUser = async (user: any) => {
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No authentication token found");
+        return;
+      }
+
+      const response = await fetch(
+        `https://aithor-be.vercel.app/api/auth/admin/users/${user._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        await fetchAllUsersAndKeys();
+        // Could add success message here if needed
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to delete user");
+      }
+    } catch (err) {
+      setError("Network error while deleting user");
+      console.error("Error deleting user:", err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleSetActive = async (userId: string, keyId: string) => {
     setSettingActive(true);
     try {
@@ -407,6 +442,7 @@ export default function AdminPage() {
             totalPages={totalPages}
             totalUsers={totalUsers}
             onPageChange={handlePageChange}
+            handleDeleteUser={handleDeleteUser}
           />
         )}
 

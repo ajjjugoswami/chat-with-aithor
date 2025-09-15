@@ -624,7 +624,7 @@ export default function SignUpPage() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
-                sx={{ mb: 3 }}
+                sx={{ mb: 3, mt: 1 }}
                 InputProps={{
                   startAdornment: (
                     <Box sx={{ color: "#059669", mr: 1 }}>

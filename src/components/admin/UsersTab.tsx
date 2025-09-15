@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Add, AdminPanelSettings, Person, VpnKey, Search, Email, Clear } from "@mui/icons-material";
+import {
+  Add,
+  Person,
+  Search,
+  Email,
+  Clear,
+  Delete,
+  Visibility,
+} from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -9,6 +17,12 @@ import {
   Typography,
   useMediaQuery,
   Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 
@@ -26,6 +40,7 @@ const UsersTab = ({
   totalPages,
   totalUsers,
   onPageChange,
+  handleDeleteUser,
 }: any) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const isSmallScreen = useMediaQuery("(max-width: 480px)");
@@ -35,6 +50,10 @@ const UsersTab = ({
   const [emailInput, setEmailInput] = useState(searchEmail);
   const [nameTimer, setNameTimer] = useState<NodeJS.Timeout | null>(null);
   const [emailTimer, setEmailTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Delete confirmation dialog state
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
 
   // Email validation function
   const isValidEmail = useCallback((email: string) => {
@@ -52,25 +71,31 @@ const UsersTab = ({
   }, [searchEmail]);
 
   // Debounced handlers
-  const handleNameChange = useCallback((value: string) => {
-    setNameInput(value);
-    if (nameTimer) clearTimeout(nameTimer);
-    const timer = setTimeout(() => {
-      setSearchName(value);
-    }, 500);
-    setNameTimer(timer);
-  }, [nameTimer, setSearchName]);
+  const handleNameChange = useCallback(
+    (value: string) => {
+      setNameInput(value);
+      if (nameTimer) clearTimeout(nameTimer);
+      const timer = setTimeout(() => {
+        setSearchName(value);
+      }, 500);
+      setNameTimer(timer);
+    },
+    [nameTimer, setSearchName]
+  );
 
-  const handleEmailChange = useCallback((value: string) => {
-    setEmailInput(value);
-    if (emailTimer) clearTimeout(emailTimer);
-    const timer = setTimeout(() => {
-      if (value === '' || isValidEmail(value)) {
-        setSearchEmail(value);
-      }
-    }, 500);
-    setEmailTimer(timer);
-  }, [emailTimer, setSearchEmail, isValidEmail]);
+  const handleEmailChange = useCallback(
+    (value: string) => {
+      setEmailInput(value);
+      if (emailTimer) clearTimeout(emailTimer);
+      const timer = setTimeout(() => {
+        if (value === "" || isValidEmail(value)) {
+          setSearchEmail(value);
+        }
+      }, 500);
+      setEmailTimer(timer);
+    },
+    [emailTimer, setSearchEmail, isValidEmail]
+  );
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -80,7 +105,21 @@ const UsersTab = ({
     };
   }, [nameTimer, emailTimer]);
 
-  console.log('UsersTab props:', { currentPage, totalPages, totalUsers, usersCount: usersWithKeys?.length }); // Debug log
+  // Handle delete confirmation
+  const confirmDelete = async () => {
+    if (userToDelete && handleDeleteUser) {
+      await handleDeleteUser(userToDelete);
+      setConfirmDialogOpen(false);
+      setUserToDelete(null);
+    }
+  };
+
+  console.log("UsersTab props:", {
+    currentPage,
+    totalPages,
+    totalUsers,
+    usersCount: usersWithKeys?.length,
+  }); // Debug log
   return (
     <>
       <Box>
@@ -126,11 +165,17 @@ const UsersTab = ({
               onChange={(e) => handleNameChange(e.target.value)}
               InputProps={{
                 startAdornment: (
-                  <Person sx={{ mr: 1, color: "text.secondary", fontSize: 18 }} />
+                  <Person
+                    sx={{ mr: 1, color: "text.secondary", fontSize: 18 }}
+                  />
                 ),
                 endAdornment: nameInput && (
                   <Clear
-                    sx={{ cursor: "pointer", color: "text.secondary", fontSize: 18 }}
+                    sx={{
+                      cursor: "pointer",
+                      color: "text.secondary",
+                      fontSize: 18,
+                    }}
                     onClick={() => handleNameChange("")}
                   />
                 ),
@@ -150,11 +195,17 @@ const UsersTab = ({
               onChange={(e) => handleEmailChange(e.target.value)}
               InputProps={{
                 startAdornment: (
-                  <Email sx={{ mr: 1, color: "text.secondary", fontSize: 18 }} />
+                  <Email
+                    sx={{ mr: 1, color: "text.secondary", fontSize: 18 }}
+                  />
                 ),
                 endAdornment: emailInput && (
                   <Clear
-                    sx={{ cursor: "pointer", color: "text.secondary", fontSize: 18 }}
+                    sx={{
+                      cursor: "pointer",
+                      color: "text.secondary",
+                      fontSize: 18,
+                    }}
                     onClick={() => handleEmailChange("")}
                   />
                 ),
@@ -168,7 +219,15 @@ const UsersTab = ({
           </Box>
 
           {(searchName || searchEmail) && (
-            <Box sx={{ mt: 2, display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                mt: 2,
+                display: "flex",
+                gap: 1,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Filtering by:
               </Typography>
@@ -189,7 +248,11 @@ const UsersTab = ({
                 >
                   Name: "{searchName}"
                   <Clear
-                    sx={{ fontSize: 14, cursor: "pointer", "&:hover": { opacity: 0.7 } }}
+                    sx={{
+                      fontSize: 14,
+                      cursor: "pointer",
+                      "&:hover": { opacity: 0.7 },
+                    }}
                     onClick={() => handleNameChange("")}
                   />
                 </Box>
@@ -211,7 +274,11 @@ const UsersTab = ({
                 >
                   Email: "{searchEmail}"
                   <Clear
-                    sx={{ fontSize: 14, cursor: "pointer", "&:hover": { opacity: 0.7 } }}
+                    sx={{
+                      fontSize: 14,
+                      cursor: "pointer",
+                      "&:hover": { opacity: 0.7 },
+                    }}
                     onClick={() => handleEmailChange("")}
                   />
                 </Box>
@@ -258,7 +325,8 @@ const UsersTab = ({
               <Box
                 key={u._id}
                 sx={{
-                  bgcolor: "background.paper",
+                  background: (theme) =>
+                    `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.primary.main}08 100%)`,
                   borderRadius: 3,
                   p: 3,
                   boxShadow: (theme) => theme.shadows[3],
@@ -267,7 +335,7 @@ const UsersTab = ({
                   display: "flex",
                   flexDirection: "column",
                   gap: 2,
-                  minHeight: 220,
+                  minHeight: isSmallScreen ? 200 : 240,
                   transition: "all 0.2s ease-in-out",
                   "&:hover": {
                     boxShadow: (theme) => theme.shadows[6],
@@ -323,30 +391,6 @@ const UsersTab = ({
                     >
                       {u.email}
                     </Typography>
-                    {u.isAdmin && (
-                      <Box
-                        sx={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                          mt: 0.5,
-                        }}
-                      >
-                        <AdminPanelSettings
-                          sx={{ fontSize: "0.8rem", color: "primary.main" }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "primary.main",
-                            fontWeight: 500,
-                            fontSize: "0.7rem",
-                          }}
-                        >
-                          Admin
-                        </Typography>
-                      </Box>
-                    )}
                   </Box>
                 </Box>
 
@@ -363,83 +407,148 @@ const UsersTab = ({
                   </Typography>
                 )}
 
-                {/* Spacer to maintain consistent card height */}
-                <Box sx={{ flex: 1 }} />
-
-                {u.isAdmin && (
+                {/* Bottom Section - Badge on Left, Icons on Right */}
+                <Box
+                  sx={{
+                    mt: "auto",
+                    pt: 2,
+                    borderTop: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
                   <Box
                     sx={{
                       display: "flex",
-                      gap: isSmallScreen ? 1 : 1,
-                      justifyContent: "flex-start",
                       alignItems: "center",
-                      pt: 1,
-                      flexDirection: isSmallScreen ? "column" : "row",
-                      width: "100%",
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                      gap: isSmallScreen ? 1 : 2,
+                      flexWrap: isSmallScreen ? "wrap" : "nowrap",
                     }}
                   >
-                    <Button
-                      variant="outlined"
-                      size={isSmallScreen ? "small" : "small"}
-                      startIcon={<Add />}
-                      onClick={() => handleOpenAddDialog(u)}
+                    {/* User Type Badge - Left Side */}
+                    <Box
                       sx={{
-                        textTransform: "none",
-                        borderRadius: 2,
-                        fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
-                        px: isSmallScreen ? 1.5 : 2,
-                        py: isSmallScreen ? 0.5 : 1,
-                        width: isSmallScreen ? "100%" : "auto",
-                        mb: isSmallScreen ? 1 : 0,
+                        flexShrink: 0,
                       }}
                     >
-                      Add Key
-                    </Button>
-                    <Button
-                      variant="contained"
-                      size={isSmallScreen ? "small" : "small"}
-                      startIcon={<VpnKey />}
-                      onClick={() => {
-                        setSelectedUser(u);
-                        setTabValue(1);
-                      }}
-                      sx={{
-                        textTransform: "none",
-                        borderRadius: 2,
-                        fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
-                        px: isSmallScreen ? 1.5 : 2,
-                        py: isSmallScreen ? 0.5 : 1,
-                        width: isSmallScreen ? "100%" : "auto",
-                        "&:hover": { bgcolor: "primary.dark" },
-                      }}
-                    >
-                      View Keys
-                    </Button>
-                  </Box>
-                )}
+                      <Box
+                        sx={{
+                          bgcolor: u.isAdmin ? "warning.main" : "success.main",
+                          color: "white",
+                          px: isSmallScreen ? 1 : 1.5,
+                          py: isSmallScreen ? 0.4 : 0.6,
+                          borderRadius: 2,
+                          fontSize: isSmallScreen ? "0.65rem" : "0.7rem",
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: 0.5,
+                          boxShadow: 1,
+                          textAlign: "center",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {u.isAdmin ? "Admin" : "Standard"}
+                      </Box>
+                    </Box>
 
-                {!u.isAdmin && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      pt: 1,
-                      opacity: 0.7,
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
+                    {/* Action Buttons - Right Side */}
+                    <Box
                       sx={{
-                        color: "text.secondary",
-                        fontStyle: "italic",
-                        fontSize: "0.75rem",
+                        display: "flex",
+                        gap: isSmallScreen ? 0.5 : 1,
+                        alignItems: "center",
+                        justifyContent: "flex-end",
+                        flexWrap: "wrap",
+                        flex: 1,
+                        minWidth: 0,
                       }}
                     >
-                      Standard User
-                    </Typography>
+                      {/* Admin Actions - Only for Admin Users */}
+                      {u.isAdmin && (
+                        <>
+                          <Tooltip title="Add API Key">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleOpenAddDialog(u)}
+                              sx={{
+                                bgcolor: "primary.main",
+                                color: "white",
+                                width: isSmallScreen ? 32 : 36,
+                                height: isSmallScreen ? 32 : 36,
+                                borderRadius: 2,
+                                boxShadow: 2,
+                                "&:hover": {
+                                  bgcolor: "primary.dark",
+                                  transform: "scale(1.1)",
+                                  boxShadow: 3,
+                                },
+                                transition: "all 0.2s ease-in-out",
+                              }}
+                            >
+                              <Add sx={{ fontSize: isSmallScreen ? 16 : 18 }} />
+                            </IconButton>
+                          </Tooltip>
+
+                          <Tooltip title="View API Keys">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setSelectedUser(u);
+                                setTabValue(1);
+                              }}
+                              sx={{
+                                bgcolor: "info.main",
+                                color: "white",
+                                width: isSmallScreen ? 32 : 36,
+                                height: isSmallScreen ? 32 : 36,
+                                borderRadius: 2,
+                                boxShadow: 2,
+                                "&:hover": {
+                                  bgcolor: "info.dark",
+                                  transform: "scale(1.1)",
+                                  boxShadow: 3,
+                                },
+                                transition: "all 0.2s ease-in-out",
+                              }}
+                            >
+                              <Visibility sx={{ fontSize: isSmallScreen ? 16 : 18 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      )}
+
+                      {/* Delete Action - Only for Standard Users */}
+                      {!u.isAdmin && (
+                        <Tooltip title="Delete User">
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setUserToDelete(u);
+                              setConfirmDialogOpen(true);
+                            }}
+                            sx={{
+                              bgcolor: "error.main",
+                              color: "white",
+                              width: isSmallScreen ? 32 : 36,
+                              height: isSmallScreen ? 32 : 36,
+                              borderRadius: 2,
+                              boxShadow: 2,
+                              "&:hover": {
+                                bgcolor: "error.dark",
+                                transform: "scale(1.1)",
+                                boxShadow: 3,
+                              },
+                              transition: "all 0.2s ease-in-out",
+                            }}
+                          >
+                            <Delete sx={{ fontSize: isSmallScreen ? 16 : 18 }} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
                   </Box>
-                )}
+                </Box>
               </Box>
             ))}
 
@@ -471,30 +580,66 @@ const UsersTab = ({
         )}
 
         {/* Pagination */}
-           <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              mt: 3,
-              mb: 2,
-              gap: 2,
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Showing {usersWithKeys.length} of {totalUsers} users
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mt: 3,
+            mb: 2,
+            gap: 2,
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Showing {usersWithKeys.length} of {totalUsers} users
+          </Typography>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={(_, page) => onPageChange(page)}
+            color="primary"
+            size={isSmallScreen ? "small" : "medium"}
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Confirm Delete User</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the user "
+            {userToDelete?.name || userToDelete?.email}"?
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            This action cannot be undone. All user data and API keys will be
+            permanently removed.
+          </Typography>
+          {userToDelete?.isAdmin && (
+            <Typography
+              variant="body2"
+              color="error.main"
+              sx={{ mt: 1, fontWeight: 500 }}
+            >
+              ⚠️ Warning: This user is an administrator. Deleting an admin user
+              may affect system functionality.
             </Typography>
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={(_, page) => onPageChange(page)}
-              color="primary"
-              size={isSmallScreen ? "small" : "medium"}
-              showFirstButton
-              showLastButton
-            />
-          </Box>
-       </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete User
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
