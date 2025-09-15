@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Add, Person } from "@mui/icons-material";
-import { Avatar, Box, Button, Typography, useMediaQuery } from "@mui/material";
+import { Avatar, Box, Button, CircularProgress, Typography, useMediaQuery } from "@mui/material";
 import APIKeyCard from "./APIKeyCard";
 import type { UserWithKeys } from "./types";
 
@@ -14,6 +14,7 @@ const UserKeysTabs = ({
   handleSetActive,
   deleting,
   settingActive,
+  loading,
 }: {
   usersWithKeys: UserWithKeys[];
   setSelectedUser: (user: UserWithKeys) => void;
@@ -24,6 +25,7 @@ const UserKeysTabs = ({
   handleSetActive: (userId: string, keyId: string) => void;
   deleting: boolean;
   settingActive: boolean;
+  loading?: boolean;
 }) => {
   const isTablet = useMediaQuery("(max-width: 960px)");
   const isSmallScreen = useMediaQuery("(max-width: 480px)");
@@ -61,9 +63,18 @@ const UserKeysTabs = ({
             <Person /> Users
           </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            {usersWithKeys
-              .filter((u) => u.isAdmin)
-              .map((u) => (
+            {loading ? (
+              <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : usersWithKeys.length === 0 ? (
+              <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  No admin users found
+                </Typography>
+              </Box>
+            ) : (
+              usersWithKeys.map((u) => (
                 <Box
                   key={u._id}
                   onClick={() => setSelectedUser(u)}
@@ -115,7 +126,8 @@ const UserKeysTabs = ({
                     </Typography>
                   </Box>
                 </Box>
-              ))}
+              ))
+            )}
           </Box>
         </Box>
 

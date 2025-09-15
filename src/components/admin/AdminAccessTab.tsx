@@ -4,15 +4,17 @@ import {
   PersonAdd,
   PersonRemove,
 } from "@mui/icons-material";
-import { Avatar, Box, Button, Typography, useMediaQuery } from "@mui/material";
+import { Avatar, Box, Button, CircularProgress, Typography, useMediaQuery } from "@mui/material";
 import type { UserWithKeys } from "./types";
 
 const AdminAccessTab = ({
   handleToggleAdminAccess,
   usersWithKeys,
+  loading,
 }: {
   handleToggleAdminAccess: any;
   usersWithKeys: UserWithKeys[];
+  loading?: boolean;
 }) => {
   const isSmallScreen = useMediaQuery("(max-width: 480px)");
   return (
@@ -52,7 +54,18 @@ const AdminAccessTab = ({
           </Typography>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {usersWithKeys.map((u) => (
+            {loading ? (
+              <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+                <CircularProgress size={32} />
+              </Box>
+            ) : usersWithKeys.length === 0 ? (
+              <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+                <Typography variant="body2" color="text.secondary">
+                  No users found
+                </Typography>
+              </Box>
+            ) : (
+              usersWithKeys.map((u) => (
               <Box
                 key={u._id}
                 sx={{
@@ -219,7 +232,8 @@ const AdminAccessTab = ({
                   )}
                 </Box>
               </Box>
-            ))}
+            ))
+            )}
           </Box>
         </Box>
       </Box>

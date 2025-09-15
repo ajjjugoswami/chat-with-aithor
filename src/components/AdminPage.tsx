@@ -38,6 +38,12 @@ export default function AdminPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [pageSize] = useState(10); // Fixed page size of 10
+
+  // Separate state for admin tabs
+  const [allUsers, setAllUsers] = useState<UserWithKeys[]>([]);
+  const [adminUsers, setAdminUsers] = useState<UserWithKeys[]>([]);
+  const [loadingAllUsers, setLoadingAllUsers] = useState(false);
+  const [loadingAdminUsers, setLoadingAdminUsers] = useState(false);
   // Add/Edit Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithKeys | null>(null);
@@ -121,6 +127,61 @@ export default function AdminPage() {
       setLoading(false);
     }
   }, [selectedUser, pageSize]);
+
+  // Fetch all users for Admin Access tab (higher limit)
+  const fetchAllUsers = useCallback(async () => {
+    setLoadingAllUsers(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const url = `https://aithor-be.vercel.app/api/api-keys/admin/all?limit=1000`; // High limit to get all users
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAllUsers(data.users || data);
+      }
+    } catch (err) {
+      console.error("Error fetching all users:", err);
+    } finally {
+      setLoadingAllUsers(false);
+    }
+  }, []);
+
+  // Fetch admin users for User Keys tab
+  const fetchAdminUsers = useCallback(async () => {
+    setLoadingAdminUsers(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const url = `https://aithor-be.vercel.app/api/api-keys/admin/all?limit=1000`; // High limit to get all users
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const allUsersData = data.users || data;
+        // Filter to get only admin users
+        const adminUsersData = allUsersData.filter((user: UserWithKeys) => user.isAdmin);
+        setAdminUsers(adminUsersData);
+      }
+    } catch (err) {
+      console.error("Error fetching admin users:", err);
+    } finally {
+      setLoadingAdminUsers(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (isAdmin) {
@@ -343,6 +404,15 @@ export default function AdminPage() {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+    
+    // Fetch data for specific tabs when they are selected
+    if (newValue === 1 && adminUsers.length === 0) {
+      // User Keys tab - fetch admin users
+      fetchAdminUsers();
+    } else if (newValue === 2 && allUsers.length === 0) {
+      // Admin Access tab - fetch all users
+      fetchAllUsers();
+    }
   };
 
   const handleToggleAdminAccess = async (user: UserWithKeys) => {
@@ -448,7 +518,7 @@ export default function AdminPage() {
 
         {tabValue === 1 && (
           <UserKeysTabs
-            usersWithKeys={usersWithKeys}
+            usersWithKeys={adminUsers}
             setSelectedUser={setSelectedUser}
             selectedUser={selectedUser}
             handleOpenAddDialog={handleOpenAddDialog}
@@ -457,13 +527,15 @@ export default function AdminPage() {
             handleSetActive={handleSetActive}
             deleting={deleting}
             settingActive={settingActive}
+            loading={loadingAdminUsers}
           />
         )}
 
         {tabValue === 2 && (
           <AdminAccessTab
             handleToggleAdminAccess={handleToggleAdminAccess}
-            usersWithKeys={usersWithKeys}
+            usersWithKeys={allUsers}
+            loading={loadingAllUsers}
           />
         )}
 
