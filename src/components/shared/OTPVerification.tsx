@@ -209,16 +209,63 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
 
   return (
     <OTPContainer elevation={0}>
-      <Box textAlign="center" mb={3}>
-        <Typography variant="h5" gutterBottom fontWeight="bold">
-          {title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {subtitle}
-        </Typography>
-        <Typography variant="body2" fontWeight="medium" mt={1}>
-          {email}
-        </Typography>
+      <Box position="relative">
+        {onCancel && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              cursor: 'pointer',
+              color: '#059669',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              textDecoration: 'none',
+              '&:hover': {
+                color: '#059669',
+                textDecoration: 'none',
+              },
+            }}
+            onClick={onCancel}
+          >
+            Cancel
+          </Box>
+        )}
+
+        <Box textAlign="center" mb={3} sx={{ pt: onCancel ? 2 : 0 }}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            fontWeight="bold"
+            sx={{
+              background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            {title}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#6b7280",
+              fontWeight: 500,
+            }}
+          >
+            {subtitle}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              color: "#1f2937",
+              mt: 1,
+            }}
+          >
+            {email}
+          </Typography>
+        </Box>
       </Box>
 
       <OTPInputContainer>
@@ -258,24 +305,42 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
           variant="contained"
           onClick={handleVerify}
           disabled={!isOtpComplete || loading}
-          sx={{ minWidth: 120 }}
+          sx={{
+            minWidth: 120,
+            background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+            color: "white",
+            borderRadius: 2,
+            fontSize: "1rem",
+            fontWeight: 600,
+            textTransform: "none",
+            boxShadow: "0 4px 15px rgba(5, 150, 105, 0.3)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #047857 0%, #065f46 100%)",
+               boxShadow: "0 6px 20px rgba(5, 150, 105, 0.4)",
+            },
+            "&:disabled": {
+              background: "linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%)",
+              color: "#065f46",
+              boxShadow: "none",
+              transform: "none",
+              cursor: "not-allowed",
+              opacity: 0.8,
+            },
+          }}
         >
           {loading ? <CircularProgress size={20} /> : 'Verify'}
         </Button>
-
-        {onCancel && (
-          <Button
-            variant="outlined"
-            onClick={onCancel}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-        )}
       </Box>
 
       <Box textAlign="center">
-        <Typography variant="body2" color="text.secondary" mb={1}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "#6b7280",
+            fontWeight: 500,
+            mb: 1,
+          }}
+        >
           {canResend ? (
             'Didn\'t receive the code?'
           ) : (
@@ -290,8 +355,14 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
           sx={{
             textTransform: 'none',
             fontSize: '0.875rem',
+            fontWeight: 600,
+            color: '#059669',
+            '&:hover': {
+              color: '#047857',
+              backgroundColor: 'rgba(5, 150, 105, 0.05)',
+            },
             '&:disabled': {
-              color: 'text.disabled',
+              color: '#9ca3af',
             },
           }}
         >
