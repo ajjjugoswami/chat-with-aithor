@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Email, Lock, ArrowBack } from "@mui/icons-material";
+import { CheckCircle, Cancel } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
@@ -174,13 +175,39 @@ export default function SignUpPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [passwordValidation, setPasswordValidation] = useState({
+    hasMinLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  });
+
+  // Password validation function
+  const validatePassword = (password: string) => {
+    const validation = {
+      hasMinLength: password.length >= 8,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(password),
+    };
+    setPasswordValidation(validation);
+    return validation;
+  };
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Validate password when password field changes
+    if (name === 'password') {
+      validatePassword(value);
+    }
   };
 
   // Handle form submission
@@ -188,13 +215,99 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
+    // Enhanced email validation
+    const email = formData.email.trim().toLowerCase();
+    
+    // Basic email format validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address format");
+      return;
+    }
+
+    // Extract domain from email
+    const domain = email.split('@')[1];
+    
+    // List of common valid TLDs
+    const validTLDs = [
+      'com', 'org', 'net', 'edu', 'gov', 'mil', 'int', 'info', 'biz', 'name',
+      'pro', 'coop', 'aero', 'museum', 'travel', 'jobs', 'mobi', 'cat', 'tel',
+      'asia', 'post', 'xxx', 'ac', 'ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'an',
+      'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd',
+      'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bm', 'bn', 'bo', 'br', 'bs', 'bt',
+      'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck',
+      'cl', 'cm', 'cn', 'co', 'cr', 'cu', 'cv', 'cx', 'cy', 'cz', 'de', 'dj',
+      'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'eh', 'er', 'es', 'et', 'eu',
+      'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg',
+      'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw',
+      'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in',
+      'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh',
+      'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li',
+      'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mg',
+      'mh', 'mk', 'ml', 'mm', 'mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu',
+      'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl',
+      'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk',
+      'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs',
+      'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk',
+      'sl', 'sm', 'sn', 'so', 'sr', 'ss', 'st', 'su', 'sv', 'sx', 'sy', 'sz',
+      'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tp',
+      'tr', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'uk', 'us', 'uy', 'uz', 'va',
+      'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'ye', 'yt', 'za', 'zm',
+      'zw', 'io', 'sh', 'ac', 'gg', 'im', 'je', 'uk'
+    ];
+
+    // List of known fake/invalid domains
+    const fakeDomains = [
+      'mail.com', 'email.com', 'example.com', 'test.com', 'fake.com', 'dummy.com', 
+      'temp.com', 'trash.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
+      'temp-mail.org', 'throwaway.email', 'yopmail.com', 'maildrop.cc', 'tempail.com',
+      'dispostable.com', '0-mail.com', 'anonbox.net', 'mailcatch.com', 'spamgourmet.com'
+    ];
+
+    // Check if domain has a valid TLD
+    const tld = domain.split('.').pop();
+    if (!tld || !validTLDs.includes(tld)) {
+      setError("Please enter a valid email address with a proper domain");
+      return;
+    }
+
+    // Check for obviously fake domains
+    if (fakeDomains.includes(domain)) {
+      setError("Please use a real email address, not a temporary or fake one");
+      return;
+    }
+
+    // Additional checks for suspicious patterns
+    if (domain.length < 4 || domain.includes('..') || domain.startsWith('.') || domain.endsWith('.')) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    // Comprehensive password strength validation
+    const passwordStrength = validatePassword(formData.password);
+    if (!passwordStrength.hasMinLength) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+    if (!passwordStrength.hasUpperCase) {
+      setError("Password must contain at least one uppercase letter");
+      return;
+    }
+    if (!passwordStrength.hasLowerCase) {
+      setError("Password must contain at least one lowercase letter");
+      return;
+    }
+    if (!passwordStrength.hasNumber) {
+      setError("Password must contain at least one number");
+      return;
+    }
+    if (!passwordStrength.hasSpecialChar) {
+      setError("Password must contain at least one special character (!@#$%^&* etc.)");
       return;
     }
 
@@ -416,11 +529,93 @@ export default function SignUpPage() {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                sx={{ mb: 2 }}
+                sx={{ mb: 1 }}
                 InputProps={{
                   startAdornment: <Lock sx={{ color: "#059669", mr: 1 }} />,
                 }}
               />
+              
+              {/* Password validation display */}
+              {formData.password && !(
+                passwordValidation.hasMinLength &&
+                passwordValidation.hasUpperCase &&
+                passwordValidation.hasLowerCase &&
+                passwordValidation.hasNumber &&
+                passwordValidation.hasSpecialChar
+              ) && (
+                <Box sx={{ mb: 2, pl: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: "#374151" }}>
+                    Password must contain:
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {passwordValidation.hasMinLength ? (
+                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                      ) : (
+                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
+                      )}
+                      <Typography variant="body2" sx={{ 
+                        color: passwordValidation.hasMinLength ? '#10b981' : '#ef4444',
+                        fontSize: '0.875rem'
+                      }}>
+                        At least 8 characters
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {passwordValidation.hasUpperCase ? (
+                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                      ) : (
+                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
+                      )}
+                      <Typography variant="body2" sx={{ 
+                        color: passwordValidation.hasUpperCase ? '#10b981' : '#ef4444',
+                        fontSize: '0.875rem'
+                      }}>
+                        One uppercase letter (A-Z)
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {passwordValidation.hasLowerCase ? (
+                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                      ) : (
+                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
+                      )}
+                      <Typography variant="body2" sx={{ 
+                        color: passwordValidation.hasLowerCase ? '#10b981' : '#ef4444',
+                        fontSize: '0.875rem'
+                      }}>
+                        One lowercase letter (a-z)
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {passwordValidation.hasNumber ? (
+                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                      ) : (
+                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
+                      )}
+                      <Typography variant="body2" sx={{ 
+                        color: passwordValidation.hasNumber ? '#10b981' : '#ef4444',
+                        fontSize: '0.875rem'
+                      }}>
+                        One number (0-9)
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {passwordValidation.hasSpecialChar ? (
+                        <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                      ) : (
+                        <Cancel sx={{ color: '#ef4444', fontSize: 16 }} />
+                      )}
+                      <Typography variant="body2" sx={{ 
+                        color: passwordValidation.hasSpecialChar ? '#10b981' : '#ef4444',
+                        fontSize: '0.875rem'
+                      }}>
+                        One special character (!@#$%^&*)
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              )}
               <StyledTextField
                 fullWidth
                 label="Confirm Password"
