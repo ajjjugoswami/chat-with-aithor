@@ -321,7 +321,7 @@ const AppManagementTab = () => {
                       <TableCell>
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {quota.userId.name || quota.userId.email}
+                            {quota?.userId?.name || quota.userId.email}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {quota.userId.email}
@@ -365,7 +365,7 @@ const AppManagementTab = () => {
         <DialogTitle>Reset User Quota</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to reset the quota for {selectedQuota?.userId.name || selectedQuota?.userId.email}?
+            Are you sure you want to reset the quota for {selectedQuota?.userId?.name || selectedQuota?.userId.email}?
             This will reset their {getProviderDisplayName(selectedQuota?.provider || '')} usage to 0.
           </Typography>
         </DialogContent>
