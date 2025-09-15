@@ -17,6 +17,11 @@ const OTPContainer = styled(Paper)(({ theme }) => ({
   boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
   border: "1px solid #e5e7eb",
   borderRadius: theme.spacing(3),
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(2),
+    marginTop: theme.spacing(1),
+    borderRadius: theme.spacing(2),
+  },
 }));
 
 const OTPInputContainer = styled(Box)(({ theme }) => ({
@@ -24,6 +29,10 @@ const OTPInputContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
   justifyContent: 'center',
   marginBottom: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    gap: theme.spacing(0.5),
+    marginBottom: theme.spacing(1.5),
+  },
 }));
 
 const OTPInput = styled(TextField)(({ theme }) => ({
@@ -69,6 +78,14 @@ const OTPInput = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-input::placeholder': {
     color: "#9ca3af",
     opacity: 1,
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: 40,
+    height: 40,
+    '& .MuiInputBase-root': {
+      height: 40,
+      fontSize: '1.2rem',
+    },
   },
 }));
 
@@ -242,6 +259,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
             }}
           >
             {title}
@@ -251,6 +269,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
             sx={{
               color: "#6b7280",
               fontWeight: 500,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             {subtitle}
@@ -261,6 +280,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
               fontWeight: 600,
               color: "#1f2937",
               mt: 1,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             {email}
@@ -300,13 +320,16 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
         </Alert>
       )}
 
-      <Box display="flex" gap={2} justifyContent="center" mb={2}>
+      <Box display="flex" gap={2} justifyContent="center" mb={2} sx={{
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: { xs: 1.5, sm: 2 },
+      }}>
         <Button
           variant="contained"
           onClick={handleVerify}
           disabled={!isOtpComplete || loading}
           sx={{
-            minWidth: 120,
+            minWidth: { xs: '100%', sm: 120 },
             background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
             color: "white",
             borderRadius: 2,
@@ -339,6 +362,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
             color: "#6b7280",
             fontWeight: 500,
             mb: 1,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
           }}
         >
           {canResend ? (
@@ -354,7 +378,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
           disabled={!canResend || resendLoading}
           sx={{
             textTransform: 'none',
-            fontSize: '0.875rem',
+            fontSize: { xs: '0.875rem', sm: '0.875rem' },
             fontWeight: 600,
             color: '#059669',
             '&:hover': {

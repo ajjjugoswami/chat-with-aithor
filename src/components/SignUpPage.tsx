@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -8,19 +8,13 @@ import {
   Alert,
   Divider,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Email, Lock, ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
-import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import OTPVerification from "./shared/OTPVerification";
-
-// Get Google Client ID from environment variables
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
 const PageContainer = styled(Box)(({ theme }) => ({
   minHeight: "100%",
   display: "flex",
@@ -165,9 +159,7 @@ const GradientButton = styled(Button)(({ theme }) => ({
 
 export default function SignUpPage() {
   // Authentication hooks
-  const { signIn, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -177,7 +169,6 @@ export default function SignUpPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [passwordValidation, setPasswordValidation] = useState({
     hasMinLength: false,
     hasUpperCase: false,
@@ -426,60 +417,6 @@ export default function SignUpPage() {
     setShowOTPVerification(false);
     setOtpSuccess("");
   };
-  const handleCredentialResponse = useCallback(
-    async (response: { credential: string }) => {
-      setGoogleLoading(true);
-      try {
-        await signIn(response.credential);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : "Google authentication failed");
-      } finally {
-        setGoogleLoading(false);
-      }
-    },
-    [signIn]
-  );
-
-  // Initialize Google Sign-In
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-      return;
-    }
-
-    const initializeGoogleSignIn = () => {
-      if (window.google && GOOGLE_CLIENT_ID) {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-        });
-
-        // Render Google button
-        if (googleButtonRef.current) {
-          window.google.accounts.id.renderButton(googleButtonRef.current, {
-            theme: "filled_blue",
-            size: "large",
-            type: "standard",
-            shape: "rectangular",
-            text: "signup_with",
-            logo_alignment: "left",
-          });
-        }
-      }
-    };
-
-    // Load Google Identity Services script
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.onload = initializeGoogleSignIn;
-    document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, [isAuthenticated, navigate, handleCredentialResponse]);
 
   return (
     <PageContainer>
@@ -543,20 +480,6 @@ export default function SignUpPage() {
           </LogoContainer>
 
           <Box sx={{ mb: 4 }}>
-            <Box
-              ref={googleButtonRef}
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                mb: 2,
-                "& > div": {
-                  borderRadius: "8px !important",
-                  overflow: "hidden",
-                },
-              }}
-            />
-
             <Box sx={{ display: "flex", alignItems: "center", my: 3 }}>
               <Divider
                 sx={{ flex: 1, borderColor: "rgba(102, 126, 234, 0.2)" }}
@@ -565,7 +488,7 @@ export default function SignUpPage() {
                 variant="body2"
                 sx={{ mx: 2, color: "#6b7280", fontWeight: 500 }}
               >
-                or continue with email
+                Sign up with email
               </Typography>
               <Divider
                 sx={{ flex: 1, borderColor: "rgba(102, 126, 234, 0.2)" }}
@@ -811,29 +734,6 @@ export default function SignUpPage() {
           </Box>
         </FormCard>
       </LeftSection>
-      {googleLoading && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            zIndex: 9999,
-          }}
-        >
-          <Box sx={{ textAlign: "center" }}>
-            <CircularProgress sx={{ color: "#059669", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#059669", fontWeight: 500 }}>
-              Signing up with Google...
-            </Typography>
-          </Box>
-        </Box>
-      )}
     </PageContainer>
   );
 }
