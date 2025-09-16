@@ -354,7 +354,15 @@ function ModelPanel({
                   {model.displayName}
                 </Typography>
               </Box>
-            ) : !hasApiKey && !(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') ? (
+            ) : !hasApiKey && (
+              !(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') ||
+              ((model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') &&
+               (() => {
+                 const providerKey = model.id === 'gpt-4o-mini' ? 'openai' : 'gemini';
+                 const remaining = (userQuotas && userQuotas[providerKey]?.remainingCalls) ?? 10;
+                 return remaining === 0;
+               })())
+            ) ? (
               /* Show API Key button when no API key exists (except for free providers) */
               <Box
                 sx={{
@@ -373,7 +381,16 @@ function ModelPanel({
                     textAlign: "center",
                   }}
                 >
-                  Add your API key to start chatting with <br/> {model.displayName}
+                  {(() => {
+                    if (model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') {
+                      const providerKey = model.id === 'gpt-4o-mini' ? 'openai' : 'gemini';
+                      const remaining = (userQuotas && userQuotas[providerKey]?.remainingCalls) ?? 10;
+                      if (remaining === 0) {
+                        return `Free quota exceeded. Add your API key to continue with ${model.displayName}`;
+                      }
+                    }
+                    return `Add your API key to start chatting with ${model.displayName}`;
+                  })()}
                 </Typography>
                 <Button
                   variant="contained"

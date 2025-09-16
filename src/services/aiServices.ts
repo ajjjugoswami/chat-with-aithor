@@ -2,6 +2,25 @@
 import { getAPIKeyForModel } from "../utils/enhancedApiKeys";
 
 // Preference helpers
+export const getProviderFromModelId = (modelId: string): string => {
+  const lowerId = modelId.toLowerCase();
+  if (lowerId.includes("gpt") || lowerId.includes("chatgpt") || lowerId.startsWith("oai-")) {
+    return "openai";
+  }
+  if (lowerId.includes("gemini")) {
+    return "gemini";
+  }
+  if (lowerId.includes("claude")) {
+    return "claude";
+  }
+  if (lowerId.includes("deepseek")) {
+    return "deepseek";
+  }
+  if (lowerId.includes("perplexity") || lowerId.includes("sonar")) {
+    return "perplexity";
+  }
+  return modelId; // fallback
+};
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";

@@ -14,7 +14,7 @@ import FeedbackDialog from "./components/FeedbackDialog";
 import EnhancedAPIKeyDialog from "./components/EnhancedAPIKeyDialog";
 import type { AIModel } from "./components/AIModelTabs";
 import { hasAPIKey } from "./utils/enhancedApiKeys";
-import { sendToAI, type ChatMessage } from "./services/aiServices";
+import { sendToAI, getProviderFromModelId, type ChatMessage } from "./services/aiServices";
 import { saveChatsToStorage, loadChatsFromStorage } from "./utils/chatStorage";
 import { stopAllTypewriters, markMessageAsTyped } from "./utils/typewriterState";
 import {
@@ -315,9 +315,21 @@ function App() {
       if (panelEnabledStates[model.id] === false) {
         return;
       }
-      
+
+      // Check if user has API key or quota for this model
+      const userHasAPIKey = hasAPIKey(model.id);
+      const provider = getProviderFromModelId(model.id);
+      const hasRemainingQuota = (provider === 'openai' || provider === 'gemini') &&
+        (authCtx?.quotas?.[provider as keyof typeof authCtx.quotas]?.remainingCalls ?? 0) > 0;
+
+      // If no API key and no remaining quota, don't show loading animation
+      // Just return early - the UI will show the "Add API Key" button
+      if (!userHasAPIKey && !hasRemainingQuota) {
+        return;
+      }
+
       try {
-        // Add loading message
+        // Add loading message only if user has API key or remaining quota
         const loadingMessageId = `loading-${Date.now()}-${index}`;
         const loadingMessage: Message = {
           id: loadingMessageId,
@@ -341,7 +353,7 @@ function App() {
         const selectedVariantId = getPanelVariant(model.id);
         const defaultVariant = getDefaultVariantForModel(model.id);
         const actualModelId = selectedVariantId || defaultVariant?.id || model.id;
-        
+
         const response = await sendToAI(conversationHistory, actualModelId);
 
         // After each send, refresh quotas so UI shows updated remaining calls
