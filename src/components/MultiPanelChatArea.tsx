@@ -326,7 +326,7 @@ function ModelPanel({
                 textAlign: 'center',
               }}>
                 <Typography sx={{ color: 'white' }}>
-                  Free quota is over for {model.displayName}. Add your API key to continue.
+                  Free quota is over for {model.displayName}. Please contact support or add your API key to continue.
                 </Typography>
                 <Button variant="contained" onClick={() => onOpenAPIKeyDialog?.(model.id)}>Add API Key</Button>
               </Box>

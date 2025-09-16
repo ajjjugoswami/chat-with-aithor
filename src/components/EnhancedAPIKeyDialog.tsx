@@ -18,8 +18,6 @@ import {
   Divider,
   useMediaQuery,
   useTheme as useMuiTheme,
-  Switch,
-  FormControlLabel,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
@@ -81,32 +79,6 @@ export default function EnhancedAPIKeyDialog({
       setShowAddForm(keys.length === 0);
     }
   }, [open, model]);
-
-  const isOpenAIorGemini =
-    model?.id.toLowerCase().includes("gemini") ||
-    model?.id.toLowerCase().includes("gpt") ||
-    model?.id.toLowerCase().includes("chatgpt");
-  const providerPrefKey = model?.id.toLowerCase().includes("gemini")
-    ? "ai_use_own_key_gemini"
-    : model?.id.toLowerCase().includes("gpt") ||
-      model?.id.toLowerCase().includes("chatgpt")
-    ? "ai_use_own_key_openai"
-    : "";
-  const [useOwnKey, setUseOwnKey] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (open && isOpenAIorGemini && providerPrefKey) {
-      const raw = localStorage.getItem(providerPrefKey);
-      setUseOwnKey(raw === "true");
-    }
-  }, [open, isOpenAIorGemini, providerPrefKey]);
-
-  const handleToggleUseOwnKey = (checked: boolean) => {
-    setUseOwnKey(checked);
-    if (providerPrefKey) {
-      localStorage.setItem(providerPrefKey, checked ? "true" : "false");
-    }
-  };
 
   const handleAddKey = () => {
     if (!newApiKey.trim()) {
@@ -369,42 +341,6 @@ export default function EnhancedAPIKeyDialog({
       </Box>
 
       <DialogContent sx={{ p: isMobile ? 2 : 3, flex: 1 }}>
-        {/* Preference Switch for OpenAI/Gemini */}
-        {isOpenAIorGemini && (
-          <Box
-            sx={{
-              mb: isMobile ? 2 : 3,
-              p: isMobile ? 1.5 : 2,
-              display: "flex",
-              justifyContent: "space-between",
-              borderRadius: 2,
-              border: `1px solid ${mode === "light" ? "#e5e7eb" : "#333"}`,
-              bgcolor: mode === "light" ? "#f9fafb" : "#111",
-            }}
-          >
-            <Box>
-              <Typography sx={{ fontWeight: 600 }}>Use my API key</Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: mode === "light" ? "#666" : "#aaa" }}
-              >
-                {useOwnKey
-                  ? "Requests will be sent directly to the provider using your saved key."
-                  : "Requests will use your free quota via the backend until it ends."}
-              </Typography>
-            </Box>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={useOwnKey}
-                  onChange={(_, c) => handleToggleUseOwnKey(c)}
-                />
-              }
-              label={null}
-            />
-          </Box>
-        )}
-
         {/* Existing Keys List */}
         {apiKeys.length > 0 && (
           <Box sx={{ mb: isMobile ? 2 : 3 }}>

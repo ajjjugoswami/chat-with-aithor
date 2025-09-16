@@ -588,7 +588,7 @@ function App() {
         sx={{ width: '100%' }}
       >
         {quotaExceeded?.provider === 'openai' || quotaExceeded?.provider === 'gemini' 
-          ? `Free ${quotaExceeded?.provider} quota exceeded. Add your own API key to continue.`
+          ? `Free ${quotaExceeded?.provider} quota exceeded. Please contact support or add your own API key to continue.`
           : `Please add your own API key for ${quotaExceeded?.provider} provider.`
         }
       </Alert>
