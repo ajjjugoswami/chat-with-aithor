@@ -1,6 +1,18 @@
 // AI API Service Integration
 import { getAPIKeyForModel } from "../utils/enhancedApiKeys";
 
+// Quota types
+interface QuotaInfo {
+  usedCalls: number;
+  maxFreeCalls: number;
+  remainingCalls: number;
+}
+
+interface UserQuotas {
+  openai: QuotaInfo;
+  gemini: QuotaInfo;
+}
+
 // Preference helpers
 export const getProviderFromModelId = (modelId: string): string => {
   const lowerId = modelId.toLowerCase();
@@ -571,10 +583,82 @@ export interface AIResponse {
   provider?: string;
 }
 
+// Helper function to send via backend /send endpoint
+async function sendViaBackend(
+  messages: ChatMessage[],
+  modelId: string,
+  provider: string
+): Promise<AIResponse> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return { success: false, error: "No authentication token found" };
+  }
+
+  // For Gemini, always use gemini-2.0-flash for backend
+  const backendModelId = provider === "gemini" ? "gemini-2.0-flash" : modelId;
+
+  try {
+    const response = await fetch(
+      "https://aithor-be.vercel.app/api/chat/send",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          messages,
+          modelId: backendModelId,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.status === 429 && data.quotaExceeded) {
+      return {
+        success: false,
+        error:
+          data.error ||
+          "Free quota exceeded. Please contact support or add your own API key to continue.",
+        quotaExceeded: true,
+        provider: data.provider || provider,
+      };
+    }
+
+    if (response.status === 400 && data.requiresUserKey) {
+      return {
+        success: false,
+        error: data.error || "Please add your own API key for this provider.",
+        requiresUserKey: true,
+        provider: data.provider || provider,
+      };
+    }
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error:
+          data.error || `HTTP ${response.status}: ${response.statusText}`,
+      };
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Backend AI service error:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 // Main function to route messages to backend AI service
 export async function sendToAI(
   messages: ChatMessage[],
-  modelId: string
+  modelId: string,
+  userQuotas?: UserQuotas | null
 ): Promise<AIResponse> {
   console.log("Sending message to backend AI service:", modelId);
 
@@ -594,93 +678,46 @@ export async function sendToAI(
   const userApiKey = getAPIKeyForModel(modelId);
   const hasUserKey = !!(userApiKey && userApiKey.trim().length > 0);
 
-  // If user has their own key, use direct API calls for all providers
-  if (hasUserKey) {
+  // Determine provider for quota checking
+  let provider = "";
+  if (isOpenAI) provider = "openai";
+  else if (isGemini) provider = "gemini";
+  else if (isClaude) provider = "claude";
+  else if (isDeepseek) provider = "deepseek";
+  else if (isPerplexity) provider = "perplexity";
+
+  // Check if user has remaining free quotas
+  const hasFreeQuotas = userQuotas && 
+    ((provider === "openai" && userQuotas.openai.remainingCalls > 0) ||
+     (provider === "gemini" && userQuotas.gemini.remainingCalls > 0));
+
+  // Priority logic:
+  // 1. If user has free quotas remaining, use backend /send endpoint (free)
+  // 2. If no free quotas but has user key, use direct API
+  // 3. If neither, try backend /send (might still work or show error)
+
+  if (hasFreeQuotas && (isOpenAI || isGemini)) {
+    // Use free quota via backend /send endpoint
+    return await sendViaBackend(messages, modelId, provider);
+  } else if (hasUserKey) {
+    // Use user's own API key
+    console.log(`Using user API key for ${provider}`);
     if (isOpenAI) return sendToChatGPT(messages, modelId);
     if (isGemini) return sendToGemini(messages, modelId);
     if (isClaude) return sendToClaude(messages, modelId);
     if (isDeepseek) return sendToDeepseek(messages, modelId);
     if (isPerplexity) return sendToPerplexity(messages, modelId);
+  } else if (isOpenAI || isGemini) {
+    // No user key and no free quotas, try backend anyway (will show error if truly exhausted)
+    console.log(`No free quotas or user key for ${provider}, trying backend`);
+    return await sendViaBackend(messages, modelId, provider);
   }
 
-  // For OpenAI and Gemini without user key, try backend /send endpoint first (free quota)
-  if (isOpenAI || isGemini) {
-    const provider = isOpenAI ? "openai" : "gemini";
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      return { success: false, error: "No authentication token found" };
-    }
-
-    try {
-      const response = await fetch(
-        "https://aithor-be.vercel.app/api/chat/send",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            messages,
-            modelId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.status === 429 && data.quotaExceeded) {
-        return {
-          success: false,
-          error:
-            data.error ||
-            "Free quota exceeded. Please contact support or add your own API key to continue.",
-          quotaExceeded: true,
-          provider: data.provider || provider,
-        };
-      }
-
-      if (response.status === 400 && data.requiresUserKey) {
-        return {
-          success: false,
-          error: data.error || "Please add your own API key for this provider.",
-          requiresUserKey: true,
-          provider: data.provider || provider,
-        };
-      }
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error:
-            data.error || `HTTP ${response.status}: ${response.statusText}`,
-        };
-      }
-
-      return data;
-    } catch (error) {
-      console.error("Backend AI service error:", error);
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
-      };
-    }
-  }
-
-  // Other providers require user's own key
-  const provider = isClaude
-    ? "claude"
-    : isDeepseek
-    ? "deepseek"
-    : isPerplexity
-    ? "perplexity"
-    : "unknown";
+  // For other providers (Claude, DeepSeek, Perplexity) - require user key
   return {
     success: false,
+    error: `Please add your own API key for ${provider} to use this model.`,
     requiresUserKey: true,
-    provider,
-    error: "Please add your own API key for this provider.",
+    provider
   };
 }

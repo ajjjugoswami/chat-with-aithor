@@ -354,7 +354,7 @@ function App() {
         const defaultVariant = getDefaultVariantForModel(model.id);
         const actualModelId = selectedVariantId || defaultVariant?.id || model.id;
 
-        const response = await sendToAI(conversationHistory, actualModelId);
+        const response = await sendToAI(conversationHistory, actualModelId, authCtx?.quotas);
 
         // After each send, refresh quotas so UI shows updated remaining calls
         authCtx?.refreshQuotas?.();
