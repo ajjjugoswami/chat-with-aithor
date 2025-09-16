@@ -16,7 +16,6 @@ import {
   Paper,
   Chip,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   useMediaQuery,
@@ -24,8 +23,9 @@ import {
   Stack,
   useTheme,
   IconButton,
+  Fade,
 } from "@mui/material";
-import { Settings, Refresh, Key, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Settings, Refresh, Key, Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   fetchAppManagementData,
@@ -301,6 +301,27 @@ const AppManagementTab = () => {
               }
               SelectProps={{ native: true }}
               size={isMobile ? "small" : "medium"}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+                  '& fieldset': {
+                    borderColor: theme.palette.mode === "light" ? "#e0e0e0" : "#404040",
+                  },
+                  '&:hover fieldset': {
+                    borderColor: theme.palette.mode === "light" ? "#b3b3b3" : "#666",
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#667eea',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                  '&.Mui-focused': {
+                    color: '#667eea',
+                  },
+                },
+              }}
             >
               <option value="openai">OpenAI (Free Access)</option>
               <option value="gemini">Gemini (Free Access)</option>
@@ -314,6 +335,27 @@ const AppManagementTab = () => {
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="Enter API key"
               size={isMobile ? "small" : "medium"}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+                  '& fieldset': {
+                    borderColor: theme.palette.mode === "light" ? "#e0e0e0" : "#404040",
+                  },
+                  '&:hover fieldset': {
+                    borderColor: theme.palette.mode === "light" ? "#b3b3b3" : "#666",
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#667eea',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                  '&.Mui-focused': {
+                    color: '#667eea',
+                  },
+                },
+              }}
             />
 
             <Button
@@ -403,7 +445,26 @@ const AppManagementTab = () => {
                                 '& .MuiInputBase-input': {
                                   fontFamily: 'monospace',
                                   fontSize: '0.75rem',
-                                }
+                                },
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: '12px',
+                                  bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+                                  '& fieldset': {
+                                    borderColor: theme.palette.mode === "light" ? "#e0e0e0" : "#404040",
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: theme.palette.mode === "light" ? "#b3b3b3" : "#666",
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#667eea',
+                                  },
+                                },
+                                '& .MuiInputLabel-root': {
+                                  color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                                  '&.Mui-focused': {
+                                    color: '#667eea',
+                                  },
+                                },
                               }}
                             />
                             <IconButton
@@ -531,7 +592,26 @@ const AppManagementTab = () => {
                                   '& .MuiInputBase-input': {
                                     fontFamily: 'monospace',
                                     fontSize: '0.75rem',
-                                  }
+                                  },
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                    bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+                                    '& fieldset': {
+                                      borderColor: theme.palette.mode === "light" ? "#e0e0e0" : "#404040",
+                                    },
+                                    '&:hover fieldset': {
+                                      borderColor: theme.palette.mode === "light" ? "#b3b3b3" : "#666",
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                      borderColor: '#667eea',
+                                    },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                                    '&.Mui-focused': {
+                                      color: '#667eea',
+                                    },
+                                  },
                                 }}
                               />
                               <IconButton
@@ -598,16 +678,133 @@ const AppManagementTab = () => {
             onClose={() => setEditDialogOpen(false)}
             maxWidth="sm"
             fullWidth
+            TransitionComponent={Fade}
+            PaperProps={{
+              sx: {
+                bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#1a1a1a",
+                color: theme.palette.mode === "light" ? "#000000" : "white",
+                borderRadius: "20px",
+                border: "none",
+                boxShadow:
+                  theme.palette.mode === "light"
+                    ? "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                    : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+                overflow: "hidden",
+                background:
+                  theme.palette.mode === "light"
+                    ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
+                    : "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+                minHeight: "500px",
+                maxHeight: "90vh",
+              },
+            }}
           >
-            <DialogTitle sx={{ pb: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Key color="primary" />
-                <Typography variant="h6" component="div">
-                  Edit {getProviderDisplayName(appKeys.find(k => k._id === editKeyId)?.provider || '')} API Key
-                </Typography>
+            {/* Custom Header */}
+            <Box
+              sx={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                p: 3,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <Box sx={{ position: "relative", zIndex: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 1,
+                    width: "100%",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      flex: 1,
+                      minWidth: 0,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                        fontSize: "24px",
+                        boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Key />
+                    </Box>
+                    <Box
+                      sx={{
+                        minWidth: 0,
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontWeight: 700,
+                          color: theme.palette.mode === "light" ? "#1a1a1a" : "white",
+                          mb: 0.25,
+                          lineHeight: 1.2,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Edit API Key
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                          fontWeight: 500,
+                          lineHeight: 1.3,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {getProviderDisplayName(appKeys.find(k => k._id === editKeyId)?.provider || '')}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <IconButton
+                    onClick={() => setEditDialogOpen(false)}
+                    sx={{
+                      bgcolor: "rgba(255, 255, 255, 0.1)",
+                      "&:hover": { bgcolor: "rgba(255, 255, 255, 0.2)" },
+                      "&:active": { bgcolor: "rgba(255, 255, 255, 0.3)" },
+                      alignSelf: "flex-start",
+                      ml: 1,
+                      flexShrink: 0,
+                      width: 48,
+                      height: 48,
+                    }}
+                  >
+                    <Close
+                      sx={{
+                        color: theme.palette.mode === "light" ? "#666" : "white",
+                        fontSize: "24px",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
               </Box>
-            </DialogTitle>
-            <DialogContent>
+            </Box>
+            <DialogContent sx={{ p: 3, flex: 1 }}>
               <Box sx={{ mb: 3 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
                   Current API Key
@@ -627,7 +824,26 @@ const AppManagementTab = () => {
                       '& .MuiInputBase-input': {
                         fontFamily: 'monospace',
                         fontSize: '0.875rem',
-                      }
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+                        '& fieldset': {
+                          borderColor: theme.palette.mode === "light" ? "#e0e0e0" : "#404040",
+                        },
+                        '&:hover fieldset': {
+                          borderColor: theme.palette.mode === "light" ? "#b3b3b3" : "#666",
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#667eea',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                        '&.Mui-focused': {
+                          color: '#667eea',
+                        },
+                      },
                     }}
                   />
                   <IconButton
@@ -660,7 +876,26 @@ const AppManagementTab = () => {
                       '& .MuiInputBase-input': {
                         fontFamily: 'monospace',
                         fontSize: '0.875rem',
-                      }
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#2a2a2a",
+                        '& fieldset': {
+                          borderColor: theme.palette.mode === "light" ? "#e0e0e0" : "#404040",
+                        },
+                        '&:hover fieldset': {
+                          borderColor: theme.palette.mode === "light" ? "#b3b3b3" : "#666",
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#667eea',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                        '&.Mui-focused': {
+                          color: '#667eea',
+                        },
+                      },
                     }}
                   />
                   <IconButton
@@ -683,7 +918,7 @@ const AppManagementTab = () => {
                 </Typography>
               </Alert>
             </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 2 }}>
+            <DialogActions sx={{ px: 3, pb: 3, pt: 2, gap: 2 }}>
               <Button 
                 onClick={() => {
                   setEditDialogOpen(false);
@@ -692,7 +927,30 @@ const AppManagementTab = () => {
                   setShowCurrentKey(false);
                   setShowNewKey(false);
                 }}
-                color="inherit"
+                sx={{
+                  borderColor: "#667eea",
+                  color: "#667eea",
+                  borderWidth: "1.5px",
+                  borderRadius: 2,
+                  py: 1.25,
+                  px: 2.5,
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  letterSpacing: "0.025em",
+                  transition: "all 0.3s ease",
+                  backgroundColor: theme.palette.mode === "light" ? "#ffffff" : "#333333",
+                  "&:hover": {
+                    borderColor: "#667eea",
+                    backgroundColor: "#667eea08",
+                    boxShadow: "0 4px 12px #667eea20",
+                    transform: "translateY(-1px)",
+                  },
+                  "&:active": {
+                    transform: "translateY(0)",
+                    boxShadow: "0 2px 6px #667eea15",
+                  },
+                }}
               >
                 Cancel
               </Button>
@@ -741,8 +999,35 @@ const AppManagementTab = () => {
                   }
                 }}
                 variant="contained"
-                color="primary"
                 disabled={savingKey || !editKeyValue.trim()}
+                sx={{
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  borderRadius: 2,
+                  py: 1.25,
+                  px: 2.5,
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  letterSpacing: "0.025em",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                    boxShadow: "0 6px 20px rgba(102, 126, 234, 0.6)",
+                    transform: "translateY(-2px)",
+                  },
+                  "&:active": {
+                    transform: "translateY(0)",
+                    boxShadow: "0 2px 10px rgba(102, 126, 234, 0.4)",
+                  },
+                  "&:disabled": {
+                    background: theme.palette.mode === "light" ? "#e0e0e0" : "#555555",
+                    color: theme.palette.mode === "light" ? "#999999" : "#cccccc",
+                    boxShadow: "none",
+                    transform: "none",
+                  },
+                }}
                 startIcon={savingKey ? <CircularProgress size={16} /> : null}
               >
                 {savingKey ? "Updating..." : "Update Key"}
@@ -1157,24 +1442,226 @@ const AppManagementTab = () => {
       </Card>
 
       {/* Reset Quota Dialog */}
-      <Dialog open={resetDialogOpen} onClose={() => setResetDialogOpen(false)}>
-        <DialogTitle>Reset User Quota</DialogTitle>
-        <DialogContent>
-          <Typography>
+      <Dialog 
+        open={resetDialogOpen} 
+        onClose={() => setResetDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        TransitionComponent={Fade}
+        PaperProps={{
+          sx: {
+            bgcolor: theme.palette.mode === "light" ? "#ffffff" : "#1a1a1a",
+            color: theme.palette.mode === "light" ? "#000000" : "white",
+            borderRadius: "20px",
+            border: "none",
+            boxShadow:
+              theme.palette.mode === "light"
+                ? "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+            overflow: "hidden",
+            background:
+              theme.palette.mode === "light"
+                ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
+                : "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+            minHeight: "300px",
+            maxHeight: "90vh",
+          },
+        }}
+      >
+        {/* Custom Header */}
+        <Box
+          sx={{
+            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)",
+            p: 3,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <Box sx={{ position: "relative", zIndex: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 1,
+                width: "100%",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  flex: 1,
+                  minWidth: 0,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    fontSize: "24px",
+                    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Refresh />
+                </Box>
+                <Box
+                  sx={{
+                    minWidth: 0,
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 700,
+                      color: theme.palette.mode === "light" ? "#1a1a1a" : "white",
+                      mb: 0.25,
+                      lineHeight: 1.2,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Reset User Quota
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: theme.palette.mode === "light" ? "#666" : "#ccc",
+                      fontWeight: 500,
+                      lineHeight: 1.3,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {getProviderDisplayName(selectedQuota?.provider || '')}
+                  </Typography>
+                </Box>
+              </Box>
+              <IconButton
+                onClick={() => setResetDialogOpen(false)}
+                sx={{
+                  bgcolor: "rgba(255, 255, 255, 0.1)",
+                  "&:hover": { bgcolor: "rgba(255, 255, 255, 0.2)" },
+                  "&:active": { bgcolor: "rgba(255, 255, 255, 0.3)" },
+                  alignSelf: "flex-start",
+                  ml: 1,
+                  flexShrink: 0,
+                  width: 48,
+                  height: 48,
+                }}
+              >
+                <Close
+                  sx={{
+                    color: theme.palette.mode === "light" ? "#666" : "white",
+                    fontSize: "24px",
+                  }}
+                />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+        <DialogContent sx={{ p: 3, flex: 1 }}>
+          <Typography
+            sx={{
+              color: theme.palette.mode === "light" ? "#1a1a1a" : "white",
+              fontSize: "1rem",
+              lineHeight: 1.6,
+              mb: 2,
+            }}
+          >
             Are you sure you want to reset the quota for{" "}
-            {selectedQuota?.userId?.name ||
-              selectedQuota?.userId?.email ||
-              "Unknown User"}
+            <Box component="span" sx={{ fontWeight: 600, color: "#ff6b6b" }}>
+              {selectedQuota?.userId?.name ||
+                selectedQuota?.userId?.email ||
+                "Unknown User"}
+            </Box>
             ? This will reset their{" "}
-            {getProviderDisplayName(selectedQuota?.provider || "")} usage to 0.
+            <Box component="span" sx={{ fontWeight: 600 }}>
+              {getProviderDisplayName(selectedQuota?.provider || "")}
+            </Box>{" "}
+            usage to 0.
           </Typography>
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              mt: 2,
+              backgroundColor: theme.palette.mode === "light" ? "#fff3cd" : "#2d1b1b",
+              color: theme.palette.mode === "light" ? "#856404" : "#d4a574",
+              borderColor: theme.palette.mode === "light" ? "#ffeaa7" : "#5d4037",
+            }}
+          >
+            <Typography variant="body2">
+              <strong>Warning:</strong> This action cannot be undone. The user's quota will be permanently reset.
+            </Typography>
+          </Alert>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setResetDialogOpen(false)}>Cancel</Button>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 2, gap: 2 }}>
+          <Button 
+            onClick={() => setResetDialogOpen(false)}
+            sx={{
+              borderColor: "#ff6b6b",
+              color: "#ff6b6b",
+              borderWidth: "1.5px",
+              borderRadius: 2,
+              py: 1.25,
+              px: 2.5,
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              textTransform: "none",
+              letterSpacing: "0.025em",
+              transition: "all 0.3s ease",
+              backgroundColor: theme.palette.mode === "light" ? "#ffffff" : "#333333",
+              "&:hover": {
+                borderColor: "#ff6b6b",
+                backgroundColor: "#ff6b6b08",
+                boxShadow: "0 4px 12px #ff6b6b20",
+                transform: "translateY(-1px)",
+              },
+              "&:active": {
+                transform: "translateY(0)",
+                boxShadow: "0 2px 6px #ff6b6b15",
+              },
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             onClick={handleResetQuota}
-            variant="contained"
-            color="primary"
+            sx={{
+              background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)",
+              color: "white",
+              borderRadius: 2,
+              py: 1.25,
+              px: 2.5,
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              textTransform: "none",
+              letterSpacing: "0.025em",
+              transition: "all 0.3s ease",
+              boxShadow: "0 4px 15px rgba(255, 107, 107, 0.4)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #e55a5a 0%, #d64a1a 100%)",
+                boxShadow: "0 6px 20px rgba(255, 107, 107, 0.6)",
+                transform: "translateY(-2px)",
+              },
+              "&:active": {
+                transform: "translateY(0)",
+                boxShadow: "0 2px 10px rgba(255, 107, 107, 0.4)",
+              },
+            }}
           >
             Reset Quota
           </Button>
