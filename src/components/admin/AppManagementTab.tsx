@@ -23,8 +23,9 @@ import {
   CircularProgress,
   Stack,
   useTheme,
+  IconButton,
 } from "@mui/material";
-import { Settings, Refresh, Key } from "@mui/icons-material";
+import { Settings, Refresh, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   fetchAppManagementData,
@@ -66,6 +67,11 @@ const AppManagementTab = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editKeyId, setEditKeyId] = useState<string | null>(null);
   const [editKeyValue, setEditKeyValue] = useState("");
+  const [showCurrentKey, setShowCurrentKey] = useState(false);
+  const [showNewKey, setShowNewKey] = useState(false);
+
+  // App key reveal states
+  const [revealedKeys, setRevealedKeys] = useState<Record<string, boolean>>({});
 
   // Reset quota dialog
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -133,6 +139,35 @@ const AppManagementTab = () => {
       console.error("Error saving app key:", error);
     } finally {
       setSavingKey(false);
+    }
+  };
+
+  const handleToggleAppKey = async (keyId: string) => {
+    setLocalError("");
+    setSuccess("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/admin/app-key/${keyId}/toggle`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess(data.message);
+        // Refresh data after successful toggle
+        dispatch(fetchAppManagementData());
+      } else {
+        const errorData = await response.json();
+        setLocalError(errorData.error || "Failed to toggle app key status");
+      }
+    } catch (error) {
+      setLocalError("Network error occurred");
+      console.error("Error toggling app key:", error);
     }
   };
 
@@ -347,6 +382,43 @@ const AppManagementTab = () => {
                             size="small"
                           />
                         </Box>
+                        
+                        {/* API Key Display */}
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                            API Key
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <TextField
+                              fullWidth
+                              value={revealedKeys[key._id] 
+                                ? (key.key || '')
+                                : (key.key || '').replace(/.(?=.{4})/g, '*')
+                              }
+                              InputProps={{
+                                readOnly: true,
+                              }}
+                              size="small"
+                              sx={{
+                                '& .MuiInputBase-input': {
+                                  fontFamily: 'monospace',
+                                  fontSize: '0.75rem',
+                                }
+                              }}
+                            />
+                            <IconButton
+                              onClick={() => setRevealedKeys(prev => ({
+                                ...prev,
+                                [key._id]: !prev[key._id]
+                              }))}
+                              size="small"
+                              sx={{ flexShrink: 0 }}
+                            >
+                              {revealedKeys[key._id] ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </Box>
+                        </Box>
+                        
                         <Box
                           sx={{
                             display: "grid",
@@ -386,18 +458,31 @@ const AppManagementTab = () => {
                             </Typography>
                           </Box>
                         </Box>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          fullWidth
-                          onClick={() => {
-                            setEditKeyId(key._id);
-                            setEditKeyValue("");
-                            setEditDialogOpen(true);
-                          }}
-                        >
-                          Edit Key
-                        </Button>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Button
+                            size="small"
+                            variant={key.isActive ? "outlined" : "contained"}
+                            color={key.isActive ? "error" : "success"}
+                            fullWidth
+                            onClick={() => handleToggleAppKey(key._id)}
+                          >
+                            {key.isActive ? "Deactivate" : "Activate"}
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            fullWidth
+                            onClick={() => {
+                              setEditKeyId(key._id);
+                              setEditKeyValue("");
+                              setShowCurrentKey(false);
+                              setShowNewKey(false);
+                              setEditDialogOpen(true);
+                            }}
+                          >
+                            Edit Key
+                          </Button>
+                        </Box>
                       </CardContent>
                     </Card>
                   ))
@@ -410,6 +495,7 @@ const AppManagementTab = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>Provider</TableCell>
+                      <TableCell>API Key</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Usage Count</TableCell>
                       <TableCell>Last Used</TableCell>
@@ -419,7 +505,7 @@ const AppManagementTab = () => {
                   <TableBody>
                     {appKeys.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} align="center">
+                        <TableCell colSpan={6} align="center">
                           No app keys configured
                         </TableCell>
                       </TableRow>
@@ -428,6 +514,37 @@ const AppManagementTab = () => {
                         <TableRow key={key._id}>
                           <TableCell>
                             {getProviderDisplayName(key.provider)}
+                          </TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 200 }}>
+                              <TextField
+                                fullWidth
+                                value={revealedKeys[key._id] 
+                                  ? (key.key || '')
+                                  : (key.key || '').replace(/.(?=.{4})/g, '*')
+                                }
+                                InputProps={{
+                                  readOnly: true,
+                                }}
+                                size="small"
+                                sx={{
+                                  '& .MuiInputBase-input': {
+                                    fontFamily: 'monospace',
+                                    fontSize: '0.75rem',
+                                  }
+                                }}
+                              />
+                              <IconButton
+                                onClick={() => setRevealedKeys(prev => ({
+                                  ...prev,
+                                  [key._id]: !prev[key._id]
+                                }))}
+                                size="small"
+                                sx={{ flexShrink: 0 }}
+                              >
+                                {revealedKeys[key._id] ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </Box>
                           </TableCell>
                           <TableCell>
                             <Chip
@@ -443,17 +560,29 @@ const AppManagementTab = () => {
                               : "Never"}
                           </TableCell>
                           <TableCell>
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              onClick={() => {
-                                setEditKeyId(key._id);
-                                setEditKeyValue("");
-                                setEditDialogOpen(true);
-                              }}
-                            >
-                              Edit
-                            </Button>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                              <Button
+                                size="small"
+                                variant={key.isActive ? "outlined" : "contained"}
+                                color={key.isActive ? "error" : "success"}
+                                onClick={() => handleToggleAppKey(key._id)}
+                              >
+                                {key.isActive ? "Deactivate" : "Activate"}
+                              </Button>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => {
+                                  setEditKeyId(key._id);
+                                  setEditKeyValue("");
+                                  setShowCurrentKey(false);
+                                  setShowNewKey(false);
+                                  setEditDialogOpen(true);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                            </Box>
                           </TableCell>
                         </TableRow>
                       ))
@@ -467,21 +596,106 @@ const AppManagementTab = () => {
           <Dialog
             open={editDialogOpen}
             onClose={() => setEditDialogOpen(false)}
+            maxWidth="sm"
+            fullWidth
           >
-            <DialogTitle>Edit App Key</DialogTitle>
+            <DialogTitle sx={{ pb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Key color="primary" />
+                <Typography variant="h6" component="div">
+                  Edit {getProviderDisplayName(appKeys.find(k => k._id === editKeyId)?.provider || '')} API Key
+                </Typography>
+              </Box>
+            </DialogTitle>
             <DialogContent>
-              <TextField
-                fullWidth
-                label="New API Key"
-                type="password"
-                value={editKeyValue}
-                onChange={(e) => setEditKeyValue(e.target.value)}
-                placeholder="Enter new API key"
-                sx={{ mt: 2 }}
-              />
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                  Current API Key
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    fullWidth
+                    value={showCurrentKey 
+                      ? (appKeys.find(k => k._id === editKeyId)?.key || '')
+                      : (appKeys.find(k => k._id === editKeyId)?.key || '').replace(/.(?=.{4})/g, '*')
+                    }
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    size="small"
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                      }
+                    }}
+                  />
+                  <IconButton
+                    onClick={() => setShowCurrentKey(!showCurrentKey)}
+                    size="small"
+                    sx={{ flexShrink: 0 }}
+                  >
+                    {showCurrentKey ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {showCurrentKey ? 'Key is visible' : 'Key is masked for security'}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                  New API Key
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    fullWidth
+                    label="Enter new API key"
+                    type={showNewKey ? "text" : "password"}
+                    value={editKeyValue}
+                    onChange={(e) => setEditKeyValue(e.target.value)}
+                    placeholder="Enter new API key"
+                    size="small"
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                      }
+                    }}
+                  />
+                  <IconButton
+                    onClick={() => setShowNewKey(!showNewKey)}
+                    size="small"
+                    sx={{ flexShrink: 0 }}
+                  >
+                    {showNewKey ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {showNewKey ? 'Key is visible as you type' : 'Key is hidden for security'}
+                </Typography>
+              </Box>
+
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                <Typography variant="body2">
+                  <strong>Warning:</strong> Updating this key will replace the current API key. 
+                  Make sure the new key is valid and has the necessary permissions.
+                </Typography>
+              </Alert>
             </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button 
+                onClick={() => {
+                  setEditDialogOpen(false);
+                  setEditKeyId(null);
+                  setEditKeyValue("");
+                  setShowCurrentKey(false);
+                  setShowNewKey(false);
+                }}
+                color="inherit"
+              >
+                Cancel
+              </Button>
               <Button
                 onClick={async () => {
                   if (!editKeyId || !editKeyValue.trim()) return;
@@ -491,14 +705,17 @@ const AppManagementTab = () => {
                   try {
                     const token = localStorage.getItem("token");
                     const response = await fetch(
-                      `${API_BASE_URL}/admin/app-key/${editKeyId}`,
+                      `${API_BASE_URL}/admin/app-key`,
                       {
-                        method: "PUT",
+                        method: "POST",
                         headers: {
                           "Content-Type": "application/json",
                           Authorization: `Bearer ${token}`,
                         },
-                        body: JSON.stringify({ key: editKeyValue.trim() }),
+                        body: JSON.stringify({ 
+                          provider: appKeys.find(k => k._id === editKeyId)?.provider,
+                          key: editKeyValue.trim() 
+                        }),
                       }
                     );
                     if (response.ok) {
@@ -506,6 +723,8 @@ const AppManagementTab = () => {
                       setEditDialogOpen(false);
                       setEditKeyId(null);
                       setEditKeyValue("");
+                      setShowCurrentKey(false);
+                      setShowNewKey(false);
                       // Refresh data after successful update
                       dispatch(fetchAppManagementData());
                     } else {
@@ -524,8 +743,9 @@ const AppManagementTab = () => {
                 variant="contained"
                 color="primary"
                 disabled={savingKey || !editKeyValue.trim()}
+                startIcon={savingKey ? <CircularProgress size={16} /> : null}
               >
-                {savingKey ? "Saving..." : "Update Key"}
+                {savingKey ? "Updating..." : "Update Key"}
               </Button>
             </DialogActions>
           </Dialog>

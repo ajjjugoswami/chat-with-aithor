@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 export interface AppKey {
   _id: string;
   provider: string;
+  key?: string; // The actual API key value (optional for security)
   isActive: boolean;
   usageCount: number;
   lastUsed?: Date;
