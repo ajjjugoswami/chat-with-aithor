@@ -216,7 +216,7 @@ function ModelPanel({
                 variants={getVariantsForModel(model.id)}
                 selectedVariant={selectedVariant}
                 onVariantSelect={onVariantChange}
-                disabled={(!(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') && !hasApiKey) || !isEnabled}
+                disabled={( !hasApiKey) || !isEnabled}
                 size="small"
               />
             </Box>
