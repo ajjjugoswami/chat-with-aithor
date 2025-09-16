@@ -4,6 +4,8 @@ export interface ServerAPIKey {
   name: string;
   isActive: boolean;
   isDefault: boolean;
+  // The plaintext API key value, returned by backend on creation (not on fetch for security)
+  key?: string;
   lastUsed?: string;
   usageCount: number;
   createdAt: string;

@@ -63,8 +63,7 @@ const navigationItems: NavigationItem[] = [
     label: "Users",
     path: "/admin/users",
     category: "management",
-    badge: 12,
-  },
+   },
   {
     icon: VpnKeyIcon,
     label: "User Keys",
@@ -88,8 +87,7 @@ const navigationItems: NavigationItem[] = [
     label: "User Feedback",
     path: "/admin/feedback",
     category: "support",
-    badge: 5,
-  },
+   },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -481,6 +479,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Tooltip title="Back to Chat">
+              <IconButton
+                onClick={handleBackToApp}
+                sx={{
+                  color: mode === "light" ? "#4a5568" : "#a0aec0",
+                  "&:hover": {
+                    bgcolor: mode === "light" ? "#f7fafc" : "#2d3748",
+                  },
+                }}
+              >
+                <ArrowBack />
+              </IconButton>
+            </Tooltip>
             <Typography
               variant="h5"
               sx={{
@@ -503,35 +514,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Tooltip
-              title={`Switch to ${mode === "light" ? "dark" : "light"} mode`}
+            <IconButton
+              onClick={toggleTheme}
+              sx={{
+                color: mode === "light" ? "#4a5568" : "#a0aec0",
+                "&:hover": {
+                  bgcolor: mode === "light" ? "#f7fafc" : "#2d3748",
+                },
+              }}
             >
-              <IconButton
-                onClick={toggleTheme}
-                sx={{
-                  color: mode === "light" ? "#4a5568" : "#a0aec0",
-                  "&:hover": {
-                    bgcolor: mode === "light" ? "#f7fafc" : "#2d3748",
-                  },
-                }}
-              >
-                {mode === "light" ? <DarkMode /> : <LightMode />}
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Back to Chat">
-              <IconButton
-                onClick={handleBackToApp}
-                sx={{
-                  color: mode === "light" ? "#4a5568" : "#a0aec0",
-                  "&:hover": {
-                    bgcolor: mode === "light" ? "#f7fafc" : "#2d3748",
-                  },
-                }}
-              >
-                <ArrowBack />
-              </IconButton>
-            </Tooltip>
+              {mode === "light" ? <DarkMode /> : <LightMode />}
+            </IconButton>
           </Box>
         </Paper>
         <Box sx={{ p: 3, maxWidth: "100%" }}>{children}</Box>

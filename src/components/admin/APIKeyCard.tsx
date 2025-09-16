@@ -14,6 +14,7 @@ import { Edit, Key, Delete, ContentCopy } from "@mui/icons-material";
 import { useState } from "react";
 import type { ServerAPIKey } from "./types";
 import { getProviderDisplayName } from "../../utils/enhancedApiKeys";
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 interface APIKeyCardProps {
   keyData: ServerAPIKey;
@@ -33,16 +34,19 @@ export default function APIKeyCard({
   settingActive,
 }: APIKeyCardProps) {
   const [copySuccess, setCopySuccess] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const isSmallScreen = useMediaQuery('(max-width: 640px)');
   const isVerySmallScreen = useMediaQuery('(max-width: 480px)');
 
   const handleCopyKeyId = async () => {
     try {
-      await navigator.clipboard.writeText(keyData._id);
+      // If revealed and key is available, copy the actual API key value.
+      const toCopy = revealed && keyData.key ? keyData.key : keyData._id;
+      await navigator.clipboard.writeText(toCopy);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error("Failed to copy Key ID:", err);
+      console.error("Failed to copy Key:", err);
     }
   };
   return (
@@ -197,37 +201,58 @@ export default function APIKeyCard({
                     borderColor: "divider",
                   }}
                 >
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "text.secondary",
-                      fontSize: isVerySmallScreen ? "0.65rem" : "0.8rem",
-                      fontFamily: "monospace",
-                      flex: 1,
-                      minWidth: 0,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Key ID: {isVerySmallScreen ? keyData._id.substring(0, 8) : (isSmallScreen ? keyData._id.substring(0, 12) : keyData._id.substring(0, 16))}...
-                  </Typography>
-                  <Tooltip title="Copy Key ID">
-                    <IconButton
-                      onClick={handleCopyKeyId}
-                      size="small"
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="body2"
                       sx={{
                         color: "text.secondary",
-                        "&:hover": {
-                          color: "primary.main",
-                        },
-                        padding: "2px",
-                        flexShrink: 0,
+                        fontSize: isVerySmallScreen ? "0.65rem" : "0.8rem",
+                        fontFamily: "monospace",
+                        flex: 1,
+                        minWidth: 0,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      <ContentCopy sx={{ fontSize: "0.9rem" }} />
-                    </IconButton>
-                  </Tooltip>
+                      {/* Show masked API key if key available, otherwise show truncated ID */}
+                      {keyData.key ? (
+                        `Key: ${revealed ? keyData.key : keyData.key.replace(/.(?=.{4})/g, '*')}`
+                      ) : (
+                        `Key ID: ${isVerySmallScreen ? keyData._id.substring(0, 8) : (isSmallScreen ? keyData._id.substring(0, 12) : keyData._id.substring(0, 16))}...`
+                      )}
+                    </Typography>
+
+                    {/* Reveal / Copy controls */}
+                    {keyData.key ? (
+                      <Tooltip title={revealed ? 'Hide key' : 'Reveal key'}>
+                        <IconButton
+                          onClick={() => setRevealed((s) => !s)}
+                          size="small"
+                          sx={{ color: 'text.secondary', padding: '2px' }}
+                        >
+                          {revealed ? <VisibilityOff sx={{ fontSize: '0.95rem' }} /> : <Visibility sx={{ fontSize: '0.95rem' }} />}
+                        </IconButton>
+                      </Tooltip>
+                    ) : null}
+
+                    <Tooltip title={keyData.key ? 'Copy API Key' : 'Copy Key ID'}>
+                      <IconButton
+                        onClick={handleCopyKeyId}
+                        size="small"
+                        sx={{
+                          color: "text.secondary",
+                          "&:hover": {
+                            color: "primary.main",
+                          },
+                          padding: "2px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <ContentCopy sx={{ fontSize: "0.9rem" }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
               </Box>
 
