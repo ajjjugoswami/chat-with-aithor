@@ -34,7 +34,7 @@ export default function APIKeyCard({
 }: APIKeyCardProps) {
   const [copySuccess, setCopySuccess] = useState(false);
   const isSmallScreen = useMediaQuery('(max-width: 640px)');
-  const isVerySmallScreen = useMediaQuery('(max-width: 640px)');
+  const isVerySmallScreen = useMediaQuery('(max-width: 480px)');
 
   const handleCopyKeyId = async () => {
     try {
@@ -50,10 +50,10 @@ export default function APIKeyCard({
       <Card
         sx={{
           mb: 2,
-          borderRadius: 3,
+          borderRadius: isVerySmallScreen ? 2 : 3,
           border: "1px solid",
           borderColor: "divider",
-          minHeight: isSmallScreen ? 160 : 200,
+          minHeight: isVerySmallScreen ? 140 : (isSmallScreen ? 160 : 200),
           display: "flex",
           flexDirection: "column",
           transition: "all 0.3s ease-in-out",
@@ -70,8 +70,8 @@ export default function APIKeyCard({
       >
         <CardContent
           sx={{
-            p: isSmallScreen ? 2 : 3,
-            pb: isSmallScreen ? 1.5 : 2,
+            p: isVerySmallScreen ? 1.5 : (isSmallScreen ? 2 : 3),
+            pb: isVerySmallScreen ? 1.5 : (isSmallScreen ? 1.5 : 2),
             flex: 1,
             display: "flex",
             flexDirection: "column",
@@ -82,26 +82,26 @@ export default function APIKeyCard({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-start",
-              mb: isSmallScreen ? 1.5 : 2,
+              mb: isVerySmallScreen ? 1 : (isSmallScreen ? 1.5 : 2),
               flex: 1,
-              flexDirection: isSmallScreen ? "column" : "row",
-              gap: isSmallScreen ? 1.5 : 0,
+              flexDirection: isVerySmallScreen ? "column" : (isSmallScreen ? "column" : "row"),
+              gap: isVerySmallScreen ? 1 : (isSmallScreen ? 1.5 : 0),
             }}
           >
-            <Box sx={{ flex: 1, minWidth: 0, mr: isSmallScreen ? 0 : 2 }}>
+            <Box sx={{ flex: 1, minWidth: 0, mr: isVerySmallScreen ? 0 : (isSmallScreen ? 0 : 2) }}>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: isSmallScreen ? 1 : 1.5,
-                  mb: isSmallScreen ? 1 : 1.5,
+                  gap: isVerySmallScreen ? 0.75 : (isSmallScreen ? 1 : 1.5),
+                  mb: isVerySmallScreen ? 0.75 : (isSmallScreen ? 1 : 1.5),
                   flexWrap: "wrap",
                 }}
               >
                 <Box
                   sx={{
-                    width: 12,
-                    height: 12,
+                    width: isVerySmallScreen ? 8 : 12,
+                    height: isVerySmallScreen ? 8 : 12,
                     borderRadius: "50%",
                     bgcolor: keyData.isActive ? "success.main" : "warning.main",
                     flexShrink: 0,
@@ -112,7 +112,7 @@ export default function APIKeyCard({
                     variant="h6"
                     sx={{
                       fontWeight: 600,
-                      fontSize: isVerySmallScreen ? "0.9rem" : (isSmallScreen ? "0.95rem" : "1rem"),
+                      fontSize: isVerySmallScreen ? "0.8rem" : (isSmallScreen ? "0.95rem" : "1rem"),
                       color: "text.primary",
                       flex: 1,
                       minWidth: 0,
@@ -126,13 +126,13 @@ export default function APIKeyCard({
                 {keyData.isDefault && (
                   <Chip
                     label="Default"
-                    size={isSmallScreen ? "small" : "small"}
+                    size={isVerySmallScreen ? "small" : "small"}
                     color="primary"
                     variant="filled"
                     sx={{
-                      fontSize: isSmallScreen ? "0.65rem" : "0.7rem",
+                      fontSize: isVerySmallScreen ? "0.6rem" : (isSmallScreen ? "0.65rem" : "0.7rem"),
                       fontWeight: 600,
-                      height: isSmallScreen ? 20 : 24,
+                      height: isVerySmallScreen ? 18 : (isSmallScreen ? 20 : 24),
                       borderRadius: 2,
                       flexShrink: 0,
                     }}
@@ -145,7 +145,7 @@ export default function APIKeyCard({
                   display: "flex",
                   flexDirection: "column",
                   gap: 0.5,
-                  mb: 2,
+                  mb: isVerySmallScreen ? 1.5 : 2,
                 }}
               >
                 <Box
@@ -153,7 +153,7 @@ export default function APIKeyCard({
                     display: "flex",
                     alignItems: isVerySmallScreen ? "flex-start" : "center",
                     gap: isVerySmallScreen ? 0.5 : 1,
-                    p: isVerySmallScreen ? 1 : 1.5,
+                    p: isVerySmallScreen ? 0.75 : (isSmallScreen ? 1 : 1.5),
                     bgcolor: "background.default",
                     borderRadius: 2,
                     border: "1px solid",
@@ -166,7 +166,7 @@ export default function APIKeyCard({
                     sx={{
                       color: "text.secondary",
                       fontFamily: "monospace",
-                      fontSize: isVerySmallScreen ? "0.75rem" : "0.9rem",
+                      fontSize: isVerySmallScreen ? "0.7rem" : "0.9rem",
                       fontWeight: 600,
                       minWidth: "fit-content",
                     }}
@@ -178,7 +178,7 @@ export default function APIKeyCard({
                     sx={{
                       color: "primary.main",
                       fontWeight: 600,
-                      fontSize: isVerySmallScreen ? "0.75rem" : "0.9rem",
+                      fontSize: isVerySmallScreen ? "0.7rem" : "0.9rem",
                     }}
                   >
                     {getProviderDisplayName(keyData.provider)}
@@ -190,7 +190,7 @@ export default function APIKeyCard({
                     alignItems: "center",
                     gap: 1,
                     flexWrap: "wrap",
-                    p: isVerySmallScreen ? 0.75 : 1,
+                    p: isVerySmallScreen ? 0.5 : (isSmallScreen ? 0.75 : 1),
                     bgcolor: "background.default",
                     borderRadius: 1,
                     border: "1px solid",
@@ -201,7 +201,7 @@ export default function APIKeyCard({
                     variant="body2"
                     sx={{
                       color: "text.secondary",
-                      fontSize: isVerySmallScreen ? "0.7rem" : "0.8rem",
+                      fontSize: isVerySmallScreen ? "0.65rem" : "0.8rem",
                       fontFamily: "monospace",
                       flex: 1,
                       minWidth: 0,
@@ -210,7 +210,7 @@ export default function APIKeyCard({
                       whiteSpace: "nowrap",
                     }}
                   >
-                    Key ID: {isVerySmallScreen ? keyData._id.substring(0, 12) : keyData._id.substring(0, 16)}...
+                    Key ID: {isVerySmallScreen ? keyData._id.substring(0, 8) : (isSmallScreen ? keyData._id.substring(0, 12) : keyData._id.substring(0, 16))}...
                   </Typography>
                   <Tooltip title="Copy Key ID">
                     <IconButton
@@ -235,9 +235,9 @@ export default function APIKeyCard({
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 1,
+                  gap: isVerySmallScreen ? 0.75 : 1,
                   mt: "auto",
-                  pt: 2,
+                  pt: isVerySmallScreen ? 1.5 : 2,
                   borderTop: "1px solid",
                   borderColor: "divider",
                 }}
@@ -257,7 +257,7 @@ export default function APIKeyCard({
                       variant="caption"
                       sx={{
                         color: "text.secondary",
-                        fontSize: isVerySmallScreen ? "0.65rem" : "0.75rem",
+                        fontSize: isVerySmallScreen ? "0.6rem" : "0.75rem",
                         fontWeight: 500,
                       }}
                     >
@@ -267,7 +267,7 @@ export default function APIKeyCard({
                       variant="caption"
                       sx={{
                         color: "text.primary",
-                        fontSize: isVerySmallScreen ? "0.65rem" : "0.75rem",
+                        fontSize: isVerySmallScreen ? "0.6rem" : "0.75rem",
                         fontWeight: 600,
                       }}
                     >
@@ -279,7 +279,7 @@ export default function APIKeyCard({
                       variant="caption"
                       sx={{
                         color: "text.secondary",
-                        fontSize: isVerySmallScreen ? "0.65rem" : "0.75rem",
+                        fontSize: isVerySmallScreen ? "0.6rem" : "0.75rem",
                         fontWeight: 500,
                       }}
                     >
@@ -289,7 +289,7 @@ export default function APIKeyCard({
                       variant="caption"
                       sx={{
                         color: "primary.main",
-                        fontSize: isVerySmallScreen ? "0.65rem" : "0.75rem",
+                        fontSize: isVerySmallScreen ? "0.6rem" : "0.75rem",
                         fontWeight: 600,
                       }}
                     >
@@ -303,7 +303,7 @@ export default function APIKeyCard({
                       variant="caption"
                       sx={{
                         color: "text.secondary",
-                        fontSize: isVerySmallScreen ? "0.65rem" : "0.75rem",
+                        fontSize: isVerySmallScreen ? "0.6rem" : "0.75rem",
                         fontWeight: 500,
                       }}
                     >
@@ -313,7 +313,7 @@ export default function APIKeyCard({
                       variant="caption"
                       sx={{
                         color: "success.main",
-                        fontSize: isVerySmallScreen ? "0.65rem" : "0.75rem",
+                        fontSize: isVerySmallScreen ? "0.6rem" : "0.75rem",
                         fontWeight: 600,
                       }}
                     >
@@ -327,8 +327,8 @@ export default function APIKeyCard({
             <Box
               sx={{
                 display: "flex",
-                flexDirection: isVerySmallScreen ? "row" : "column",
-                gap: isVerySmallScreen ? 0.5 : (isSmallScreen ? 0.5 : 1),
+                flexDirection: isVerySmallScreen ? "row" : (isSmallScreen ? "row" : "column"),
+                gap: isVerySmallScreen ? 0.25 : (isSmallScreen ? 0.5 : 1),
                 flexShrink: 0,
                 justifyContent: isVerySmallScreen ? "center" : "flex-start",
                 mt: isVerySmallScreen ? 1 : 0,
@@ -349,10 +349,10 @@ export default function APIKeyCard({
                     },
                     transition: "all 0.2s ease-in-out",
                     borderRadius: 2,
-                    p: isSmallScreen ? 0.75 : 1,
+                    p: isVerySmallScreen ? 0.5 : (isSmallScreen ? 0.75 : 1),
                   }}
                 >
-                  <Edit fontSize={isSmallScreen ? "small" : "small"} />
+                  <Edit fontSize={isVerySmallScreen ? "small" : "small"} />
                 </IconButton>
               </Tooltip>
 
@@ -367,10 +367,10 @@ export default function APIKeyCard({
                     },
                     transition: "all 0.2s ease-in-out",
                     borderRadius: 2,
-                    p: isSmallScreen ? 0.75 : 1,
+                    p: isVerySmallScreen ? 0.5 : (isSmallScreen ? 0.75 : 1),
                   }}
                 >
-                  <Key fontSize={isSmallScreen ? "small" : "small"} />
+                  <Key fontSize={isVerySmallScreen ? "small" : "small"} />
                 </IconButton>
               </Tooltip>
 
@@ -385,10 +385,10 @@ export default function APIKeyCard({
                     },
                     transition: "all 0.2s ease-in-out",
                     borderRadius: 2,
-                    p: isSmallScreen ? 0.75 : 1,
+                    p: isVerySmallScreen ? 0.5 : (isSmallScreen ? 0.75 : 1),
                   }}
                 >
-                  <Delete fontSize={isSmallScreen ? "small" : "small"} />
+                  <Delete fontSize={isVerySmallScreen ? "small" : "small"} />
                 </IconButton>
               </Tooltip>
             </Box>

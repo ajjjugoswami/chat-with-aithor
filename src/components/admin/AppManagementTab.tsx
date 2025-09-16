@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
   Alert,
   Table,
   TableBody,
@@ -22,28 +21,17 @@ import {
   DialogActions,
   useMediaQuery,
   CircularProgress,
+  Stack,
+  useTheme,
 } from '@mui/material';
 import { Settings, Refresh, Key } from '@mui/icons-material';
-
-interface AppKey {
-  _id: string;
-  provider: string;
-  isActive: boolean;
-  usageCount: number;
-  lastUsed?: Date;
-  createdAt: Date;
-}
-
-interface UserQuota {
-  userId: {
-    _id: string;
-    email: string;
-    name?: string;
-  } | null;
-  provider: string;
-  usedCalls: number;
-  maxFreeCalls: number;
-}
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { 
+  fetchAppManagementData, 
+  clearError, 
+  resetInitialized,
+  type UserQuota 
+} from '../../store/slices/appManagementSlice';
 
 interface UserQuotaGroup {
   user: {
@@ -58,10 +46,14 @@ interface UserQuotaGroup {
 const API_BASE_URL = 'https://aithor-be.vercel.app/api';
 
 const AppManagementTab = () => {
-  const [appKeys, setAppKeys] = useState<AppKey[]>([]);
-  const [userQuotas, setUserQuotas] = useState<UserQuota[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const { appKeys, userQuotas, loading, error } = useAppSelector(
+    (state) => state.appManagement
+  );
+
+  // Component local state for form handling
+  const [localError, setLocalError] = useState('');
   const [success, setSuccess] = useState('');
 
   // App key form state
@@ -78,68 +70,31 @@ const AppManagementTab = () => {
   const [selectedQuota, setSelectedQuota] = useState<UserQuota | null>(null);
 
   const isSmallScreen = useMediaQuery('(max-width: 600px)');
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const fetchAppKeys = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/admin/app-keys`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+  // Theme-aware colors
+  const cardBgColor = theme.palette.mode === 'light' ? 'background.paper' : 'grey.900';
+  const sectionBgColor = theme.palette.mode === 'light' ? 'grey.50' : 'grey.800';
+  const borderColor = theme.palette.mode === 'light' ? 'divider' : 'grey.700';
 
-      if (response.ok) {
-        const data = await response.json();
-        setAppKeys(data);
-      } else {
-        setError('Failed to fetch app keys');
-      }
-    } catch (error) {
-      console.error('Error fetching app keys:', error);
-      setError('Network error while fetching app keys');
-    }
+  // Remove initialization logic from AppManagementTab - handled by AppManagementPage
+  // const isInitializedRef = useRef(false);
+  // useEffect(() => { ... }, [dispatch, initialized]);
+
+  const handleRefresh = () => {
+    dispatch(clearError());
+    dispatch(resetInitialized());
+    dispatch(fetchAppManagementData());
   };
-
-  const fetchUserQuotas = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/admin/user-quotas`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUserQuotas(data);
-      } else {
-        setError('Failed to fetch user quotas');
-      }
-    } catch (error) {
-      console.error('Error fetching user quotas:', error);
-      setError('Network error while fetching user quotas');
-    }
-  };
-
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    await Promise.all([fetchAppKeys(), fetchUserQuotas()]);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
 
   const handleSaveAppKey = async () => {
     if (!apiKey.trim()) {
-      setError('API key is required');
+      setLocalError('API key is required');
       return;
     }
 
     setSavingKey(true);
-    setError('');
+    setLocalError('');
     setSuccess('');
 
     try {
@@ -159,13 +114,14 @@ const AppManagementTab = () => {
       if (response.ok) {
         setSuccess(`${selectedProvider.charAt(0).toUpperCase() + selectedProvider.slice(1)} API key updated successfully`);
         setApiKey('');
-        await fetchAppKeys();
+        // Refresh data after successful save
+        dispatch(fetchAppManagementData());
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to save API key');
+        setLocalError(errorData.error || 'Failed to save API key');
       }
     } catch (error) {
-      setError('Network error occurred');
+      setLocalError('Network error occurred');
       console.error('Error saving app key:', error);
     } finally {
       setSavingKey(false);
@@ -186,17 +142,17 @@ const AppManagementTab = () => {
 
       if (response.ok) {
         setSuccess('Quota reset successfully');
-        await fetchUserQuotas();
+        // Refresh data after successful reset
+        dispatch(fetchAppManagementData());
         setResetDialogOpen(false);
         setSelectedQuota(null);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to reset quota');
+        setLocalError(errorData.error || 'Failed to reset quota');
       }
     } catch (error) {
-      setError('Network error occurred');
-            console.error('Error saving app key:', error);
-
+      setLocalError('Network error occurred');
+      console.error('Error resetting quota:', error);
     }
   };
 
@@ -218,8 +174,8 @@ const AppManagementTab = () => {
           <Button
             size="small"
             onClick={() => {
-              setError('');
-              loadData();
+              dispatch(clearError());
+              handleRefresh();
             }}
             sx={{ ml: 2 }}
           >
@@ -229,103 +185,218 @@ const AppManagementTab = () => {
       )}
       {/* App Keys Management */}
       <Card>
-        <CardContent>
-          <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Key /> App API Keys Management
-          </Typography>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              gap: { xs: 1, sm: 2 },
+              mb: 3,
+            }}
+          >
+            <Key sx={{ color: 'primary.main', fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                fontWeight: 600 
+              }}
+            >
+              App API Keys Management
+            </Typography>
+          </Box>
 
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {(error || localError) && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error || localError}
+            </Alert>
+          )}
           {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-          <Grid container spacing={3}>
-            <Grid  sx={{ xs: 12, md: 6 }}>
-              <TextField
-                select
-                fullWidth
-                label="Provider"
-                value={selectedProvider}
-                onChange={(e) => setSelectedProvider(e.target.value as 'openai' | 'gemini')}
-                SelectProps={{ native: true }}
-              >
-                <option value="openai">OpenAI (Free Access)</option>
-                <option value="gemini">Gemini (Free Access)</option>
-              </TextField>
-            </Grid>
-            <Grid  sx={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                label="API Key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter API key"
-              />
-            </Grid>
-            <Grid  sx={{ xs: 12, md: 6 }}>
-              <Button
-                variant="contained"
-                onClick={handleSaveAppKey}
-                disabled={savingKey || !apiKey.trim()}
-                startIcon={savingKey ? <div style={{ width: 20, height: 20 }} /> : <Key />}
-              >
-                {savingKey ? 'Saving...' : 'Save API Key'}
-              </Button>
-            </Grid>
-          </Grid>
+          {/* Form Layout */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { 
+                xs: '1fr', 
+                sm: 'repeat(2, 1fr)', 
+                md: 'repeat(3, 1fr)' 
+              },
+              gap: { xs: 2, sm: 3 },
+              alignItems: 'end',
+            }}
+          >
+            <TextField
+              select
+              fullWidth
+              label="Provider"
+              value={selectedProvider}
+              onChange={(e) => setSelectedProvider(e.target.value as 'openai' | 'gemini')}
+              SelectProps={{ native: true }}
+              size={isMobile ? 'small' : 'medium'}
+            >
+              <option value="openai">OpenAI (Free Access)</option>
+              <option value="gemini">Gemini (Free Access)</option>
+            </TextField>
+            
+            <TextField
+              fullWidth
+              label="API Key"
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Enter API key"
+              size={isMobile ? 'small' : 'medium'}
+            />
+            
+            <Button
+              variant="contained"
+              onClick={handleSaveAppKey}
+              disabled={savingKey || !apiKey.trim()}
+              startIcon={savingKey ? <CircularProgress size={16} /> : <Key />}
+              size={isMobile ? 'small' : 'medium'}
+              sx={{
+                height: 'fit-content',
+                py: { xs: 1, sm: 1.5 },
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              }}
+            >
+              {savingKey ? 'Saving...' : 'Save API Key'}
+            </Button>
+          </Box>
 
           {/* Current App Keys */}
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>Current App Keys</Typography>
-            <TableContainer component={Paper} variant="outlined">
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Provider</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Usage Count</TableCell>
-                    <TableCell>Last Used</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {appKeys.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} align="center">
-                        No app keys configured
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    appKeys.map((key) => (
-                      <TableRow key={key._id}>
-                        <TableCell>{getProviderDisplayName(key.provider)}</TableCell>
-                        <TableCell>
+          <Box sx={{ mt: 4 }}>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                mb: 2, 
+                fontWeight: 600,
+                fontSize: { xs: '1rem', sm: '1.125rem' }
+              }}
+            >
+              Current App Keys
+            </Typography>
+            
+            {isMobile ? (
+              // Mobile Card Layout
+              <Stack spacing={2}>
+                {appKeys.length === 0 ? (
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No app keys configured
+                    </Typography>
+                  </Paper>
+                ) : (
+                  appKeys.map((key) => (
+                    <Card 
+                      key={key._id} 
+                      variant="outlined"
+                      sx={{ 
+                        bgcolor: cardBgColor,
+                        borderColor: borderColor
+                      }}
+                    >
+                      <CardContent sx={{ p: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                          <Typography variant="h6" sx={{ fontSize: '1rem' }}>
+                            {getProviderDisplayName(key.provider)}
+                          </Typography>
                           <Chip
                             label={key.isActive ? 'Active' : 'Inactive'}
                             color={key.isActive ? 'success' : 'error'}
                             size="small"
                           />
-                        </TableCell>
-                        <TableCell>{key.usageCount}</TableCell>
-                        <TableCell>
-                          {key.lastUsed ? new Date(key.lastUsed).toLocaleDateString() : 'Never'}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => {
-                              setEditKeyId(key._id);
-                              setEditKeyValue('');
-                              setEditDialogOpen(true);
-                            }}
-                          >Edit</Button>
+                        </Box>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 2 }}>
+                          <Box>
+                            <Typography variant="caption" color="text.secondary">
+                              Usage Count
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {key.usageCount}
+                            </Typography>
+                          </Box>
+                          <Box>
+                            <Typography variant="caption" color="text.secondary">
+                              Last Used
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {key.lastUsed ? new Date(key.lastUsed).toLocaleDateString() : 'Never'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          fullWidth
+                          onClick={() => {
+                            setEditKeyId(key._id);
+                            setEditKeyValue('');
+                            setEditDialogOpen(true);
+                          }}
+                        >
+                          Edit Key
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </Stack>
+            ) : (
+              // Desktop Table Layout
+              <TableContainer component={Paper} variant="outlined">
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Provider</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Usage Count</TableCell>
+                      <TableCell>Last Used</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {appKeys.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center">
+                          No app keys configured
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                    ) : (
+                      appKeys.map((key) => (
+                        <TableRow key={key._id}>
+                          <TableCell>{getProviderDisplayName(key.provider)}</TableCell>
+                          <TableCell>
+                            <Chip
+                              label={key.isActive ? 'Active' : 'Inactive'}
+                              color={key.isActive ? 'success' : 'error'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>{key.usageCount}</TableCell>
+                          <TableCell>
+                            {key.lastUsed ? new Date(key.lastUsed).toLocaleDateString() : 'Never'}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => {
+                                setEditKeyId(key._id);
+                                setEditKeyValue('');
+                                setEditDialogOpen(true);
+                              }}
+                            >Edit</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </Box>
           {/* Edit Key Dialog */}
           <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
@@ -347,7 +418,7 @@ const AppManagementTab = () => {
                 onClick={async () => {
                   if (!editKeyId || !editKeyValue.trim()) return;
                   setSavingKey(true);
-                  setError('');
+                  setLocalError('');
                   setSuccess('');
                   try {
                     const token = localStorage.getItem('token');
@@ -364,13 +435,14 @@ const AppManagementTab = () => {
                       setEditDialogOpen(false);
                       setEditKeyId(null);
                       setEditKeyValue('');
-                      await fetchAppKeys();
+                      // Refresh data after successful update
+                      dispatch(fetchAppManagementData());
                     } else {
                       const errorData = await response.json();
-                      setError(errorData.error || 'Failed to update API key');
+                      setLocalError(errorData.error || 'Failed to update API key');
                     }
                   } catch (error) {
-                    setError('Network error occurred');
+                    setLocalError('Network error occurred');
                     console.error('Error updating app key:', error);
                   } finally {
                     setSavingKey(false);
@@ -389,135 +461,284 @@ const AppManagementTab = () => {
 
       {/* User Quotas */}
       <Card>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Settings /> User Quota Usage
-            </Typography>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between', 
+              alignItems: { xs: 'flex-start', sm: 'center' }, 
+              gap: { xs: 2, sm: 0 },
+              mb: 3 
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Settings sx={{ color: 'primary.main', fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                  fontWeight: 600 
+                }}
+              >
+                User Quota Usage
+              </Typography>
+            </Box>
             <Button
               variant="outlined"
               startIcon={<Refresh />}
-              onClick={loadData}
+              onClick={handleRefresh}
               disabled={loading}
+              size={isMobile ? 'small' : 'medium'}
+              sx={{
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                px: { xs: 2, sm: 3 },
+                alignSelf: { xs: 'flex-start', sm: 'auto' },
+              }}
             >
-              Refresh
+              {isMobile ? 'Refresh' : 'Refresh Data'}
             </Button>
           </Box>
 
-          <TableContainer component={Paper} variant="outlined">
-            <Table size={isSmallScreen ? 'small' : 'medium'}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>User</TableCell>
-                  <TableCell>OpenAI Used/Free</TableCell>
-                  <TableCell>OpenAI Status</TableCell>
-                  <TableCell>Gemini Used/Free</TableCell>
-                  <TableCell>Gemini Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {userQuotas.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      No quota data available
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  // Group quotas by user
-                  Object.values(
-                    userQuotas
-                      .filter(quota => quota.provider === 'openai' || quota.provider === 'gemini')
-                      .reduce((acc, quota) => {
-                        const userId = quota.userId?._id || 'unknown';
-                        if (!acc[userId]) {
-                          acc[userId] = {
-                            user: quota.userId,
-                            openai: null,
-                            gemini: null
-                          };
-                        }
-                        if (quota.provider === 'openai') {
-                          acc[userId].openai = quota;
-                        } else if (quota.provider === 'gemini') {
-                          acc[userId].gemini = quota;
-                        }
-                        return acc;
-                      }, {} as Record<string, UserQuotaGroup>)
-                  ).map((userGroup: UserQuotaGroup) => (
-                    <TableRow key={userGroup.user?._id || 'unknown'}>
-                      <TableCell>
-                        <Box>
+          {isMobile ? (
+            // Mobile Card Layout for User Quotas
+            <Stack spacing={2}>
+              {userQuotas.length === 0 ? (
+                <Paper sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No quota data available
+                  </Typography>
+                </Paper>
+              ) : (
+                Object.values(
+                  userQuotas
+                    .filter(quota => quota.provider === 'openai' || quota.provider === 'gemini')
+                    .reduce((acc, quota) => {
+                      const userId = quota.userId?._id || 'unknown';
+                      if (!acc[userId]) {
+                        acc[userId] = {
+                          user: quota.userId,
+                          openai: null,
+                          gemini: null
+                        };
+                      }
+                      if (quota.provider === 'openai') {
+                        acc[userId].openai = quota;
+                      } else if (quota.provider === 'gemini') {
+                        acc[userId].gemini = quota;
+                      }
+                      return acc;
+                    }, {} as Record<string, UserQuotaGroup>)
+                ).map((userGroup: UserQuotaGroup) => (
+                  <Card 
+                    key={userGroup.user?._id || 'unknown'} 
+                    variant="outlined"
+                    sx={{ 
+                      bgcolor: cardBgColor,
+                      borderColor: borderColor
+                    }}
+                  >
+                    <CardContent sx={{ p: 2 }}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 600 }}>
+                          {userGroup.user?.name || userGroup.user?.email || 'Unknown User'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {userGroup.user?.email || 'No email'}
+                        </Typography>
+                      </Box>
+                      
+                      {/* OpenAI Section */}
+                      <Box sx={{ mb: 2, p: 1.5, bgcolor: sectionBgColor, borderRadius: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                           <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {userGroup.user?.name || userGroup.user?.email || 'Unknown User'}
+                            OpenAI
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {userGroup.user?.email || 'No email'}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        {userGroup.openai ? `${userGroup.openai.usedCalls}/${userGroup.openai.maxFreeCalls}` : 'N/A'}
-                      </TableCell>
-                      <TableCell>
-                        {userGroup.openai ? (
-                          <Chip
-                            label={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'Exceeded' : 'Active'}
-                            color={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'error' : 'success'}
-                            size="small"
-                          />
-                        ) : (
-                          <Chip label="No Data" color="default" size="small" />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {userGroup.gemini ? `${userGroup.gemini.usedCalls}/${userGroup.gemini.maxFreeCalls}` : 'N/A'}
-                      </TableCell>
-                      <TableCell>
-                        {userGroup.gemini ? (
-                          <Chip
-                            label={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'Exceeded' : 'Active'}
-                            color={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'error' : 'success'}
-                            size="small"
-                          />
-                        ) : (
-                          <Chip label="No Data" color="default" size="small" />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          {userGroup.openai && (
-                            <Button
+                          {userGroup.openai ? (
+                            <Chip
+                              label={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'Exceeded' : 'Active'}
+                              color={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'error' : 'success'}
                               size="small"
-                              variant="outlined"
-                              onClick={() => {
-                                setSelectedQuota(userGroup.openai);
-                                setResetDialogOpen(true);
-                              }}
-                            >
-                              Reset OpenAI
-                            </Button>
-                          )}
-                          {userGroup.gemini && (
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              onClick={() => {
-                                setSelectedQuota(userGroup.gemini);
-                                setResetDialogOpen(true);
-                              }}
-                            >
-                              Reset Gemini
-                            </Button>
+                            />
+                          ) : (
+                            <Chip label="No Data" color="default" size="small" />
                           )}
                         </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Used: {userGroup.openai ? `${userGroup.openai.usedCalls}/${userGroup.openai.maxFreeCalls}` : 'N/A'}
+                        </Typography>
+                        {userGroup.openai && (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            fullWidth
+                            sx={{ mt: 1 }}
+                            onClick={() => {
+                              setSelectedQuota(userGroup.openai);
+                              setResetDialogOpen(true);
+                            }}
+                          >
+                            Reset OpenAI Quota
+                          </Button>
+                        )}
+                      </Box>
+                      
+                      {/* Gemini Section */}
+                      <Box sx={{ p: 1.5, bgcolor: sectionBgColor, borderRadius: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            Gemini
+                          </Typography>
+                          {userGroup.gemini ? (
+                            <Chip
+                              label={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'Exceeded' : 'Active'}
+                              color={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'error' : 'success'}
+                              size="small"
+                            />
+                          ) : (
+                            <Chip label="No Data" color="default" size="small" />
+                          )}
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Used: {userGroup.gemini ? `${userGroup.gemini.usedCalls}/${userGroup.gemini.maxFreeCalls}` : 'N/A'}
+                        </Typography>
+                        {userGroup.gemini && (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            fullWidth
+                            sx={{ mt: 1 }}
+                            onClick={() => {
+                              setSelectedQuota(userGroup.gemini);
+                              setResetDialogOpen(true);
+                            }}
+                          >
+                            Reset Gemini Quota
+                          </Button>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </Stack>
+          ) : (
+            // Desktop Table Layout
+            <TableContainer component={Paper} variant="outlined">
+              <Table size={isSmallScreen ? 'small' : 'medium'}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>User</TableCell>
+                    <TableCell>OpenAI Used/Free</TableCell>
+                    <TableCell>OpenAI Status</TableCell>
+                    <TableCell>Gemini Used/Free</TableCell>
+                    <TableCell>Gemini Status</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {userQuotas.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        No quota data available
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                  ) : (
+                    // Group quotas by user
+                    Object.values(
+                      userQuotas
+                        .filter(quota => quota.provider === 'openai' || quota.provider === 'gemini')
+                        .reduce((acc, quota) => {
+                          const userId = quota.userId?._id || 'unknown';
+                          if (!acc[userId]) {
+                            acc[userId] = {
+                              user: quota.userId,
+                              openai: null,
+                              gemini: null
+                            };
+                          }
+                          if (quota.provider === 'openai') {
+                            acc[userId].openai = quota;
+                          } else if (quota.provider === 'gemini') {
+                            acc[userId].gemini = quota;
+                          }
+                          return acc;
+                        }, {} as Record<string, UserQuotaGroup>)
+                    ).map((userGroup: UserQuotaGroup) => (
+                      <TableRow key={userGroup.user?._id || 'unknown'}>
+                        <TableCell>
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {userGroup.user?.name || userGroup.user?.email || 'Unknown User'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {userGroup.user?.email || 'No email'}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          {userGroup.openai ? `${userGroup.openai.usedCalls}/${userGroup.openai.maxFreeCalls}` : 'N/A'}
+                        </TableCell>
+                        <TableCell>
+                          {userGroup.openai ? (
+                            <Chip
+                              label={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'Exceeded' : 'Active'}
+                              color={userGroup.openai.usedCalls >= userGroup.openai.maxFreeCalls ? 'error' : 'success'}
+                              size="small"
+                            />
+                          ) : (
+                            <Chip label="No Data" color="default" size="small" />
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {userGroup.gemini ? `${userGroup.gemini.usedCalls}/${userGroup.gemini.maxFreeCalls}` : 'N/A'}
+                        </TableCell>
+                        <TableCell>
+                          {userGroup.gemini ? (
+                            <Chip
+                              label={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'Exceeded' : 'Active'}
+                              color={userGroup.gemini.usedCalls >= userGroup.gemini.maxFreeCalls ? 'error' : 'success'}
+                              size="small"
+                            />
+                          ) : (
+                            <Chip label="No Data" color="default" size="small" />
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {userGroup.openai && (
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => {
+                                  setSelectedQuota(userGroup.openai);
+                                  setResetDialogOpen(true);
+                                }}
+                              >
+                                Reset OpenAI
+                              </Button>
+                            )}
+                            {userGroup.gemini && (
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => {
+                                  setSelectedQuota(userGroup.gemini);
+                                  setResetDialogOpen(true);
+                                }}
+                              >
+                                Reset Gemini
+                              </Button>
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </CardContent>
       </Card>
 

@@ -28,13 +28,14 @@ const UserKeysTabs = ({
   loading?: boolean;
 }) => {
   const isTablet = useMediaQuery("(max-width: 960px)");
-  const isSmallScreen = useMediaQuery("(max-width: 480px)");
+  const isSmallScreen = useMediaQuery("(max-width: 600px)");
+  const isVerySmallScreen = useMediaQuery("(max-width: 480px)");
   return (
     <>
       <Box
         sx={{
           display: "flex",
-          gap: isSmallScreen ? 2 : 3,
+          gap: isVerySmallScreen ? 1.5 : (isSmallScreen ? 2 : 3),
           alignItems: "flex-start",
           flexDirection: isTablet ? "column" : "row",
         }}
@@ -43,8 +44,8 @@ const UserKeysTabs = ({
           sx={{
             width: { xs: "100%", md: 320 },
             bgcolor: "background.paper",
-            borderRadius: 3,
-            p: 3,
+            borderRadius: isVerySmallScreen ? 2 : 3,
+            p: isVerySmallScreen ? 2 : 3,
             boxShadow: (theme) => theme.shadows[3],
             border: "1px solid",
             borderColor: "divider",
@@ -53,11 +54,12 @@ const UserKeysTabs = ({
           <Typography
             variant="subtitle1"
             sx={{
-              mb: 2,
+              mb: isVerySmallScreen ? 1.5 : 2,
               fontWeight: 600,
               display: "flex",
               alignItems: "center",
               gap: 1,
+              fontSize: isVerySmallScreen ? "0.9rem" : "1rem",
             }}
           >
             <Person /> Users
@@ -95,10 +97,10 @@ const UserKeysTabs = ({
                   <Avatar
                     src={u.picture}
                     sx={{
-                      width: 40,
-                      height: 40,
+                      width: isVerySmallScreen ? 32 : 40,
+                      height: isVerySmallScreen ? 32 : 40,
                       bgcolor: "primary.main",
-                      fontSize: "0.95rem",
+                      fontSize: isVerySmallScreen ? "0.8rem" : "0.95rem",
                       fontWeight: 700,
                     }}
                   >
@@ -111,7 +113,7 @@ const UserKeysTabs = ({
                       variant="body1"
                       sx={{
                         fontWeight: 600,
-                        fontSize: "0.95rem",
+                        fontSize: isVerySmallScreen ? "0.8rem" : "0.95rem",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
@@ -120,7 +122,10 @@ const UserKeysTabs = ({
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{ color: "text.secondary" }}
+                      sx={{ 
+                        color: "text.secondary",
+                        fontSize: isVerySmallScreen ? "0.7rem" : "0.75rem",
+                      }}
                     >
                       {u.email}
                     </Typography>
@@ -136,22 +141,33 @@ const UserKeysTabs = ({
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
+              alignItems: isVerySmallScreen ? "flex-start" : "center",
+              mb: isVerySmallScreen ? 1.5 : 2,
+              flexDirection: isVerySmallScreen ? "column" : "row",
+              gap: isVerySmallScreen ? 1 : 0,
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: isVerySmallScreen ? 1 : 2 }}>
               {selectedUser && (
                 <Avatar
                   src={selectedUser.picture}
-                  sx={{ width: 48, height: 48 }}
+                  sx={{ 
+                    width: isVerySmallScreen ? 36 : 48, 
+                    height: isVerySmallScreen ? 36 : 48 
+                  }}
                 >
                   {(selectedUser.name || selectedUser.email || "")
                     .charAt(0)
                     .toUpperCase()}
                 </Avatar>
               )}
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              <Typography 
+                variant={isVerySmallScreen ? "subtitle1" : "h6"} 
+                sx={{ 
+                  fontWeight: 700,
+                  fontSize: isVerySmallScreen ? "0.9rem" : "1.25rem",
+                }}
+              >
                 {selectedUser
                   ? selectedUser.name || selectedUser.email
                   : "Select a user"}
@@ -161,12 +177,21 @@ const UserKeysTabs = ({
               <Box sx={{ display: "flex", gap: 1 }}>
                 <Button
                   variant="outlined"
-                  size="small"
-                  startIcon={<Add />}
+                  size={isVerySmallScreen ? "small" : "small"}
+                  startIcon={!isVerySmallScreen ? <Add /> : undefined}
                   onClick={() => handleOpenAddDialog(selectedUser)}
-                  sx={{ textTransform: "none", borderRadius: 2 }}
+                  sx={{ 
+                    textTransform: "none", 
+                    borderRadius: 2,
+                    fontSize: isVerySmallScreen ? "0.75rem" : "0.875rem",
+                    px: isVerySmallScreen ? 1.5 : 2,
+                  }}
                 >
-                  Add Key
+                  {isVerySmallScreen ? (
+                    <Add sx={{ fontSize: 16 }} />
+                  ) : (
+                    "Add Key"
+                  )}
                 </Button>
               </Box>
             )}
@@ -174,39 +199,55 @@ const UserKeysTabs = ({
           {!selectedUser ? (
             <Box
               sx={{
-                p: 6,
+                p: isVerySmallScreen ? 4 : 6,
                 bgcolor: "background.paper",
-                borderRadius: 2,
+                borderRadius: isVerySmallScreen ? 2 : 2,
                 border: "1px dashed",
                 borderColor: "divider",
                 textAlign: "center",
               }}
             >
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                Choose a user from the left to view and manage their API keys.
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: "text.secondary",
+                  fontSize: isVerySmallScreen ? "0.8rem" : "0.875rem",
+                }}
+              >
+                Choose a user from the {isTablet ? "above" : "left"} to view and manage their API keys.
               </Typography>
             </Box>
           ) : (
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-                gap: 3,
+                gridTemplateColumns: isVerySmallScreen 
+                  ? "1fr" 
+                  : isSmallScreen 
+                    ? "repeat(auto-fit, minmax(280px, 1fr))" 
+                    : "repeat(auto-fit, minmax(340px, 1fr))",
+                gap: isVerySmallScreen ? 2 : 3,
               }}
             >
               {selectedUser.apiKeys.length === 0 && (
                 <Box
                   sx={{
                     gridColumn: "1 / -1",
-                    p: 4,
+                    p: isVerySmallScreen ? 3 : 4,
                     bgcolor: "background.paper",
-                    borderRadius: 2,
+                    borderRadius: isVerySmallScreen ? 2 : 2,
                     border: "1px dashed",
                     borderColor: "divider",
                     textAlign: "center",
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: "text.secondary",
+                      fontSize: isVerySmallScreen ? "0.8rem" : "0.875rem",
+                    }}
+                  >
                     This user has no API keys yet.
                   </Typography>
                 </Box>

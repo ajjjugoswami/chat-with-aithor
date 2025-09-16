@@ -76,8 +76,8 @@ export default function AdminPage() {
       }
 
       const params = new URLSearchParams();
-      if (name) params.append('name', name);
-      if (email) params.append('email', email);
+      if (name && typeof name === "string") params.append('name', name);
+      if (email && typeof email === "string") params.append('email', email);
       params.append('page', page.toString());
       params.append('limit', pageSize.toString());
       const queryString = params.toString();

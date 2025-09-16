@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from '../store';
 import App from '../App';
-import AdminPage from './AdminPage';
+import { AdminApp } from './admin';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider, CssBaseline } from '@mui/material';
@@ -18,63 +20,65 @@ export default function ThemedApp() {
   const theme = getTheme(mode);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/sign-in" element={<SignInPage />} />
-            <Route path="/sign-up" element={<SignUpPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-            <Route 
-              path="/chat" 
-              element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/chat/c/:id" 
-              element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/settings" 
-              element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/help" 
-              element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute>
-                  <AdminPage />
-                </ProtectedRoute>
-              } 
-            />
-            {/* Redirect any unknown routes to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          <CookieConsentBanner />
-        </AuthProvider>
-      </Router>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/signin" element={<SignInPage />} />
+              <Route path="/sign-in" element={<SignInPage />} />
+              <Route path="/sign-up" element={<SignUpPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+              <Route 
+                path="/chat" 
+                element={
+                  <ProtectedRoute>
+                    <App />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/chat/c/:id" 
+                element={
+                  <ProtectedRoute>
+                    <App />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute>
+                    <App />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/help" 
+                element={
+                  <ProtectedRoute>
+                    <App />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/*" 
+                element={
+                  <ProtectedRoute>
+                    <AdminApp />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* Redirect any unknown routes to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+            <CookieConsentBanner />
+          </AuthProvider>
+        </Router>
+      </ThemeProvider>
+    </Provider>
   );
 }
