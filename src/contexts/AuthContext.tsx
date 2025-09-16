@@ -1,5 +1,10 @@
-import React, { createContext, useState, useEffect, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -40,7 +45,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const API_BASE_URL = 'https://aithor-be.vercel.app/api';
+const API_BASE_URL = "https://aithor-be.vercel.app/api";
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -50,9 +55,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    const savedQuotas = localStorage.getItem('quotas');
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+    const savedQuotas = localStorage.getItem("quotas");
 
     if (token && savedUser) {
       // Set initial data from localStorage
@@ -67,11 +72,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const verifyToken = async (token: string) => {
+  const verifyToken = async (token: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -82,26 +87,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(data.user);
           setQuotas(data.user.quotas || null);
           // Update localStorage with fresh data
-          localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('quotas', JSON.stringify(data.user.quotas || null));
+          localStorage.setItem("user", JSON.stringify(data.user));
+          localStorage.setItem(
+            "quotas",
+            JSON.stringify(data.user.quotas || null)
+          );
+          return true;
         } else {
           // Token invalid, clear storage
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('quotas');
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          localStorage.removeItem("quotas");
+          return false;
         }
+      } else {
+        return false;
       }
     } catch (error) {
-      console.error('Token verification failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      console.error("Token verification failed:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
   const refreshQuotas = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) return;
     await verifyToken(token);
   };
@@ -109,9 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (credential: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/google-auth`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ credential }),
       });
@@ -119,15 +132,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
-        navigate('/');
+        // Call verifyToken to get fresh user data and quotas
+        const isValid = await verifyToken(data.token);
+        if (isValid) {
+          navigate("/chat");
+        }
       } else {
-        throw new Error(data.error || 'Google authentication failed');
+        throw new Error(data.error || "Google authentication failed");
       }
     } catch (error) {
-      console.error('Google sign in error:', error);
+      console.error("Google sign in error:", error);
       throw error;
     }
   };
@@ -135,9 +152,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signInWithForm = async (email: string, password: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -145,15 +162,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
-        navigate('/');
+        // Call verifyToken to get fresh user data and quotas
+        const isValid = await verifyToken(data.token);
+        if (isValid) {
+          navigate("/chat");
+        }
       } else {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.error || "Login failed");
       }
     } catch (error) {
-      console.error('Form sign in error:', error);
+      console.error("Form sign in error:", error);
       throw error;
     }
   };
@@ -163,27 +184,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setQuotas(null);
 
     // Clear authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('quotas');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("quotas");
 
     // Clear all chat-related data
-    localStorage.removeItem('ai-chat-conversations');
-    localStorage.removeItem('typed-message-ids');
+    localStorage.removeItem("ai-chat-conversations");
+    localStorage.removeItem("typed-message-ids");
 
     // Clear API keys data
-    localStorage.removeItem('ai-chat-api-keys-v2');
-    localStorage.removeItem('ai-chat-api-keys'); // Legacy key
+    localStorage.removeItem("ai-chat-api-keys-v2");
+    localStorage.removeItem("ai-chat-api-keys"); // Legacy key
 
     // Clear panel configuration data
-    localStorage.removeItem('chat-panel-widths');
-    localStorage.removeItem('chat-panel-collapsed');
-    localStorage.removeItem('chat-panel-enabled');
-    localStorage.removeItem('sidebar-width');
-    localStorage.removeItem('sidebar-collapsed');
+    localStorage.removeItem("chat-panel-widths");
+    localStorage.removeItem("chat-panel-collapsed");
+    localStorage.removeItem("chat-panel-enabled");
+    localStorage.removeItem("sidebar-width");
+    localStorage.removeItem("sidebar-collapsed");
 
     // Clear model variants data
-    const modelVariantsKey = 'chat-panel-variants';
+    const modelVariantsKey = "chat-panel-variants";
     localStorage.removeItem(modelVariantsKey);
 
     // Sign out from Google
@@ -192,12 +213,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     // Redirect to landing page
-    navigate('/');
+    navigate("/");
   };
 
   const updateAuthState = (token: string, userData: User) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
     setLoading(false);
   };
