@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -31,6 +32,7 @@ import { MessageSquare } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { useNavigate } from "react-router-dom";
+import SignOutConfirmationModal from "./SignOutConfirmationModal";
 
 interface Chat {
   id: string;
@@ -66,6 +68,7 @@ export default function Sidebar({
   const { signOut, user } = useAuth();
   const { mode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [signOutModalOpen, setSignOutModalOpen] = useState(false);
   const groupedChats = chats?.reduce((acc, chat) => {
     if (!acc[chat.date]) {
       acc[chat.date] = [];
@@ -871,7 +874,7 @@ export default function Sidebar({
                     </Typography>
                     <Button
                       startIcon={<Logout />}
-                      onClick={signOut}
+                      onClick={() => setSignOutModalOpen(true)}
                       size="small"
                       sx={{
                         color: mode === "light" ? "#666" : "#bbb",
@@ -904,7 +907,7 @@ export default function Sidebar({
                 {/* Collapsed Sign Out Button */}
                 {isCollapsed && (
                   <IconButton
-                    onClick={signOut}
+                    onClick={() => setSignOutModalOpen(true)}
                     size="small"
                     sx={{
                       color: mode === "light" ? "#666" : "#bbb",
@@ -1087,7 +1090,7 @@ export default function Sidebar({
 
                     <Button
                       startIcon={<Logout />}
-                      onClick={signOut}
+                      onClick={() => setSignOutModalOpen(true)}
                       size="small"
                       sx={{
                         color: mode === "light" ? "#666" : "#bbb",
@@ -1120,7 +1123,7 @@ export default function Sidebar({
                 {/* Collapsed Sign Out Button */}
                 {isCollapsed && (
                   <IconButton
-                    onClick={signOut}
+                    onClick={() => setSignOutModalOpen(true)}
                     size="small"
                     sx={{
                       color: mode === "light" ? "#666" : "#bbb",
@@ -1174,6 +1177,16 @@ export default function Sidebar({
           )}
         </>
       )}
+
+      {/* Sign Out Confirmation Modal */}
+      <SignOutConfirmationModal
+        open={signOutModalOpen}
+        onClose={() => setSignOutModalOpen(false)}
+        onConfirm={() => {
+          setSignOutModalOpen(false);
+          signOut();
+        }}
+      />
     </Box>
   );
 }

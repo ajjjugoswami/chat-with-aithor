@@ -161,13 +161,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = () => {
     setUser(null);
     setQuotas(null);
+
+    // Clear authentication data
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('quotas');
+
+    // Clear all chat-related data
+    localStorage.removeItem('ai-chat-conversations');
+    localStorage.removeItem('typed-message-ids');
+
+    // Clear API keys data
+    localStorage.removeItem('ai-chat-api-keys-v2');
+    localStorage.removeItem('ai-chat-api-keys'); // Legacy key
+
+    // Clear panel configuration data
+    localStorage.removeItem('chat-panel-widths');
+    localStorage.removeItem('chat-panel-collapsed');
+    localStorage.removeItem('chat-panel-enabled');
+    localStorage.removeItem('sidebar-width');
+    localStorage.removeItem('sidebar-collapsed');
+
+    // Clear model variants data
+    const modelVariantsKey = 'chat-panel-variants';
+    localStorage.removeItem(modelVariantsKey);
+
     // Sign out from Google
     if (window.google) {
       window.google.accounts.id.disableAutoSelect();
     }
+
     // Redirect to landing page
     navigate('/');
   };
