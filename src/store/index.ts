@@ -3,6 +3,7 @@ import usersSlice from './slices/usersSlice';
 import adminSlice from './slices/adminSlice';
 import feedbackSlice from './slices/feedbackSlice';
 import appManagementSlice from './slices/appManagementSlice';
+import dashboardSlice from './slices/dashboardSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     admin: adminSlice,
     feedback: feedbackSlice,
     appManagement: appManagementSlice,
+    dashboard: dashboardSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

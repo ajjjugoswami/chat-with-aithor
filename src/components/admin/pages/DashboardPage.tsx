@@ -4,22 +4,43 @@ import {
   Card, 
   CardContent,
   LinearProgress,
-  Chip
+  Chip,
+  CircularProgress,
+  Alert,
+  Button,
+  IconButton
 } from '@mui/material';
 import { 
   People as PeopleIcon,
   AdminPanelSettings as AdminIcon,
   Feedback as FeedbackIcon,
   TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon
+  TrendingDown as TrendingDownIcon,
+  Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { useTheme } from '../../../hooks/useTheme';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { fetchDashboardStats, clearError } from '../../../store/slices/dashboardSlice';
 
 export default function DashboardPage() {
   const { mode } = useTheme();
+  const dispatch = useAppDispatch();
+  
+  // Get dashboard state from Redux
+  const { stats, loading, error, lastFetched } = useAppSelector((state) => state.dashboard);
 
-  // Static data for demo
-  const stats = {
+  useEffect(() => {
+    // Only fetch if we don't have data or if it's been more than 5 minutes since last fetch
+    const shouldFetch = !stats || !lastFetched || (Date.now() - lastFetched) > 300000; // 5 minutes
+    
+    if (shouldFetch) {
+      dispatch(fetchDashboardStats());
+    }
+  }, [dispatch, stats, lastFetched]);
+
+  // Fallback static data in case of error or no data
+  const fallbackStats = {
     totalUsers: 1247,
     adminUsers: 8,
     feedbackCount: 342,
@@ -29,6 +50,16 @@ export default function DashboardPage() {
       admins: 0
     }
   };
+
+  const handleRefresh = () => {
+    dispatch(fetchDashboardStats());
+  };
+
+  const handleClearError = () => {
+    dispatch(clearError());
+  };
+
+  const currentStats = stats || fallbackStats;
 
   const StatCard = ({ title, value, icon, color, growth }: {
     title: string;
@@ -212,17 +243,53 @@ export default function DashboardPage() {
 
   return (
     <Box>
-      <Typography
-        variant="h4"
-        component="h1"
-        sx={{
-          mb: 4,
-          color: mode === 'light' ? '#333' : '#fff',
-          fontWeight: 600,
-        }}
-      >
-        Dashboard
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            color: mode === 'light' ? '#333' : '#fff',
+            fontWeight: 600,
+          }}
+        >
+          Dashboard
+        </Typography>
+        
+        <IconButton
+          onClick={handleRefresh}
+          disabled={loading}
+          sx={{
+            color: mode === 'light' ? '#666' : '#aaa',
+            '&:hover': {
+              color: mode === 'light' ? '#333' : '#fff',
+            },
+          }}
+          title="Refresh dashboard data"
+        >
+          <RefreshIcon />
+        </IconButton>
+      </Box>
+
+      {error && (
+        <Alert 
+          severity="error" 
+          sx={{ mb: 3 }}
+          onClose={handleClearError}
+          action={
+            <Button color="inherit" size="small" onClick={handleRefresh}>
+              Retry
+            </Button>
+          }
+        >
+          {error}
+        </Alert>
+      )}
+
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <CircularProgress />
+        </Box>
+      )}
 
       {/* Statistics Cards */}
       <Box
@@ -235,24 +302,24 @@ export default function DashboardPage() {
       >
         <StatCard
           title="Total Users"
-          value={stats.totalUsers}
+          value={currentStats.totalUsers}
           icon={<PeopleIcon />}
           color="#667eea"
-          growth={stats.growth.users}
+          growth={currentStats.growth.users}
         />
         <StatCard
           title="Admin Users"
-          value={stats.adminUsers}
+          value={currentStats.adminUsers}
           icon={<AdminIcon />}
           color="#f093fb"
-          growth={stats.growth.admins}
+          growth={currentStats.growth.admins}
         />
         <StatCard
           title="User Feedback"
-          value={stats.feedbackCount}
+          value={currentStats.feedbackCount}
           icon={<FeedbackIcon />}
           color="#4caf50"
-          growth={stats.growth.feedback}
+          growth={currentStats.growth.feedback}
         />
       </Box>
 
