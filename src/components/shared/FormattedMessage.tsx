@@ -6,7 +6,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { ContentCopy, Check, Download } from "@mui/icons-material";
-import { UserIcon } from "./Icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -15,6 +14,7 @@ import { useState } from "react";
 import "highlight.js/styles/vs2015.css"; // Dark theme for code highlighting
 import "./message-styles.css"; // Custom message styles
 import { useTheme } from "../../hooks/useTheme";
+import { useAuth } from "../../hooks/useAuth";
 import TypewriterMessage from "./TypewriterMessage";
 
 interface FormattedMessageProps {
@@ -43,6 +43,7 @@ export default function FormattedMessage({
   imageLinks,
 }: FormattedMessageProps) {
   const { mode } = useTheme();
+  const { user } = useAuth();
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [copiedBlocks, setCopiedBlocks] = useState<Set<number>>(new Set());
   const [messageCopied, setMessageCopied] = useState(false);
@@ -217,9 +218,9 @@ export default function FormattedMessage({
             mt: 0.25,
             boxShadow: "0 2px 6px rgba(25, 118, 210, 0.3)", // Blue shadow
           }}
-        >
-          <UserIcon sx={{ fontSize: isMobile ? 16 : 18, color: "#fff" }} />
-        </Avatar>
+          src={user?.picture || "https://ui-avatars.com/api/?name=User&background=1976d2&color=fff&size=32"}
+          alt={user?.name || "User Avatar"}
+        />
       </Box>
     );
   }
@@ -345,6 +346,9 @@ export default function FormattedMessage({
           color: "white",
           flexShrink: 0,
           mt: 0.5,
+          boxShadow: mode === "light"
+            ? "0 2px 8px rgba(0, 0, 0, 0.15)"
+            : "0 2px 8px rgba(255, 255, 255, 0.1)",
         }}
       >
         <Box

@@ -36,6 +36,8 @@ export default function ThemedApp() {
 
 function AppWithAuth() {
   const { loading } = useAuth();
+  const { mode } = useTheme();
+  const theme = getTheme(mode);
 
   return (
     <>
@@ -49,7 +51,7 @@ function AppWithAuth() {
           display="flex"
           justifyContent="center"
           alignItems="center"
-          bgcolor="rgba(0, 0, 0, 0.7)"
+          bgcolor={mode === 'light' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.7)'}
           zIndex={9999}
           sx={{
             backdropFilter: 'blur(2px)',
@@ -62,15 +64,20 @@ function AppWithAuth() {
               justifyContent: 'center',
               p: 3,
               borderRadius: '50%',
+              bgcolor: theme.palette.background.paper,
               animation: 'breathe 2s ease-in-out infinite',
               '@keyframes breathe': {
                 '0%, 100%': { 
                   transform: 'scale(1)', 
-                  boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' 
+                  boxShadow: mode === 'light' 
+                    ? '0 0 20px rgba(19, 52, 135, 0.3)' 
+                    : '0 0 20px rgba(59, 130, 246, 0.3)' 
                 },
                 '50%': { 
                   transform: 'scale(1.1)', 
-                  boxShadow: '0 0 40px rgba(59, 130, 246, 0.6)' 
+                  boxShadow: mode === 'light' 
+                    ? '0 0 40px rgba(19, 52, 135, 0.6)' 
+                    : '0 0 40px rgba(59, 130, 246, 0.6)' 
                 },
               },
             }}
