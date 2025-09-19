@@ -19,11 +19,11 @@ import {
   DialogContent,
   DialogActions,
   useMediaQuery,
-  CircularProgress,
   Stack,
   useTheme,
   IconButton,
   Fade,
+  CircularProgress,
 } from "@mui/material";
 import { Settings, Refresh, Key, Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -33,6 +33,7 @@ import {
   resetInitialized,
   type UserQuota,
 } from "../../store/slices/appManagementSlice";
+import CustomLoading from '../CustomLoading';
 
 interface UserQuotaGroup {
   user: {
@@ -216,8 +217,7 @@ const AppManagementTab = () => {
           py: 4,
         }}
       >
-        <CircularProgress />
-        <Typography sx={{ ml: 2 }}>Loading...</Typography>
+        <CustomLoading />
       </Box>
     );
   }

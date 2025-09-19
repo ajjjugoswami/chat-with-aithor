@@ -37,7 +37,7 @@ export default function ThemedApp() {
 function AppWithAuth() {
   const { loading } = useAuth();
   const { mode } = useTheme();
-  const theme = getTheme(mode);
+  // const theme = getTheme(mode);
 
   return (
     <>
@@ -64,7 +64,7 @@ function AppWithAuth() {
               justifyContent: 'center',
               p: 3,
               borderRadius: '50%',
-              bgcolor: theme.palette.background.paper,
+              // bgcolor: theme.palette.background.paper,
               animation: 'breathe 2s ease-in-out infinite',
               '@keyframes breathe': {
                 '0%, 100%': { 

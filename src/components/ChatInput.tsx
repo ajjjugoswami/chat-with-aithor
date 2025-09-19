@@ -9,7 +9,6 @@ import {
   useMediaQuery,
   Dialog,
   DialogContent,
-  CircularProgress,
 } from "@mui/material";
 import {
   Send,
@@ -28,6 +27,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useTheme } from "../hooks/useTheme";
 import { useTypewriterState } from "../hooks/useTypewriterState";
 import { stopAllTypewriters } from "../utils/typewriterState";
+import CustomLoading from "./CustomLoading";
 
 declare global {
   interface Window {
@@ -735,48 +735,22 @@ export default function ChatInput({
           </IconButton>
 
           <DialogContent sx={{ textAlign: "center", p: 4 }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <Box sx={{ position: "relative" }}>
-                <CircularProgress
-                  size={80}
-                  sx={{
-                    color: "#ff4444",
-                    animation: "pulse 1.5s infinite",
-                    "@keyframes pulse": {
-                      "0%": { opacity: 0.6, transform: "scale(1)" },
-                      "50%": { opacity: 1, transform: "scale(1.1)" },
-                      "100%": { opacity: 0.6, transform: "scale(1)" },
-                    },
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    color: "#ff4444",
-                  }}
-                >
-                  <Mic sx={{ fontSize: "2rem" }} />
-                </Box>
-              </Box>
-
-              <Typography
-                variant="h6"
-                sx={{ color: mode === "light" ? "#333" : "#fff" }}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 2,
+                }}
               >
-                {isListening ? "Listening..." : "Starting..."}
-              </Typography>
+                <CustomLoading size={80} />
 
-              {voiceTranscript && (
+                <Typography
+                  variant="h6"
+                  sx={{ color: mode === "light" ? "#333" : "#fff" }}
+                >
+                  {isListening ? "Listening..." : "Starting..."}
+                </Typography>              {voiceTranscript && (
                 <Box
                   sx={{
                     bgcolor:

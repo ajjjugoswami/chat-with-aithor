@@ -12,7 +12,6 @@ import {
   IconButton,
   Tooltip,
   Alert,
-  CircularProgress,
   Button,
   Dialog,
   DialogContent,
@@ -27,6 +26,7 @@ import {
 import { Visibility, Delete, Close } from "@mui/icons-material";
 import { useTheme } from "../../hooks/useTheme";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import CustomLoading from '../CustomLoading';
 import {
   fetchFeedbacks,
   deleteFeedback,
@@ -225,7 +225,7 @@ export default function FeedbackTab() {
         alignItems="center"
         minHeight="200px"
       >
-        <CircularProgress />
+        <CustomLoading />
       </Box>
     );
   }
@@ -307,7 +307,7 @@ export default function FeedbackTab() {
                 zIndex: 1,
               }}
             >
-              <CircularProgress />
+              <CustomLoading />
             </Box>
           )}
           <Table>
@@ -398,7 +398,7 @@ export default function FeedbackTab() {
                 borderRadius: 1,
               }}
             >
-              <CircularProgress />
+              <CustomLoading />
             </Box>
           )}
           {feedbacks.map((item: FeedbackItem) => (

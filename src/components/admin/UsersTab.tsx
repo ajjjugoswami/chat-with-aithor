@@ -12,7 +12,6 @@ import {
   Avatar,
   Box,
   Button,
-  CircularProgress,
   TextField,
   Typography,
   useMediaQuery,
@@ -25,6 +24,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
+import CustomLoading from '../CustomLoading';
 
 const UsersTab = ({
   usersWithKeys,
@@ -114,7 +114,14 @@ const UsersTab = ({
     }
   };
 
- 
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", p: 6 }}>
+        <CustomLoading size={48} />
+      </Box>
+    );
+  }
+
   return (
     <>
       <Box>
@@ -300,11 +307,7 @@ const UsersTab = ({
           )}
         </Box>
 
-        {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 6 }}>
-            <CircularProgress size={60} />
-          </Box>
-        ) : (
+      
           <Box
             sx={{
               display: "grid",
@@ -572,7 +575,7 @@ const UsersTab = ({
               </Box>
             )}
           </Box>
-        )}
+       
 
         {/* Pagination */}
         <Box

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Add, Person } from "@mui/icons-material";
-import { Avatar, Box, Button, CircularProgress, Typography, useMediaQuery } from "@mui/material";
+import { Avatar, Box, Button, Typography, useMediaQuery } from "@mui/material";
 import APIKeyCard from "./APIKeyCard";
 import type { UserWithKeys } from "./types";
+import CustomLoading from '../CustomLoading';
 
 const UserKeysTabs = ({
   usersWithKeys,
@@ -67,7 +68,7 @@ const UserKeysTabs = ({
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {loading ? (
               <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
-                <CircularProgress size={24} />
+                <CustomLoading size={24} />
               </Box>
             ) : usersWithKeys.length === 0 ? (
               <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>

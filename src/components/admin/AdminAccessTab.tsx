@@ -4,8 +4,9 @@ import {
   PersonAdd,
   PersonRemove,
 } from "@mui/icons-material";
-import { Avatar, Box, Button, CircularProgress, Typography, useMediaQuery } from "@mui/material";
+import { Avatar, Box, Button, Typography, useMediaQuery } from "@mui/material";
 import type { UserWithKeys } from "./types";
+import CustomLoading from '../CustomLoading';
 
 const AdminAccessTab = ({
   handleToggleAdminAccess,
@@ -81,7 +82,7 @@ const AdminAccessTab = ({
           <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 3 } }}>
             {loading ? (
               <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-                <CircularProgress size={32} />
+                <CustomLoading size={32} />
               </Box>
             ) : usersWithKeys.length === 0 ? (
               <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>

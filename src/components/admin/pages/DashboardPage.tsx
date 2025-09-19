@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   Alert,
   Button,
   IconButton,
@@ -21,6 +20,7 @@ import { useTheme } from "../../../hooks/useTheme";
 import { useEffect } from "react";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import CustomLoading from '../../CustomLoading';
 import {
   fetchDashboardStats,
   clearError,
@@ -388,7 +388,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <Box sx={{ display: "flex", height:"100%",justifyContent: "center",alignItems:"center", mt: 10 }}>
-        <CircularProgress />
+        <CustomLoading />
       </Box>
     );
   }
