@@ -520,7 +520,7 @@ export default function ChatInput({
             multiline
             maxRows={6}
             placeholder={
-              selectedModel ? `Ask ${selectedModel}...` : "Ask me anything..."
+              selectedModel ? `Ask...` : "Ask..."
             }
             value={
               message +
