@@ -5,9 +5,10 @@ import App from '../App';
 import { AdminApp } from './admin';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { AuthProvider } from '../contexts/AuthContext';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box, Fade } from '@mui/material';
 import { getTheme } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
 import LandingPage from './LandingPage';
 import SignUpPage from './SignUpPage';
 import SignInPage from './SignInPage';
@@ -25,60 +26,123 @@ export default function ThemedApp() {
         <CssBaseline />
         <Router>
           <AuthProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/signin" element={<SignInPage />} />
-              <Route path="/sign-in" element={<SignInPage />} />
-              <Route path="/sign-up" element={<SignUpPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-              <Route 
-                path="/chat" 
-                element={
-                  <ProtectedRoute>
-                    <App />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/chat/c/:id" 
-                element={
-                  <ProtectedRoute>
-                    <App />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/settings" 
-                element={
-                  <ProtectedRoute>
-                    <App />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/help" 
-                element={
-                  <ProtectedRoute>
-                    <App />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/*" 
-                element={
-                  <ProtectedRoute>
-                    <AdminApp />
-                  </ProtectedRoute>
-                } 
-              />
-              {/* Redirect any unknown routes to home */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <CookieConsentBanner />
+            <AppWithAuth />
           </AuthProvider>
         </Router>
       </ThemeProvider>
     </Provider>
+  );
+}
+
+function AppWithAuth() {
+  const { loading } = useAuth();
+
+  return (
+    <>
+      <Fade in={loading} timeout={300}>
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          width="100%"
+          height="100%"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          bgcolor="rgba(0, 0, 0, 0.7)"
+          zIndex={9999}
+          sx={{
+            backdropFilter: 'blur(2px)',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: 3,
+              borderRadius: '50%',
+              animation: 'breathe 2s ease-in-out infinite',
+              '@keyframes breathe': {
+                '0%, 100%': { 
+                  transform: 'scale(1)', 
+                  boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' 
+                },
+                '50%': { 
+                  transform: 'scale(1.1)', 
+                  boxShadow: '0 0 40px rgba(59, 130, 246, 0.6)' 
+                },
+              },
+            }}
+          >
+            <Box
+              component="img"
+              src="/favicon.png"
+              alt="AIthor Logo"
+              sx={{
+                width: 48,
+                height: 48,
+                animation: 'rotate 2s linear infinite',
+                '@keyframes rotate': {
+                  '0%': { transform: 'rotate(0deg)' },
+                  '100%': { transform: 'rotate(360deg)' },
+                },
+              }}
+            />
+          </Box>
+        </Box>
+      </Fade>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route 
+          path="/chat" 
+          element={
+            <ProtectedRoute>
+              <App />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/chat/c/:id" 
+          element={
+            <ProtectedRoute>
+              <App />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings" 
+          element={
+            <ProtectedRoute>
+              <App />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/help" 
+          element={
+            <ProtectedRoute>
+              <App />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/*" 
+          element={
+            <ProtectedRoute>
+              <AdminApp />
+            </ProtectedRoute>
+          } 
+        />
+        {/* Redirect any unknown routes to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <CookieConsentBanner />
+    </>
   );
 }
