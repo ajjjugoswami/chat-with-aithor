@@ -488,6 +488,42 @@ export default function Sidebar({
             </Box>
           )}
 
+          {/* Upgrade Button */}
+          <Box sx={{ mt: 2, mb: 2, display: "flex", justifyContent: "center" }}>
+            <Button
+              onClick={() => setPaymentModalOpen(true)}
+              size="small"
+              sx={{
+                color: mode === "light" ? "#10b981" : "#4ade80",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                minHeight: "32px",
+                padding: "6px 12px",
+                width: "100%",
+                borderRadius: "8px",
+                border:
+                  mode === "light"
+                    ? "1px solid rgba(16, 185, 129, 0.3)"
+                    : "1px solid rgba(74, 222, 128, 0.3)",
+                background:
+                  mode === "light"
+                    ? "rgba(255, 255, 255, 0.9)"
+                    : "rgba(255, 255, 255, 0.05)",
+                backdropFilter: "blur(10px)",
+                "&:hover": {
+                  color: "#fff",
+                  bgcolor: "rgba(16, 185, 129, 0.1)",
+                  borderColor: "#10b981",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 4px 8px rgba(16, 185, 129, 0.2)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Upgrade
+            </Button>
+          </Box>
+
           <Box
             sx={{
               display: "flex",
@@ -627,42 +663,6 @@ export default function Sidebar({
           </Box>
         </Box>
       )}
-
-      {/* Upgrade Button */}
-      <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
-        <Button
-          onClick={() => setPaymentModalOpen(true)}
-          size="small"
-          sx={{
-            color: mode === "light" ? "#10b981" : "#4ade80",
-            textTransform: "none",
-            fontSize: "0.75rem",
-            minHeight: "32px",
-            padding: "6px 12px",
-            width: "100%",
-            borderRadius: "8px",
-            border:
-              mode === "light"
-                ? "1px solid rgba(16, 185, 129, 0.3)"
-                : "1px solid rgba(74, 222, 128, 0.3)",
-            background:
-              mode === "light"
-                ? "rgba(255, 255, 255, 0.9)"
-                : "rgba(255, 255, 255, 0.05)",
-            backdropFilter: "blur(10px)",
-            "&:hover": {
-              color: "#fff",
-              bgcolor: "rgba(16, 185, 129, 0.1)",
-              borderColor: "#10b981",
-              transform: "translateY(-1px)",
-              boxShadow: "0 4px 8px rgba(16, 185, 129, 0.2)",
-            },
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          Upgrade
-        </Button>
-      </Box>
 
       {isMobile && (
         <>
