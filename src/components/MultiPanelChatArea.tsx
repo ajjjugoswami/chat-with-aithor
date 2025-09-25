@@ -189,25 +189,6 @@ function ModelPanel({
                 }}
               >
                 {model.displayName}
-                {/* Show quota info for free providers */}
-                {(model.id === 'gpt-4o-mini' || model.id === 'gemini-2.0-flash') && (
-                  <Typography
-                    component="span"
-                    sx={{
-                      ml: 1,
-                      fontSize: "0.75rem",
-                      fontWeight: 400,
-                      color: mode === "light" ? "#666" : "#ccc",
-                      opacity: isEnabled ? 1 : 0.5,
-                    }}
-                  >
-                    {(() => {
-                      const providerKey = model.id === 'gpt-4o-mini' ? 'openai' : 'gemini';
-                      const remaining = (userQuotas && userQuotas[providerKey]?.remainingCalls) ?? 10;
-                      return `(${remaining} free left)`;
-                    })()}
-                  </Typography>
-                )}
                 {/* Show selected variant if different from base model */}
               </Typography>
 

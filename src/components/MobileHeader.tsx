@@ -283,18 +283,20 @@ export default function MobileHeader({
         </Toolbar>
       </AppBar>
 
-      {/* Drawer with Sidebar content */}
       <Drawer
         anchor="left"
         open={drawerOpen}
         onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better performance on mobile
+        }}
         sx={{
           "& .MuiDrawer-paper": {
-            width: 300, // Increased width
+            width: 320, // Increased width for better mobile experience
             background:
               mode === "light"
-                ? "linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%)"
-                : "linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%)",
+                ? "#fafbfc"
+                : "#1e1e1e",
             borderRight:
               mode === "light"
                 ? "1px solid rgba(0, 0, 0, 0.08)"
@@ -306,12 +308,12 @@ export default function MobileHeader({
                 : "2px 0 12px rgba(0, 0, 0, 0.3)",
           },
           "& .MuiBackdrop-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(4px)",
           },
         }}
       >
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <Sidebar
             onNewChat={() => {
               onNewChat();
@@ -330,7 +332,10 @@ export default function MobileHeader({
               navigate("/help");
               setDrawerOpen(false);
             }}
-            onFeedbackClick={onFeedbackClick}
+            onFeedbackClick={() => {
+              onFeedbackClick();
+              setDrawerOpen(false);
+            }}
             onDeleteChat={onDeleteChat}
             isCollapsed={false}
           />

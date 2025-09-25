@@ -56,7 +56,7 @@ export default function ChatLayout({ sidebar, chatArea, sidebarCollapsed = false
           overflow: isMobile ? 'visible' : 'hidden',
           minWidth: 0,
           height: isMobile ? 'auto' : '100%',
-          minHeight: isMobile ? 'calc(100dvh - 100px)' : 'auto', // Subtract smaller header height on mobile
+          minHeight: isMobile ? 'calc(100dvh - 80px)' : 'auto', // Subtract mobile header height
           backgroundColor: mode === "light" ? "#fff !important" : "#202020",
         }}
       >
