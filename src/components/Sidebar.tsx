@@ -156,9 +156,8 @@ export default function Sidebar({
                 fontFamily:
                   "'Orbitron', 'Roboto Mono', 'Monaco', 'Consolas', monospace",
                 letterSpacing: "2px",
-                fontSize: "1.5rem",
-                mb: 0.5,
-              }}
+                fontSize: { xs: "1.5rem", sm: "1.5rem" },
+               }}
             >
               AITHOR
             </Typography>
