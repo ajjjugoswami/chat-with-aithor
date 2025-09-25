@@ -337,8 +337,7 @@ export default function MobileHeader({
               setDrawerOpen(false);
             }}
             onDeleteChat={onDeleteChat}
-            isCollapsed={false}
-          />
+           />
         </Box>
       </Drawer>
     </>

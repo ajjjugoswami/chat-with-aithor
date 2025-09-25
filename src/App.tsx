@@ -215,9 +215,9 @@ function App() {
   };
 
   const handleBackToChat = () => {
-    // Stop any active typewriter animations when navigating back to chat
+    // Stop any active typewriter animations when navigating back
     stopAllTypewriters();
-    navigate("/chat");
+    navigate(-1);
   };
 
   const handleChatSelect = (chatId: string) => {

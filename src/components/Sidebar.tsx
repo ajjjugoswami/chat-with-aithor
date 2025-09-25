@@ -43,6 +43,8 @@ interface SidebarProps {
   onHelpClick: () => void;
   onFeedbackClick: () => void;
   onDeleteChat?: (chatId: string) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export default function Sidebar({
@@ -157,14 +159,12 @@ export default function Sidebar({
                   "'Orbitron', 'Roboto Mono', 'Monaco', 'Consolas', monospace",
                 letterSpacing: "2px",
                 fontSize: { xs: "1.5rem", sm: "1.5rem" },
-               }}
+              }}
             >
               AITHOR
             </Typography>
           </Box>
         </Box>
-
-
       </Box>
 
       <Button
@@ -286,18 +286,14 @@ export default function Sidebar({
                       }}
                     >
                       <ListItemText
-                        onClick={() => {
-                          onChatSelect(chat.id);
-                          navigate(`/chat/c/${chat.id}`);
-                        }}
+                        onClick={() => onChatSelect(chat.id)}
                         primary={chat.title}
                         primaryTypographyProps={{
                           variant: "body2",
                           sx: {
                             color: mode === "light" ? "#333" : "#fff",
                             cursor: "pointer",
-                            fontWeight:
-                              selectedChatId === chat.id ? 600 : 400,
+                            fontWeight: selectedChatId === chat.id ? 600 : 400,
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -408,15 +404,13 @@ export default function Sidebar({
                       fontSize: "0.75rem",
                     }}
                   >
-                    {quotas.openai.remainingCalls}/
-                    {quotas.openai.maxFreeCalls}
+                    {quotas.openai.remainingCalls}/{quotas.openai.maxFreeCalls}
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
                   value={
-                    (quotas.openai.usedCalls / quotas.openai.maxFreeCalls) *
-                    100
+                    (quotas.openai.usedCalls / quotas.openai.maxFreeCalls) * 100
                   }
                   sx={{
                     height: 6,
@@ -463,15 +457,13 @@ export default function Sidebar({
                       fontSize: "0.75rem",
                     }}
                   >
-                    {quotas.gemini.remainingCalls}/
-                    {quotas.gemini.maxFreeCalls}
+                    {quotas.gemini.remainingCalls}/{quotas.gemini.maxFreeCalls}
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
                   value={
-                    (quotas.gemini.usedCalls / quotas.gemini.maxFreeCalls) *
-                    100
+                    (quotas.gemini.usedCalls / quotas.gemini.maxFreeCalls) * 100
                   }
                   sx={{
                     height: 6,
@@ -539,10 +531,7 @@ export default function Sidebar({
             {/* Settings */}
             <Tooltip title="Settings">
               <IconButton
-                onClick={() => {
-                  onSettingsClick();
-                  navigate("/settings");
-                }}
+                onClick={onSettingsClick}
                 sx={{
                   width: 40,
                   height: 40,
@@ -565,10 +554,7 @@ export default function Sidebar({
             {/* Help */}
             <Tooltip title="Help">
               <IconButton
-                onClick={() => {
-                  onHelpClick();
-                  navigate("/help");
-                }}
+                onClick={onHelpClick}
                 sx={{
                   width: 40,
                   height: 40,
