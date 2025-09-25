@@ -89,7 +89,7 @@ export default function MobileHeader({
         <Toolbar
           sx={{
             justifyContent: "space-between",
-            minHeight: "56px !important", // Increased height
+            minHeight: "48px !important", // Reduced height
             px: 2, // Increased padding
             py: 1,
           }}

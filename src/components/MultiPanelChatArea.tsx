@@ -150,7 +150,7 @@ function ModelPanel({
       {/* Model Header */}
       <Box
         sx={{
-          p: isMobile ? 0.75 : 1.5,
+          p: isMobile ? 0.5 : 0.8,
           borderBottom: "none",
           display: "flex",
           alignItems: "center",
@@ -256,7 +256,7 @@ function ModelPanel({
               display: "flex",
               flexDirection: "column",
               gap: isMobile ? 1 : 1.5,
-              minHeight: isMobile ? "calc(100dvh - 260px)" : "auto", // Reduced for smaller header
+              minHeight: isMobile ? "calc(100dvh - 252px)" : "auto", // Reduced for smaller header
               height: isMobile ? "auto" : "100%",
               backgroundColor: mode === "light" ? "#f8f9fa" : "#0a0a0a",
               position: 'relative',
@@ -702,7 +702,7 @@ export default function MultiPanelChatArea({
         display: "flex",
         flexDirection: "column",
         height: isMobile ? "auto" : "100%",
-        minHeight: isMobile ? "calc(100dvh - 100px)" : "100%", // Subtract smaller header height
+        minHeight: isMobile ? "calc(100dvh - 92px)" : "100%", // Subtract smaller header height
         backgroundColor: mode === "light" ? "#fff !important" : "#1a1a1a",
         flex: 1,
         overflow: isMobile ? "visible" : "hidden",
