@@ -96,6 +96,7 @@ export default function Sidebar({
           background:
             "linear-gradient(90deg, #667eea 0%, #4facfe 50%, #00f2fe 100%)",
           zIndex: 1,
+          width: isMobile ? "340px" : "280px",
         },
       }}
     >
