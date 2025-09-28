@@ -28,6 +28,7 @@ import {
 } from "../utils/enhancedApiKeys";
 import EnhancedAPIKeyDialog from "./EnhancedAPIKeyDialog";
 import ChangePasswordDialog from "./ChangePasswordDialog";
+import SignOutConfirmationModal from "./SignOutConfirmationModal";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +50,7 @@ export default function SettingsPage({
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
     useState(false);
+  const [signOutModalOpen, setSignOutModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -64,7 +66,11 @@ export default function SettingsPage({
     setSelectedModel(null);
   };
 
-  const handleSignOut = async () => {
+  const handleSignOut = () => {
+    setSignOutModalOpen(true);
+  };
+
+  const handleConfirmSignOut = async () => {
     await signOut();
     navigate("/");
   };
@@ -760,6 +766,13 @@ export default function SettingsPage({
           // Optional: Show success message or refresh user data
           console.log("Password changed successfully");
         }}
+      />
+
+      {/* Sign Out Confirmation Modal */}
+      <SignOutConfirmationModal
+        open={signOutModalOpen}
+        onClose={() => setSignOutModalOpen(false)}
+        onConfirm={handleConfirmSignOut}
       />
     </Box>
   );

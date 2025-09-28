@@ -192,10 +192,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("ai-chat-conversations");
     localStorage.removeItem("typed-message-ids");
 
-    // Clear API keys data
-    localStorage.removeItem("ai-chat-api-keys-v2");
-    localStorage.removeItem("ai-chat-api-keys"); // Legacy key
-
     // Clear panel configuration data
     localStorage.removeItem("chat-panel-widths");
     localStorage.removeItem("chat-panel-collapsed");
@@ -206,6 +202,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Clear model variants data
     const modelVariantsKey = "chat-panel-variants";
     localStorage.removeItem(modelVariantsKey);
+
+    localStorage.removeItem("chat-model-enabled");
 
     // Sign out from Google
     if (window.google) {

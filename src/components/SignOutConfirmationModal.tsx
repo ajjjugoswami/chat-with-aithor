@@ -224,17 +224,7 @@ export default function SignOutConfirmationModal({
             </Typography>
 
             <Box component="ul" sx={{ m: 0, pl: 2 }}>
-              <Box component="li" sx={{ mb: 1 }}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: mode === "light" ? "#666" : "#ccc",
-                    fontSize: isMobile ? "0.8rem" : undefined,
-                  }}
-                >
-                  Your saved API keys
-                </Typography>
-              </Box>
+             
               <Box component="li" sx={{ mb: 1 }}>
                 <Typography
                   variant="body2"
