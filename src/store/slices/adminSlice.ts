@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { UserWithKeys } from '../../components/admin/types';
+import { authFetch } from '../../utils/authFetch';
 
 interface AdminState {
   allUsers: UserWithKeys[];
@@ -33,7 +34,7 @@ export const fetchAllUsers = createAsyncThunk(
 
       const url = 'https://aithor-be.vercel.app/api/api-keys/admin/all?limit=1000';
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

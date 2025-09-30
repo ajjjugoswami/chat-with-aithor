@@ -2,6 +2,7 @@ import React, {
   createContext,
   useState,
   useEffect,
+  useCallback,
   type ReactNode,
 } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +33,7 @@ interface AuthContextType {
   signIn: (credential: string) => Promise<void>;
   signInWithForm: (email: string, password: string) => Promise<void>;
   signOut: () => void;
+  handleAuthError: () => void;
   loading: boolean;
   updateAuthState: (token: string, userData: User) => void;
   refreshQuotas: () => Promise<void>;
@@ -53,6 +55,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const handleAuthError = useCallback(() => {
+    setUser(null);
+    setQuotas(null);
+
+    // Clear authentication data
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("quotas");
+
+    // Redirect to sign in page
+    navigate("/signin");
+  }, [navigate]);
+
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
     const token = localStorage.getItem("token");
@@ -71,6 +86,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    const handleAuthErrorEvent = () => {
+      handleAuthError();
+    };
+
+    window.addEventListener('auth-error', handleAuthErrorEvent);
+
+    return () => {
+      window.removeEventListener('auth-error', handleAuthErrorEvent);
+    };
+  }, [handleAuthError]);
 
   const verifyToken = async (token: string): Promise<boolean> => {
     try {
@@ -98,6 +125,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           localStorage.removeItem("quotas");
+          setUser(null);
+          setQuotas(null);
           return false;
         }
       } else {
@@ -228,6 +257,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     signInWithForm,
     signOut,
+    handleAuthError,
     loading,
     updateAuthState,
     refreshQuotas,

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { UserWithKeys } from '../../components/admin/types';
+import { authFetch } from '../../utils/authFetch';
 
 interface UsersState {
   users: UserWithKeys[];
@@ -49,7 +50,7 @@ export const fetchUsersWithKeys = createAsyncThunk(
         ? `https://aithor-be.vercel.app/api/api-keys/admin/all?${queryString}`
         : 'https://aithor-be.vercel.app/api/api-keys/admin/all';
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,7 +85,7 @@ export const deleteUser = createAsyncThunk(
         return rejectWithValue('No authentication token found');
       }
 
-      const response = await fetch(`https://aithor-be.vercel.app/api/auth/admin/users/${userId}`, {
+      const response = await authFetch(`https://aithor-be.vercel.app/api/auth/admin/users/${userId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -126,7 +127,7 @@ export const saveAPIKey = createAsyncThunk(
 
       const method = keyId ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +158,7 @@ export const deleteAPIKey = createAsyncThunk(
         return rejectWithValue('No authentication token found');
       }
 
-      const response = await fetch(`https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}`, {
+      const response = await authFetch(`https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -185,7 +186,7 @@ export const setActiveAPIKey = createAsyncThunk(
         return rejectWithValue('No authentication token found');
       }
 
-      const response = await fetch(`https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}/active`, {
+      const response = await authFetch(`https://aithor-be.vercel.app/api/api-keys/admin/${userId}/${keyId}/active`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${token}`,

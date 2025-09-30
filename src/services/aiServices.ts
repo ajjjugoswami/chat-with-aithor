@@ -1,5 +1,6 @@
 // AI API Service Integration
 import { getAPIKeyForModel } from "../utils/enhancedApiKeys";
+import { authFetch } from "../utils/authFetch";
 
 // Quota types
 interface QuotaInfo {
@@ -598,7 +599,7 @@ async function sendViaBackend(
   const backendModelId = provider === "gemini" ? "gemini-2.0-flash" : modelId;
 
   try {
-    const response = await fetch(
+    const response = await authFetch(
       "https://aithor-be.vercel.app/api/chat/send",
       {
         method: "POST",
