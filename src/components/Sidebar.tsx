@@ -174,6 +174,7 @@ export default function Sidebar({
         onClick={() => {
           onNewChat();
         }}
+        className="new-chat-btn"
         sx={{
           mb: 2,
           background: mode === "light" ? "#667eea" : "#333",

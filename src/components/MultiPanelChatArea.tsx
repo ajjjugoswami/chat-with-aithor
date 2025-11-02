@@ -374,6 +374,7 @@ function ModelPanel({
                   })()}
                 </Typography>
                 <Button
+                  className="add-api-key-btn"
                   variant="contained"
                   startIcon={<Key />}
                   onClick={() => setApiKeyDialogOpen(true)}

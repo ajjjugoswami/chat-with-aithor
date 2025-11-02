@@ -38,7 +38,9 @@ import MobileHeader from "./components/MobileHeader";
 import { useMediaQuery, Snackbar, Alert } from "@mui/material";
 import { AuthContext } from "./contexts/AuthContext";
 import { useContext } from "react";
+import AHDjs from "ahdjs";
 import React from "react";
+import { useAuth } from "./hooks/useAuth";
 
 interface Message {
   id: string;
@@ -64,7 +66,8 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { quotas } = useContext<any>(AuthContext);
-  
+  const { pathname } = useLocation();
+
   const currentView = location.pathname === "/settings" ? "settings" : location.pathname === "/help" ? "help" : "chat";
   
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() =>
@@ -135,7 +138,6 @@ function App() {
     chatIdParam || undefined
   );
 
-  // Sync selectedChatId with route parameter
   useEffect(() => {
     setSelectedChatId(chatIdParam || undefined);
   }, [chatIdParam]);
@@ -156,6 +158,36 @@ function App() {
   useEffect(() => {
     saveChatsToStorage(chats);
   }, [chats]);
+
+  const { user } = useAuth();
+console.log("User ID:", user);
+   const fetchTours = async (pathname:any) => {
+    try {
+      const ahdJS = AHDjs(undefined, {
+        applicationId: "68fe3656ea23fd016a4484e5",
+        apiHost: "https://pagepilot.fabbuilder.com",
+        visitorId: user?.id,
+        showProgressbar: false,
+      });
+      await ahdJS.showHighlights(`/${pathname}`, true);
+  
+      return true;
+    } catch (error) {
+      console.log(error)
+      return false;
+    }
+  };
+  const toCamelCase = (str: string) => {
+    return str
+      .replace(/^\//, "")
+      .replace(/[-_/](.)/g, (_, char) => char.toUpperCase());
+  };
+
+  console.log("Pathname:", toCamelCase(pathname));
+  useEffect(() => {
+    const processPathname = toCamelCase(pathname);
+    fetchTours(processPathname);
+  }, [pathname, user?.id]);
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
 
